@@ -3,9 +3,9 @@
 
 //Dependecias->
 var sys = require('util'),
-    express = require('express'),
-    app         = express.createServer('localhost'),
-    io          = require('../node_modules/socket.io');
+express = require('express'),
+app         = express.createServer('localhost'),
+io          = require('../node_modules/socket.io');
 app.use(express.static(__dirname + '/public'));
 
 var webClients = [];
@@ -13,7 +13,7 @@ var handler =  require('./Handler');
 
 app.get('/', function (req, res) {
     
-});
+    });
 
 app.listen(3000);
 
@@ -23,23 +23,25 @@ server.sockets.on('connection', function (client){
     
     // new client is here!
     client.send ( 'Conectado con servidor!' );
-	webClients.push(client);
+    webClients.push(client);
 
     client.on('message', function () {
-		console.log('nuevo mensaje del browser');
+        console.log('nuevo mensaje del browser');
     });
 
     client.on('disconnect', function () {
 		
-    });
+        });
 
     client.on('ready', function(){
         //client.send(handler.get)
         var setts = handler.getSetts();
 
         for(i=0;i<setts.length;i++){
-            client.emit('grafica-ini',{setts : setts[i]});
-            //client.emit('graficas-ini',{hello :'data'});
+            client.emit('grafica-ini',{
+                setts : setts[i]
+                });
+        //client.emit('graficas-ini',{hello :'data'});
         }
     });
 

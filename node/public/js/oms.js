@@ -7,17 +7,19 @@ $(document).ready(function(){
     
     socket.on('connect', function () {
         
-	   $(".estado").empty().append('Conectado :}');
-       socket.emit('ready', {ready:'true'});
+        $(".estado").empty().append('Conectado :}');
+        socket.emit('ready', {
+            ready:'true'
+        });
        
     });
 
     socket.on('message', function(msg) {
-		json = JSON.parse(msg);
+        json = JSON.parse(msg);
         //formateamos el string por que colapsa si usamos /
         select ="ul ."+ unSlash(json.symbol) + " p"; 
-		$(select).empty().append(json.precio);
-	});
+        $(select).empty().append(json.precio);
+    });
 
     socket.on('disconnect', function () {
         $(".estado").replaceWith('Desconectado :{');
@@ -46,12 +48,14 @@ $(document).ready(function(){
 
     socket.on('grafica-ini', function(data){
         //pedimos el esta de la grafica hasta este momento.
-        socket.emit('grafica-state',{id: data.setts.ID});
+        socket.emit('grafica-state',{
+            id: data.setts.ID
+            });
         buildGrafica(data);
         
         
-        //console.log({id: data.setts.ID});
-       //$("#estrategias").replaceWith(data.toString());
+    //console.log({id: data.setts.ID});
+    //$("#estrategias").replaceWith(data.toString());
     });
 
     socket.on('expert-state', function(data){
