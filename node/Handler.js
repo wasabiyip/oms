@@ -16,15 +16,15 @@ exports.notify = function (type,moneda, precio){
             "precio":precio
         }
     });
-for(var i=0; i<Graficas.length; i++) {
-	    
-    if(Graficas[i].getSymbol() === moneda){
-        console.log(msj);   
-        //Es muy importante enviar '\n' ya que java espera un fin de 
-        //linea: readLine();
-        Graficas[i].getSocket().write(msj + '\n');
+    for(var i=0; i<Graficas.length; i++) {
+
+        if(Graficas[i].getSymbol() === moneda){
+            console.log(msj);   
+            //Es muy importante enviar '\n' ya que java espera un fin de 
+            //linea: readLine();
+            Graficas[i].getSocket().write(msj + '\n');
+        }
     }
-}
 }
 
 exports.expertState = function(txt){
@@ -35,17 +35,17 @@ exports.expertState = function(txt){
             "value":id
         }
     });
-for(var i=0; i<Graficas.length; i++) {
-    //**CUIDADO esto es una Charrada!
-    if(Graficas[i].getSetts().ID == id){
-        //tenemos que extraer los bytes del mensaje que vamos a enviar.	    	
-        console.log('obteniendo estado ' + id);   
-        //Es muy importante enviar '\n' ya que java espera un fin de 
-        //linea: readLine();
-        //console.log(bytes);
-        Graficas[i].getSocket().write(msj +'\n');
+    for(var i=0; i<Graficas.length; i++) {
+        //**CUIDADO esto es una Charrada!
+        if(Graficas[i].getSetts().ID == id){
+            //tenemos que extraer los bytes del mensaje que vamos a enviar.	    	
+            console.log('obteniendo estado ' + id);   
+            //Es muy importante enviar '\n' ya que java espera un fin de 
+            //linea: readLine();
+            //console.log(bytes);
+            Graficas[i].getSocket().write(msj +'\n');
+        }
     }
-}
 }
 
 //Regresamos el numero de graficas.

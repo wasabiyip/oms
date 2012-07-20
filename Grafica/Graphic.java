@@ -213,6 +213,12 @@ public class Graphic extends Thread {
                     System.out.println(txt.toString());
                     this.writeNode(txt.toString());
                     break;
+                case "ask":
+                    System.out.println(msj);
+                    break;
+                case "bid":
+                    System.out.println(msj);
+                    break;
                 default:
                     System.out.println("Mensaje no identificado");
             }
@@ -233,7 +239,7 @@ public class Graphic extends Thread {
         }
     }
     
-   /* public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException {
         
         //Graphic grafica = new Graphic("EUR/GBP", 5);
         //Graphic grafica = new Graphic("EUR/USD", 5);
@@ -241,5 +247,5 @@ public class Graphic extends Thread {
         Graphic grafica = new Graphic("USD/CHF", 5);
         //Graphic grafica = new Graphic("USD/JPY", 5);      
         grafica.start();  
-    }*/
+    }
 }

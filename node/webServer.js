@@ -3,9 +3,9 @@
 
 //Dependecias->
 var sys = require('util'),
-express = require('express'),
-app         = express.createServer('localhost'),
-io          = require('../node_modules/socket.io');
+express = require('../../../../lib/node_modules/express'),
+app= express.createServer('localhost'),
+io = require('../../../../lib/node_modules/socket.io');
 app.use(express.static(__dirname + '/public'));
 
 var webClients = [];

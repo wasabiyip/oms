@@ -89,15 +89,15 @@ function evaluar(msj, socket){
             //Cada que se recibe un precio.	
             case 'stream':
                 if(handler.symbolExists(income.symbol)){
-                    console.log(income.entry);
-                    msj = {
+                    /*msj = {
                         "values":{
                             "symbol": income.symbol,
                             "tipo": income.entry, 
                             "precio": income.precio
                             }
-                        };
+                        };*/
                 webServer.onStream(msj);
+                handler.notify(income.entry,income.symbol, income.precio)
 
             }
             break;
