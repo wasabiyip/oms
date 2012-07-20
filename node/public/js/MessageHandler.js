@@ -1,5 +1,0 @@
-
-function shutMessage(message){
-
-	
-}
