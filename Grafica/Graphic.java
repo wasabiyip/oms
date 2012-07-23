@@ -122,10 +122,10 @@ public class Graphic extends Thread {
      *
      * @param price
      */
-    public void onTick(Double price) {
+    public void onOpen(Double price) {
         StringBuffer msj = new StringBuffer();
         msj.append("{");
-        msj.append("\"type\": \"onTick\",");
+        msj.append("\"type\": \"onOpen\",");
         msj.append("\"precio\": " + price);
         msj.append("}");
 
@@ -146,8 +146,6 @@ public class Graphic extends Thread {
             this.onCandle();
             cont = 0;
         }
-
-        System.out.println("Tick : " + price);
     }
 
     /**
@@ -213,8 +211,9 @@ public class Graphic extends Thread {
             System.out.println(json);
 
             switch ((String) json.get("type")) {
-                case "tick":
-                    this.onTick((double) json.get("precio"));
+                case "open":
+                    System.out.println("open: "+ json.get("precio") );
+                    this.onOpen((double) json.get("precio"));
                     break;
                 case "get-state":
                     StringBuffer txt = new StringBuffer();
@@ -227,13 +226,14 @@ public class Graphic extends Thread {
                     this.writeNode(txt.toString());
                     break;
                 case "ask":
-                    System.out.println(msj);
+                    //expert.setAsk((double) json.get("precio"));
                     break;
                 case "bid":
-                    System.out.println(msj);
+                    expert.onTick((double) json.get("precio"));
+                    //expert.setBid((double) json.get("precio"));
                     break;
                 default:
-                    System.out.println("Mensaje no identificado");
+                    System.out.println("Mensaje no identificado"+ json.toString());
             }
 
         } catch (ParseException ex) {
@@ -257,9 +257,9 @@ public class Graphic extends Thread {
     public static void main(String[] args) throws IOException {
 
         //Graphic grafica = new Graphic("EUR/GBP", 5);
-        //Graphic grafica = new Graphic("EUR/USD", 5);
+        Graphic grafica = new Graphic("EUR/USD", 5);
         //Graphic grafica = new Graphic("GBP/USD", 5);
-        Graphic grafica = new Graphic("USD/CHF", 5);
+        //Graphic grafica = new Graphic("USD/CHF", 5);
         //Graphic grafica = new Graphic("USD/JPY", 5);      
         grafica.start();
     }

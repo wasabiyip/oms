@@ -33,7 +33,7 @@ $(document).ready(function(){
         });
     });
 
-    socket.on('grafica-stream', function(data){
+    socket.on('grafica-tick', function(data){
 
         symbol = unSlash(data.values.symbol);
         
@@ -66,7 +66,7 @@ $(document).ready(function(){
         });
     });
     //cada que hay un precio de apertura de vela.
-    socket.on('grafica-tick', function(data){
+    socket.on('grafica-open', function(data){
         var id = unSlash(data.values.id);
 
         $("#"+id+" .promedios h3 span").empty().append(data.values.precio);

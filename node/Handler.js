@@ -18,8 +18,7 @@ exports.notify = function (type,moneda, precio){
     });
     for(var i=0; i<Graficas.length; i++) {
 
-        if(Graficas[i].getSymbol() === moneda){
-            console.log(msj);   
+        if(Graficas[i].getSymbol() === moneda){  
             //Es muy importante enviar '\n' ya que java espera un fin de 
             //linea: readLine();
             Graficas[i].getSocket().write(msj + '\n');

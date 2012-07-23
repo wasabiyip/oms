@@ -67,11 +67,11 @@ exports.onCandle = function(data){
     notify('grafica-candle', data);
 }
 /*
-recibimos un evento onTick.
+recibimos un evento onOpen.
 */
-exports.onTick= function(data){
+exports.onOpen= function(data){
     console.log(''+data);
-    notify('grafica-tick', data);
+    notify('grafica-open', data);
 }
 
 exports.expertState = function(data){

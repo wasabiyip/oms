@@ -5,7 +5,7 @@ var net = require('net');
 var webServer = require('./webServer');
 var app = net.createServer();
 var handler = require('./Handler');
-
+var excel = require('./util/Excel');
 //Iniciamos el servidor TCP.
 var Graficas = [];
 var server_precios, server_op;
@@ -54,7 +54,6 @@ function evaluar(msj, socket){
     try{
 
         var income = JSON.parse(msj);
-
         switch (income.type){
             //Un cliente conectado
             case 'login':
@@ -81,13 +80,13 @@ function evaluar(msj, socket){
                 break;
 
             //un tick es un precio de apertura de minuto.
-            case 'tick':
+            case 'open':
                 //msj = {"msj" :{"type":"tick" ,"precio":income.precio};
-                handler.notify('tick',income.symbol, income.precio);
+                handler.notify('open',income.symbol, income.precio);
                 break;
 
             //Cada que se recibe un precio.	
-            case 'stream':
+            case 'tick':
                 if(handler.symbolExists(income.symbol)){
                     /*msj = {
                         "values":{
@@ -98,7 +97,10 @@ function evaluar(msj, socket){
                         };*/
                 webServer.onStream(msj);
                 handler.notify(income.entry,income.symbol, income.precio)
-
+                
+            }
+            if(income.symbol === 'EUR/USD'){
+                //excel.writePrecio(income.entry, income.precio);
             }
             break;
         //cuando un cliente se desconecta.
@@ -114,7 +116,7 @@ function evaluar(msj, socket){
             }
             break;	
         //al recibir un evento onTick de un cliente conectado.
-        case 'onTick':
+        case 'onOpen':
             id = handler.getGrafica(socket).settings.ID;
             msj = {
                 "values":{
@@ -122,7 +124,7 @@ function evaluar(msj, socket){
                     "precio": income.precio
                     }
                 };
-        webServer.onTick(msj);     
+        webServer.onOpen(msj);     
         break;
     //al recibir un evento onClandle de un cliente conectado.
     case 'onCandle':
