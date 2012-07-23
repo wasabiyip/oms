@@ -126,31 +126,31 @@ function evaluar(msj, socket){
                 };
         webServer.onOpen(msj);     
         break;
-    //al recibir un evento onClandle de un cliente conectado.
-    case 'onCandle':
-        id = handler.getGrafica(socket).settings.ID;
+        //al recibir un evento onClandle de un cliente conectado.
+        case 'onCandle':
+            id = handler.getGrafica(socket).settings.ID;
+            msj = {
+                "values":{
+                    "id":id , 
+                    "vars":income.variables
+                    }
+                };
+        webServer.onCandle(msj);
+        break;
+    case 'expert-state':
+        //handler.state(income.variables);
         msj = {
             "values":{
-                "id":id , 
-                "vars":income.variables
+                "id":income.id, 
+                "vars": income.variables
                 }
             };
-    webServer.onCandle(msj);
+    webServer.expertState(msj);
     break;
-case 'expert-state':
-    //handler.state(income.variables);
-    msj = {
-        "values":{
-            "id":income.id, 
-            "vars": income.variables
-            }
-        };
-webServer.expertState(msj);
-break;
-}
-//Cachamos cualquier error y lo imprimimos.
-}catch(error){
-    console.log(error + msj);
-}
+    }
+    //Cachamos cualquier error y lo imprimimos.
+    }catch(error){
+        console.log(error + msj);
+    }
 }
 //-------------------------------------------------------------------/

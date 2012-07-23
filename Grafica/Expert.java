@@ -75,7 +75,9 @@ public class Expert extends Settings {
         setPriceBoll(price); 
         System.out.println("Up " + this.bollUp() + " Dn " + this.bollDn());
     }
-    
+    public void onOpen(double price){
+        lastOpen = price;
+    }
     /**
      * Refrescamos las bandas con el precio de apertura de la vela.
      * @param price 

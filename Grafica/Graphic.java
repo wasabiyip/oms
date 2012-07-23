@@ -141,7 +141,7 @@ public class Graphic extends Thread {
         this.cont++;
 
         candle.onTick(price);
-        expert.onTick(price);
+        expert.onOpen(price);
         if (this.cont >= this.periodo) {
             this.onCandle();
             cont = 0;
@@ -208,11 +208,9 @@ public class Graphic extends Thread {
         try {
             JSONObject root = (JSONObject) new JSONParser().parse("{" + msj);
             JSONObject json = (JSONObject) root.get("msj");
-            System.out.println(json);
 
             switch ((String) json.get("type")) {
                 case "open":
-                    System.out.println("open: "+ json.get("precio") );
                     this.onOpen((double) json.get("precio"));
                     break;
                 case "get-state":
