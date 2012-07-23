@@ -1,5 +1,3 @@
-
-
 package oms.util;
 
 import quickfix.FieldNotFound;

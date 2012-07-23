@@ -1,5 +1,3 @@
-
-
 package oms.util;
 //
 // A simple Java Console for your application (Swing version)

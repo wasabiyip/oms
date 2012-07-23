@@ -16,54 +16,60 @@ import quickfix.SessionNotFound;
 import quickfix.field.*;
 
 /**
- *Clase que se encarga de todo lo relacionado con las ordenés.
+ * Clase que se encarga de todo lo relacionado con las ordenés.
+ *
  * @author omar
  */
 public class Order {
+
     static MongoDao mongo;
     static DBObject obj;
     static ArrayList<ArrayList> stops = new ArrayList();
-    
+
     /**
      * Guardamos una cadena de Json que representa a una ordén.
+     *
      * @param orden
-     * @throws Exception 
+     * @throws Exception
      */
-    public static void orderRecord(String orden) throws Exception{
-        
+    public static void orderRecord(String orden) throws Exception {
+
         mongo = new MongoDao();
         DBCollection coll = mongo.getCollection();
-        obj = (DBObject)JSON.parse(orden);
-        coll.insert(obj);        
-    }
-    /**
-     * Modificamos el registro de una orden y le agregamos los limites.
-     * @param tipo
-     * @param id
-     * @param precio
-     * @throws Exception 
-     */
-    public static void stopsRecord(char tipo, String id, Double precio, String order) throws Exception{
-        
-        mongo = new MongoDao();
-        DBCollection coll = mongo.getCollection();
-        BasicDBObject stop = new BasicDBObject();
-       
-        if (tipo == '3'){
-            stop.append("$set", new BasicDBObject().append("StopL", order));
-            
-        }else{
-            stop.append("$set", new BasicDBObject().append("TakeP", order));
-        }
-        coll.update(new BasicDBObject().append("OrderID", id), stop);        
+        obj = (DBObject) JSON.parse(orden);
+        coll.insert(obj);
     }
 
     /**
-     * Obtenemos el número total de ordenés activas. 
-     * @return
-     * @throws Exception 
+     * Modificamos el registro de una orden y le agregamos los limites.
+     *
+     * @param tipo
+     * @param id
+     * @param precio
+     * @throws Exception
      */
-    public static DBCursor getTotal(){
+    public static void stopsRecord(char tipo, String id, Double precio, String order) throws Exception {
+
+        mongo = new MongoDao();
+        DBCollection coll = mongo.getCollection();
+        BasicDBObject stop = new BasicDBObject();
+
+        if (tipo == '3') {
+            stop.append("$set", new BasicDBObject().append("StopL", order));
+
+        } else {
+            stop.append("$set", new BasicDBObject().append("TakeP", order));
+        }
+        coll.update(new BasicDBObject().append("OrderID", id), stop);
+    }
+
+    /**
+     * Obtenemos el número total de ordenés activas.
+     *
+     * @return
+     * @throws Exception
+     */
+    public static DBCursor getTotal() {
         try {
             mongo = new MongoDao();
         } catch (Exception ex) {
@@ -74,15 +80,17 @@ public class Order {
         BasicDBObject query = new BasicDBObject();
         query.put("Status", 1);
         cur = coll.find(query);
-        
+
         return cur;
     }
+
     /**
      * Obtenemos el número total de ordenés por MAGICMA.
+     *
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
-    public static int getTotalMagic(){
+    public static int getTotalMagic() {
         try {
             mongo = new MongoDao();
         } catch (Exception ex) {
@@ -96,18 +104,19 @@ public class Order {
         cur = coll.find(query);
         return cur.count();
     }
-    
+
     /**
      * Enviamos una orden...
+     *
      * @param price
      * @param type
      * @throws SessionNotFound
-     * @throws Exception 
+     * @throws Exception
      */
     public static void Send(double price, char type, Object ID) {
 
         quickfix.fix42.NewOrderSingle nworder = new quickfix.fix42.NewOrderSingle();
-        nworder.set(new ClOrdID((String)ID));
+        nworder.set(new ClOrdID((String) ID));
         nworder.set(new HandlInst('1'));
         nworder.set(new Side(type));
         nworder.set(new Currency("EUR"));
@@ -121,16 +130,18 @@ public class Order {
             Session.sendToTarget(nworder, SenderApp.sessionID);
         } catch (SessionNotFound ex) {
             Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
-        }                
+        }
     }
+
     /**
      * Enviamos StropLoss y TakeProfit por cada operacion.
+     *
      * @param type
      * @param ID
-     * @param qty 
+     * @param qty
      */
-    public static void SendStops(char type, String ID, int qty){
-        
+    public static void SendStops(char type, String ID, int qty) {
+
         quickfix.fix42.NewOrderSingle nwsl = new quickfix.fix42.NewOrderSingle();
         quickfix.fix42.NewOrderSingle nwtp = new quickfix.fix42.NewOrderSingle();
         nwsl.set(new ClOrdID(ID));
@@ -147,17 +158,21 @@ public class Order {
         nwsl.set(new OrderQty(qty));
         nwtp.set(new Currency("EUR"));
         nwsl.set(new Currency("EUR"));
-        if(type == 1){
-            
-           /* nwsl.set(new StopPx(MarketPool.getOffer()- (Settings.sl * Settings.Point)));
-            nwtp.set(new Price(MarketPool.getOffer() + (Settings.tp*Settings.Point)));*/
-            
+        if (type == 1) {
+
+            /*
+             * nwsl.set(new StopPx(MarketPool.getOffer()- (Settings.sl *
+             * Settings.Point))); nwtp.set(new Price(MarketPool.getOffer() + (Settings.tp*Settings.Point)));
+             */
+
             nwsl.set(new Side('2'));
             nwtp.set(new Side('2'));
-        }else{
-            /*nwsl.set(new StopPx(MarketPool.getBid() + (Settings.sl * Settings.Point)));
-            nwtp.set(new Price(MarketPool.getBid() - (Settings.tp*Settings.Point)));*/
-            nwsl.setField(new IntField(7534,1));
+        } else {
+            /*
+             * nwsl.set(new StopPx(MarketPool.getBid() + (Settings.sl *
+             * Settings.Point))); nwtp.set(new Price(MarketPool.getBid() - (Settings.tp*Settings.Point)));
+             */
+            nwsl.setField(new IntField(7534, 1));
             nwsl.set(new Side('1'));
             nwtp.set(new Side('1'));
         }
@@ -167,12 +182,14 @@ public class Order {
         } catch (SessionNotFound ex) {
             Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
+
+
     }
+
     /**
      * Cerramos una orden enviando la orden opuesta al tipo que se recibe.
-     * @param tipo 
+     *
+     * @param tipo
      */
     public static void Close(Integer tipo) {
         try {
@@ -186,29 +203,28 @@ public class Order {
         query.put("Status", 1);
         //query.put("MAGICMA", Settings.MAGICMA);
         DBCursor cur = coll.find(query);
-        
+
         while (cur.hasNext()) {
             temp = cur.next();
-            
-            if (((Integer)temp.get("Type")) == tipo) {
+
+            if (((Integer) temp.get("Type")) == tipo) {
                 System.out.println(temp.get("Type"));
-                if(tipo==1){
+                if (tipo == 1) {
                     //Send(MarketPool.getOffer(), '2',(String) temp.get("OrderID"));
-                    closeStops((String) temp.get("OrderID"),'2', temp.get("NoOrder").toString());
-                }
-                else{
+                    closeStops((String) temp.get("OrderID"), '2', temp.get("NoOrder").toString());
+                } else {
                     //Send(MarketPool.getBid(), '1', (String) temp.get("OrderID"));
-                    closeStops((String) temp.get("OrderID"),'1',temp.get("NoOrder").toString());
+                    closeStops((String) temp.get("OrderID"), '1', temp.get("NoOrder").toString());
                 }
             }
         }
     }
-    
-    public static void closeStops(String ID, char side, String order){
-        
+
+    public static void closeStops(String ID, char side, String order) {
+
         quickfix.fix42.OrderCancelRequest stop = new quickfix.fix42.OrderCancelRequest();
         quickfix.fix42.OrderCancelRequest take = new quickfix.fix42.OrderCancelRequest();
-        
+
         stop.set(new ClOrdID(ID + "SL"));
         take.set(new ClOrdID(ID + "TP"));
         stop.set(new OrigClOrdID(ID));
@@ -220,7 +236,7 @@ public class Order {
         stop.setChar(40, '3');
         take.setChar(40, 'F');
         stop.set(new Side(side));
-        take.set(new Side(side));      
+        take.set(new Side(side));
         stop.set(new TransactTime());
         take.set(new TransactTime());
         try {
@@ -229,16 +245,18 @@ public class Order {
         } catch (SessionNotFound ex) {
             Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
         }
-                
+
     }
+
     /**
-     * Verificamos si la orden existe en Mongo para ver si la que se envio anteriormente
-     * es el cierre de la nueva.
+     * Verificamos si la orden existe en Mongo para ver si la que se envio
+     * anteriormente es el cierre de la nueva.
+     *
      * @param msj
      * @return
-     * @throws Exception 
+     * @throws Exception
      */
-    public static boolean Exists(quickfix.fix42.ExecutionReport msj) throws Exception{
+    public static boolean Exists(quickfix.fix42.ExecutionReport msj) throws Exception {
         mongo = new MongoDao();
         String id = msj.getClOrdID().getValue();
         Double price = msj.getAvgPx().getValue();
@@ -246,56 +264,57 @@ public class Order {
         BasicDBObject query = new BasicDBObject();
         query.put("OrderID", id);
         DBCursor cur = coll.find(query);
-        
-        if(cur.count() > 0){
+
+        if (cur.count() > 0) {
             Order.shutDown(id, price, coll);
             return true;
+        } else {
+            return false;
         }
-        else return false;
     }
-    
+
     /**
-     * Sabiendo que una orden ya existe y que la orden recibida es de cierre, 
+     * Sabiendo que una orden ya existe y que la orden recibida es de cierre,
      * este método cambia el status de la orden a 0 para que ya no este activa,
      * y guarda el precio en el que se cerro la orden.
+     *
      * @param id
      * @param price
      * @param coll
-     * @throws Exception 
+     * @throws Exception
      */
     private static void shutDown(String id, Double price, DBCollection coll) throws Exception {
-        
-        BasicDBObject set = new BasicDBObject().append("$set", new BasicDBObject()
-                .append("Status", 0));
-        BasicDBObject push = new BasicDBObject().append("$set", new BasicDBObject()
-                .append("Close", price));
+
+        BasicDBObject set = new BasicDBObject().append("$set", new BasicDBObject().append("Status", 0));
+        BasicDBObject push = new BasicDBObject().append("$set", new BasicDBObject().append("Close", price));
         coll.update(new BasicDBObject().append("OrderID", id), set);
         coll.update(new BasicDBObject().append("OrderID", id), push);
     }
-    
-    public static Integer getId() throws Exception{
-        
+
+    public static Integer getId() throws Exception {
+
         mongo = new MongoDao();
         DBCollection coll = mongo.getCollection();
         BasicDBObject query = new BasicDBObject();
         query.put("Status", 0);
         DBCursor cur = coll.find(query);
         return (Integer) cur.next().get("NoOrder");
-             
+
     }
-    
-    public static String getCl() throws Exception{
-        
+
+    public static String getCl() throws Exception {
+
         mongo = new MongoDao();
         DBCollection coll = mongo.getCollection();
         BasicDBObject query = new BasicDBObject();
         query.put("Status", 0);
         DBCursor cur = coll.find(query);
         return (String) cur.next().get("OrderID");
-             
+
     }
-    private static String sumLong(String ord, int num){
-        
+
+    private static String sumLong(String ord, int num) {
+
         long orden = Long.valueOf(ord).longValue();
         orden = orden + num;
         return Long.toString(orden);

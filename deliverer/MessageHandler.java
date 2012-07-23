@@ -65,10 +65,8 @@ public class MessageHandler {
                 group.get(mdentrypx);
                 group.get(mdentrytype);
                 if (mdentrytype.getValue() == 0) {
-
                     //MarketPool.setBid(mdentrypx.getValue());
                 } else if (mdentrytype.getValue() == 1) {
-
                     //MarketPool.setOffer(mdentrypx.getValue());
                 }
 
@@ -121,9 +119,8 @@ public class MessageHandler {
                 //Nuevo
                 Order.stopsRecord('F', msj.getClOrdID().getValue(), msj.getPrice().getValue(),
                         msj.getOrderID().getValue());
-            }else {
+            } else {
                 //Close
-                
             }
         } else if (Order.Exists(msj) && msj.getOrdStatus().getValue() == '2') {
             //Cierre de operacion

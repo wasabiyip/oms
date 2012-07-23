@@ -7,11 +7,10 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author omar
- * Clase que se comunica con mongo para obtener datos.
+ * @author omar Clase que se comunica con mongo para obtener datos.
  */
-public class MongoDao {  
-    
+public class MongoDao {
+
     protected MongoConnection mongo;
     private DB db;
     private DBCollection coll;
@@ -19,19 +18,17 @@ public class MongoDao {
     private BasicDBObject query = new BasicDBObject();
     private BasicDBObject fechaMin;
     private BasicDBObject sort;
-    
     private ArrayList<Double> arrList = new ArrayList();
-    
+
     /**
-     * Constructor Obtiene la conexión con mongo y hace un query con el parametro
-     * recibido.
-     * 
+     * Constructor Obtiene la conexión con mongo y hace un query con el
+     * parametro recibido.
+     *
      * @param date fecha apartir de la cual queremos obtener datos.
-     * @throws Exception 
+     * @throws Exception
      */
-    
-    public MongoDao(){
-        
+    public MongoDao() {
+
         mongo = MongoConnection.getInstance();
         try {
             mongo.connect();
@@ -39,80 +36,84 @@ public class MongoDao {
             Logger.getLogger(MongoDao.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-       
+
     public DBCursor query(int ini, int fin) {
-        
+
         ArrayList<String> temp;
         DBCursor cursor;
-                      
-        query.put("Date", new BasicDBObject("$gte", ini)
-                                    .append("$lte", fin));
+
+        query.put("Date", new BasicDBObject("$gte", ini).append("$lte", fin));
         cursor = coll.find(query);
         return cursor;
     }
-       
-    public DB getDB(){
+
+    public DB getDB() {
         return this.db;
     }
-    
-    public DBCollection getCollection(){
+
+    public DBCollection getCollection() {
         return this.coll;
     }
-    
-    public void setDB(String db){
+
+    public void setDB(String db) {
         this.db = mongo.getConnection().getDB(db);
     }
-    
-    public void setCollection(String coll){
+
+    public void setCollection(String coll) {
         this.coll = this.db.getCollection(coll);
     }
+
     /**
      * Cambia la fecha que se esta utilizado.
+     *
      * @param date Nueva fecha con la que trabajaremos.
      */
     public void setDate(int date) {
 
         query.put("Date", new BasicDBObject("$gt", date));
-        this.cursor = coll.find(query).sort((new BasicDBObject("Date",-1)));
+        this.cursor = coll.find(query).sort((new BasicDBObject("Date", -1)));
     }
-    
+
     /**
      * Obtenemos un campo especifico desde.
+     *
      * @param field ccampo que queremos obtener.
-     * @return 
+     * @return
      */
     private ArrayList getField(String field) {
         ArrayList<ArrayList> doble;
         ArrayList temp = new ArrayList();
         doble = new ArrayList();
         DBObject obj;
-        
+
         while (this.cursor.hasNext()) {
             obj = cursor.next();
             temp.add(obj.get("Date"));
             temp.add(obj.get("Time"));
             temp.add((Double) (obj.get(field)));
             doble.add(new ArrayList(temp));
-            
+
             temp.clear();
         }
         return doble;
     }
-    
-    public ArrayList getCandleData(String symbol, int periodo){
+
+    public ArrayList getCandleData(String symbol, int periodo) {
         ArrayList precios = new ArrayList();
         this.setDB("history");
         this.setCollection(symbol);
         DBCursor cursor;
-        
-        if(periodo>0){
-            cursor = this.coll.find().sort(new BasicDBObject( "$natural" , -1 ) ).limit(periodo);
-        
-            while(cursor.hasNext()){
+
+        if (periodo > 0) {
+            cursor = this.coll.find().sort(new BasicDBObject("$natural", -1)).limit(periodo);
+
+            while (cursor.hasNext()) {
 
                 precios.add(cursor.next().get("Open"));
             }
-        }else precios.add(null);
+        } else {
+            precios.add(null);
+        }
         return precios;
-    }  
+    }
 }
