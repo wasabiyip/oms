@@ -30,7 +30,9 @@ public class Expert extends Settings {
     private int velas = 0;
     private double lastOpen=0.0;
     private double ask=0.0;
-    private double bid=0.0;
+    
+    private Date date = new oms.Grafica.Date();
+    
     /**
      * Constructor...
      * @param symbol Indica el par de monedas con el se va a trabajar.
@@ -62,9 +64,14 @@ public class Expert extends Settings {
      * de operaciones, así que tratalo con RESPETO!
      * @param price precio de apertura del minuto!
      */
-    public void onTick(Double price) {
+    public void onTick(Double bid) {
     
-        System.out.println("tick " + price);
+        if (date.getDayWeek() != 6){
+            if(ask-bid <= this.spread){
+                
+            }
+            
+        }
     }
     
     /**
@@ -197,13 +204,6 @@ public class Expert extends Settings {
             else j--;//<---------|| CUIDADO ESTO ES UNA CHARRADA!
         }
         return str.toString();
-    }
-    /**
-     * Guardamos el valor del bid.
-     * @param bid 
-     */
-    public void setBid(Double bid){
-        this.bid = bid;
     }
     /**
      * Guardamos el valor del ask.

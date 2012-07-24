@@ -88,19 +88,19 @@ function evaluar(msj, socket){
             //Cada que se recibe un precio.	
             case 'tick':
                 if(handler.symbolExists(income.symbol)){
-                    /*msj = {
+                    msj = {
                         "values":{
                             "symbol": income.symbol,
                             "tipo": income.entry, 
                             "precio": income.precio
                             }
-                        };*/
-                webServer.onStream(msj);
+                        };
+                webServer.onTick(msj);
                 handler.notify(income.entry,income.symbol, income.precio)
                 
             }
             if(income.symbol === 'EUR/USD'){
-                //excel.writePrecio(income.entry, income.precio);
+                excel.writePrecio(income.entry, income.precio);
             }
             break;
         //cuando un cliente se desconecta.

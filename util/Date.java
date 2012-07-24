@@ -226,4 +226,9 @@ public class Date {
 		sb.append(".");sb.append(getMillis());
 		return sb.toString();
 	}
+        
+        public int dayWeek(){
+            Calendar calendar = Calendar.getInstance();
+            return calendar.getTime().getDay();
+        }
 }

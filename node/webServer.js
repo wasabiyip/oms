@@ -55,9 +55,9 @@ exports.clientsLength = function(){
     return webClients.length;
 }
 
-exports.onStream = function(data){
+exports.onTick = function(data){
 
-    notify('grafica-stream', data);
+    notify('grafica-tick', data);
 }
 /*
 recibimos un evento onCandle.

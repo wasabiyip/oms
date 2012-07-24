@@ -34,14 +34,16 @@ $(document).ready(function(){
     });
 
     socket.on('grafica-tick', function(data){
-
-        symbol = unSlash(data.values.symbol);
         
+        symbol = unSlash(data.values.symbol);
         for(i=0; i<ids.length;i++){
             
             if(ids[i].search(symbol)>=0){
                 //primero borramos lo que este y después ponemos el precio.
-                $("#estrategias #"+ids[i]+" h2 span").empty().append(data.values.precio);
+                if(data.values.tipo==="ask")
+                    $("#estrategias #"+ids[i]+" h2 .ask").empty().append(data.values.precio);
+                else
+                    $("#estrategias #"+ids[i]+" h2 .bid").empty().append(data.values.precio);
             }
         }
     })
@@ -83,7 +85,7 @@ function buildGrafica(data){
     ids.push(id);
     //Creamos html de grafica.
     $("#estrategias").append('<div class=\'grafica\' id=' + id +'></div>');
-    $("#"+id).append('<h2>'+ setts.symbol +' <span class="stream"></span></h2>')
+    $("#"+id).append('<h2>'+ setts.symbol +' bid: <span class="bid"></span> ask: <span class="ask"></span></h2>')
     $("#"+id).append('<div class=\'settings\'></<div>');
     $("#" +id+ " .settings").append('<ul><h3>Datos del expert</h3></ul>');
     $("#" +id).append('<div class=\'promedios\'></<div>');

@@ -224,11 +224,10 @@ public class Graphic extends Thread {
                     this.writeNode(txt.toString());
                     break;
                 case "ask":
-                    //expert.setAsk((double) json.get("precio"));
+                    expert.setAsk((double) json.get("precio"));
                     break;
                 case "bid":
                     expert.onTick((double) json.get("precio"));
-                    //expert.setBid((double) json.get("precio"));
                     break;
                 default:
                     System.out.println("Mensaje no identificado"+ json.toString());
@@ -255,8 +254,8 @@ public class Graphic extends Thread {
     public static void main(String[] args) throws IOException {
 
         //Graphic grafica = new Graphic("EUR/GBP", 5);
-        Graphic grafica = new Graphic("EUR/USD", 5);
-        //Graphic grafica = new Graphic("GBP/USD", 5);
+        //Graphic grafica = new Graphic("EUR/USD", 5);
+        Graphic grafica = new Graphic("GBP/USD", 5);
         //Graphic grafica = new Graphic("USD/CHF", 5);
         //Graphic grafica = new Graphic("USD/JPY", 5);      
         grafica.start();
