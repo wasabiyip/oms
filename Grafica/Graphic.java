@@ -44,8 +44,8 @@ public class Graphic extends Thread {
      * @throws IOException
      */
     public Graphic(String symbol, int periodo, String id) {
-        System.out.println("Grafica de " + symbol + " " + periodo);
-        expert = new Expert(symbol);
+        System.out.println("Grafica de " + symbol + " " + periodo +  " " + id);
+        expert = new Expert(symbol, id);
         dif = GMTDate.getDate().getMinute() % periodo;
         this.symbol = symbol;
         this.periodo = periodo;

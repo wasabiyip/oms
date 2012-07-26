@@ -20,15 +20,20 @@ public class GraficaHandler {
     public void addGrafica(String symbol, int periodo){
         //Podriamos poner aquí algunas opciones mas como pasar el archivo log
         graficas.add(new Graphic(symbol, periodo, this.getId(symbol)));
+        runGrafica(graficas.size()-1);
+        
     }
     
+    private void runGrafica(int index){
+        graficas.get(index).start();
+    }
     
     public void orderEntry(){
         
     }
     
     /**
-     * Este método genera un id único para cada expert/gráfica.
+     * Este método genera un id único para cada gráfica.
      * @return id único.
      */
     private String getId(String id){

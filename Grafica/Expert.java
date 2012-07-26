@@ -39,11 +39,11 @@ public class Expert extends Settings {
      * Constructor...
      * @param symbol Indica el par de monedas con el se va a trabajar.
      */
-    public Expert(String symbol) {
+    public Expert(String symbol, String id) {
         //llamamos a el constructor de el padre (Settings).
         super(symbol);
         indicador = new Indicador(Graphic.unSlash(this.symbol),5);
-        System.out.println("Expert Listo..");
+        
         /**
          * Añadimos los periodos a las bandas.
          */
@@ -54,8 +54,7 @@ public class Expert extends Settings {
         bollBandS1 = indicador.createBollinger(this.bollS1);
         bollBandS2 = indicador.createBollinger(this.bollS2);
         bollBandS3 = indicador.createBollinger(this.bollS3);
-      
-        System.out.println(this.getExpertState().toString());
+        this.id = id;
     }
     
     /**

@@ -26,6 +26,7 @@ public class SenderApp extends MessageCracker implements Application{
     PriceSensitive pricesense = new PriceSensitive();
     public static MongoConnection mongo;
     public static SessionID sessionID;
+    private GraficaHandler graficaHandler = new GraficaHandler();
     
     /**
      * Método que se ejecuta al crear aplicación.
@@ -56,6 +57,7 @@ public class SenderApp extends MessageCracker implements Application{
     @Override
     public void onLogon(SessionID id) {
         SenderApp.sessionID = id;
+        this.graficaHandler.addGrafica("USD/JPY", 5);
     }
     
     /**
