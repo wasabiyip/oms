@@ -2,7 +2,7 @@ package oms.deliverer;
 
 import java.util.Date;
 import oms.deliverer.SenderApp;
-import oms.util.Order;
+import oms.Grafica.Order;
 import oms.util.fixToJson;
 import quickfix.FieldNotFound;
 import quickfix.Session;
@@ -96,7 +96,7 @@ public class MessageHandler {
      * @param msj
      * @throws FieldNotFound
      */
-    public static void orderHandler(quickfix.fix42.ExecutionReport msj) throws FieldNotFound, Exception {
+    public static void executionReport(quickfix.fix42.ExecutionReport msj) throws FieldNotFound, Exception {
         /**
          * Aquí recibimos la respuesta del servidor de como fué tratada nuestra
          * orden el campo ExecType del mensaje contiene esta información.
@@ -108,7 +108,7 @@ public class MessageHandler {
             //StopLoss
             if (msj.getExecType().getValue() == 0) {
                 //Nueva    
-                Order.stopsRecord('3', msj.getClOrdID().getValue(), msj.getStopPx().getValue(),
+                OrderHandler.stopsRecord('3', msj.getClOrdID().getValue(), msj.getStopPx().getValue(),
                         msj.getOrderID().getValue());
             } else {
                 //Close
@@ -117,14 +117,14 @@ public class MessageHandler {
             //TakeProfit
             if (msj.getExecType().getValue() == 0) {
                 //Nuevo
-                Order.stopsRecord('F', msj.getClOrdID().getValue(), msj.getPrice().getValue(),
+                OrderHandler.stopsRecord('F', msj.getClOrdID().getValue(), msj.getPrice().getValue(),
                         msj.getOrderID().getValue());
             } else {
                 //Close
             }
-        } else if (Order.Exists(msj) && msj.getOrdStatus().getValue() == '2') {
+        /*} else if (Order.Exists(msj) && msj.getOrdStatus().getValue() == '2') {
             //Cierre de operacion
-            System.out.println("Cerrando orden: " + msj.getExecID().getValue());
+            System.out.println("Cerrando orden: " + msj.getExecID().getValue());*/
         } else {
             //Entrada de orden
             switch (msj.getExecType().getValue()) {
@@ -141,18 +141,17 @@ public class MessageHandler {
                      * Si es 2 quiere decir que la orden fué aceptada y
                      * procedemos a guardarla en Mongo.
                      */
-                    Order.orderRecord(new fixToJson().parseOrder(msj));
+                    OrderHandler.orderRecord(new fixToJson().parseOrder(msj));
                     if (msj.getSide().getValue() == '1') {
-                        Order.SendStops('1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue());
+                        OrderHandler.SendStops('1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
                         System.out.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
                                 + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
                     }
                     if (msj.getSide().getValue() == '2') {
-                        Order.SendStops('2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue());
+                        OrderHandler.SendStops('2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
                         System.out.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
                                 + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
                     }
-
                     break;
 
                 case '4':

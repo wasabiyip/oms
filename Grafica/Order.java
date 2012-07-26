@@ -52,38 +52,4 @@ public class Order {
             Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    /**
-     * Cerramos una orden enviando la orden opuesta al tipo que se recibe.
-     *
-     * @param tipo
-     */
-    public void Close(Integer tipo) {
-        try {
-            mongo = new MongoDao();
-        } catch (Exception ex) {
-            Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        DBCollection coll = mongo.getCollection("operaciones");
-        BasicDBObject query = new BasicDBObject();
-        DBObject temp;
-        query.put("Status", 1);
-        //query.put("MAGICMA", Settings.MAGICMA);
-        DBCursor cur = coll.find(query);
-
-        while (cur.hasNext()) {
-            temp = cur.next();
-
-            if (((Integer) temp.get("Type")) == tipo) {
-                System.out.println(temp.get("Type"));
-                if (tipo == 1) {
-                    //Send(MarketPool.getOffer(), '2',(String) temp.get("OrderID"));
-                    closeStops((String) temp.get("OrderID"), '2', temp.get("NoOrder").toString());
-                } else {
-                    //Send(MarketPool.getBid(), '1', (String) temp.get("OrderID"));
-                    closeStops((String) temp.get("OrderID"), '1', temp.get("NoOrder").toString());
-                }
-            }
-        }
-    }
 }

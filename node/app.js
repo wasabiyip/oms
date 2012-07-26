@@ -100,7 +100,7 @@ function evaluar(msj, socket){
                 
             }
             if(income.symbol === 'EUR/USD'){
-                excel.writePrecio(income.entry, income.precio);
+                //excel.writePrecio(income.entry, income.precio);
             }
             break;
         //cuando un cliente se desconecta.

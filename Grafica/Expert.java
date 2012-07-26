@@ -4,6 +4,7 @@ import java.util.Properties;
 import oms.Grafica.indicators.BollingerBands;
 import oms.Grafica.indicators.Indicador;
 import java.util.Random;
+import oms.util.idGenerator;
 
 /**
  * Un Expert es el la parte del código que controla la apertura y cierre de las
@@ -28,9 +29,10 @@ public class Expert extends Settings {
     private int velasCont = 0;
     private double point = 0.0001;
     private int velas = 0;
-    private double lastOpen=0.0;
+    private double open=0.0;
+    private double bid=0.0;
     private double ask=0.0;
-    
+    private Order orders = new Order();
     private Date date = new oms.Grafica.Date();
     
     /**
@@ -41,7 +43,6 @@ public class Expert extends Settings {
         //llamamos a el constructor de el padre (Settings).
         super(symbol);
         indicador = new Indicador(Graphic.unSlash(this.symbol),5);
-        this.id = this.getId();
         System.out.println("Expert Listo..");
         /**
          * Añadimos los periodos a las bandas.
@@ -65,12 +66,13 @@ public class Expert extends Settings {
      * @param price precio de apertura del minuto!
      */
     public void onTick(Double bid) {
-    
-        if (date.getDayWeek() != 6){
-            if(ask-bid <= this.spread){
+        this.bid = bid;
+        //Si no es sabado
+        if (date.getDayWeek() != 6) {
+            if (ask-bid <= this.spread* this.point) {
                 
+                //System.out.println(Order.getTotalMagic());
             }
-            
         }
     }
     
@@ -79,11 +81,12 @@ public class Expert extends Settings {
      * @param price precio de apertura de la nueva vela.
      */
     public void onCandle(Double price){
-        setPriceBoll(price); 
-        System.out.println("Up " + this.bollUp() + " Dn " + this.bollDn());
+        setPriceBoll(price);
+         
     }
     public void onOpen(double price){
-        lastOpen = price;
+        open = price;
+        orders.Send(open, '2', new idGenerator().getID());
     }
     /**
      * Refrescamos las bandas con el precio de apertura de la vela.
@@ -184,27 +187,7 @@ public class Expert extends Settings {
         return temp.toString();
     }
     
-    /**
-     * Este método genera un id único para cada expert/gráfica.
-     * @return id único.
-     */
-    private String getId(){
-        
-        StringBuffer str = new StringBuffer(this.symbol+"-");
-        Random r = new Random();
-        Random r2 = new Random();
-        int n = 25; // 65-90 codigo ASCII.
-        
-        
-        for (int j=0; j<4; j++){
-            int i = r.nextInt() % n;
-            if ( (65 + i <= 90) && (65 + i >= 65)){
-                str.append ((char) (65 + i));  
-            }
-            else j--;//<---------|| CUIDADO ESTO ES UNA CHARRADA!
-        }
-        return str.toString();
-    }
+    
     /**
      * Guardamos el valor del ask.
      * @param ask 

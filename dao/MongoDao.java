@@ -33,6 +33,7 @@ public class MongoDao extends IMongoDAO {
         mongo = MongoConnection.getInstance();
         try {
             mongo.connect();
+            db = mongo.getDataBase();
         } catch (Exception ex) {
             Logger.getLogger(MongoDao.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -53,10 +54,10 @@ public class MongoDao extends IMongoDAO {
         return this.db;
     }
 
-    public DBCollection getCollection() {
-        return this.coll;
+    public DBCollection getCollection(String coll) {
+        return this.db.getCollection(coll);
     }
-
+    
     public void setDB(String db) {
         this.db = mongo.getConnection().getDB(db);
     }

@@ -3,6 +3,7 @@ package oms.deliverer;
 
 import oms.Grafica.Graphic;
 import java.io.IOException;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.dao.MongoConnection;
@@ -35,7 +36,7 @@ public class SenderApp extends MessageCracker implements Application{
         
         
         /*pricebeat.addObserver(new Expert());*/
-        Console console = new Console();   
+        //Console console = new Console();   
         mongo = MongoConnection.getInstance();
         /*try {
             Graphic eurusd = new Graphic("EUR/USD", 5);
@@ -54,15 +55,7 @@ public class SenderApp extends MessageCracker implements Application{
      */
     @Override
     public void onLogon(SessionID id) {
-        try {
-            //System.out.println("onLogon->>");
-            Graphic grafica = new Graphic("EUR/GBP", 5);           
-            grafica.start();
-            
-            
-        } catch (IOException ex) {
-            Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        SenderApp.sessionID = id;
     }
     
     /**
@@ -183,7 +176,7 @@ public class SenderApp extends MessageCracker implements Application{
     
     public void onMessage(quickfix.fix42.ExecutionReport msj, SessionID sessionID) throws FieldNotFound, Exception{
         
-        MessageHandler.orderHandler(msj);
+        MessageHandler.executionReport(msj);
         
     }
     

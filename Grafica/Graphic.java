@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONArray;
@@ -33,6 +34,7 @@ public class Graphic extends Thread {
     private int periodo;
     private int cont;
     private int dif;
+    private String id;
 
     /**
      * Constructor!
@@ -41,7 +43,7 @@ public class Graphic extends Thread {
      * @param periodo tiempo con el que trabajaremos.
      * @throws IOException
      */
-    public Graphic(String symbol, int periodo) throws IOException {
+    public Graphic(String symbol, int periodo, String id) {
         System.out.println("Grafica de " + symbol + " " + periodo);
         expert = new Expert(symbol);
         dif = GMTDate.getDate().getMinute() % periodo;
@@ -49,7 +51,8 @@ public class Graphic extends Thread {
         this.periodo = periodo;
         this.candle = new Candle(periodo, this.getHistorial(dif));
         cont = dif;
-        new Console();
+        this.id = id;
+        
     }
 
     /**
@@ -250,7 +253,8 @@ public class Graphic extends Thread {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    
+    /*
     public static void main(String[] args) throws IOException {
 
         //Graphic grafica = new Graphic("EUR/GBP", 5);
@@ -259,5 +263,5 @@ public class Graphic extends Thread {
         //Graphic grafica = new Graphic("USD/CHF", 5);
         //Graphic grafica = new Graphic("USD/JPY", 5);      
         grafica.start();
-    }
+    }*/
 }
