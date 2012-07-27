@@ -10,10 +10,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Order;
 import oms.dao.MongoDao;
+import oms.util.fixToJson;
 import quickfix.IntField;
 import quickfix.Session;
 import quickfix.SessionNotFound;
 import quickfix.field.*;
+import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.NewOrderSingle;
 
 /**
@@ -22,22 +24,31 @@ import quickfix.fix42.NewOrderSingle;
  */
 public class OrderHandler {
 
-    static MongoDao mongo;
+    static MongoDao mongo = new MongoDao();
     static DBObject obj;
-    static ArrayList<ArrayList> stops = new ArrayList();
-
+    /**
+     * Este array
+     */
+    static ArrayList<ArrayList> ordPool = new ArrayList();
+    
+    
     /**
      * Metodo que envia las ordenes a Currenex, es sincronizado para que no se
      * confunda si muchas graficas quieren enviar ordenés al mismo tiempo.
      *
      * @param msj
      */
-    public synchronized static void sendOrder(Object msj, String id) {
-
+    public synchronized static void sendOrder(NewOrderSingle msj, String id) {
+        ArrayList temp = new ArrayList();
         try {
-            Session.sendToTarget((NewOrderSingle) msj, SenderApp.sessionID);
+            temp.add(id);
+            temp.add(msj.getClOrdID().getValue());
+            ordPool.add(temp);
+            Session.sendToTarget(msj, SenderApp.sessionID);
         } catch (SessionNotFound ex) {
             Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception e){
+            System.err.println("El horror! - ClOrdID no encontrado...");
         }
     }
 
@@ -50,11 +61,20 @@ public class OrderHandler {
      * @param orden
      * @throws Exception
      */
-    public static void orderRecord(String orden) throws Exception {
-
-        mongo = new MongoDao();
+    public static void orderRecord(ExecutionReport orden) throws Exception {
+        String entry = "";
+        System.out.println(orden.getClOrdID().getValue());
+        for (int i = 0; i < ordPool.size(); i++) {
+            System.out.println("lala: " +ordPool.get(i).get(1));
+            if(ordPool.get(i).get(1).equals(orden.getClOrdID().getValue())){
+                entry = (String) ordPool.get(i).get(0);
+                break;
+            }
+        }
+        System.out.println("grafica actual :" +entry);
+        String json = new fixToJson().parseOrder(orden,entry);
         DBCollection coll = mongo.getCollection("log");
-        obj = (DBObject) JSON.parse(orden);
+        obj = (DBObject) JSON.parse(json);
         coll.insert(obj);
     }
 
@@ -65,12 +85,12 @@ public class OrderHandler {
      * @param ID
      * @param qty
      */
-    public synchronized static void SendStops(char type, String ID, int qty, double precio) {
-
+    public synchronized static void SendStops(char type, String ordid, int qty, double precio) {
+        System.out.println("sending stops : " + precio);
         quickfix.fix42.NewOrderSingle nwsl = new quickfix.fix42.NewOrderSingle();
         quickfix.fix42.NewOrderSingle nwtp = new quickfix.fix42.NewOrderSingle();
-        nwsl.set(new ClOrdID(ID));
-        nwtp.set(new ClOrdID(ID));
+        nwsl.set(new ClOrdID(ordid));
+        nwtp.set(new ClOrdID(ordid));
         nwsl.set(new OrdType('3'));
         nwtp.set(new OrdType('F'));
         nwsl.set(new Symbol("EUR/USD"));
@@ -119,7 +139,6 @@ public class OrderHandler {
      */
     public static void stopsRecord(char tipo, String id, Double precio, String order) throws Exception {
 
-        mongo = new MongoDao();
         DBCollection coll = mongo.getCollection("operaciones");
         BasicDBObject stop = new BasicDBObject();
 
@@ -139,11 +158,7 @@ public class OrderHandler {
      * @throws Exception
      */
     public static DBCursor getTotal() {
-        try {
-            mongo = new MongoDao();
-        } catch (Exception ex) {
-            Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         DBCollection coll = mongo.getCollection("operaciones");
         DBCursor cur = coll.find();
         BasicDBObject query = new BasicDBObject();
@@ -160,11 +175,7 @@ public class OrderHandler {
      * @throws Exception
      */
     public static int getTotalMagic() {
-        try {
-            mongo = new MongoDao();
-        } catch (Exception ex) {
-            Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         DBCollection coll = mongo.getCollection("operaciones");
         DBCursor cur = coll.find();
         BasicDBObject query = new BasicDBObject();
@@ -208,11 +219,7 @@ public class OrderHandler {
      * @param tipo
      */
     public void Close(Integer tipo) {
-        try {
-            mongo = new MongoDao();
-        } catch (Exception ex) {
-            Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         DBCollection coll = mongo.getCollection("operaciones");
         BasicDBObject query = new BasicDBObject();
         DBObject temp;
@@ -254,7 +261,7 @@ public class OrderHandler {
     }
 
     public static boolean Exists(quickfix.fix42.ExecutionReport msj) throws Exception {
-        mongo = new MongoDao();
+        
         String id = msj.getClOrdID().getValue();
         Double price = msj.getAvgPx().getValue();
         DBCollection coll = mongo.getCollection("operaciones");
@@ -279,8 +286,7 @@ public class OrderHandler {
      * @throws Exception
      */
     public static Integer getId() throws Exception {
-
-        mongo = new MongoDao();
+        
         DBCollection coll = mongo.getCollection("operaciones");
         BasicDBObject query = new BasicDBObject();
         query.put("Status", 0);
@@ -291,13 +297,11 @@ public class OrderHandler {
 
     public static String getCl() throws Exception {
 
-        mongo = new MongoDao();
         DBCollection coll = mongo.getCollection("operaciones");
         BasicDBObject query = new BasicDBObject();
         query.put("Status", 0);
         DBCursor cur = coll.find(query);
         return (String) cur.next().get("OrderID");
-
     }
 
     private static String sumLong(String ord, int num) {
