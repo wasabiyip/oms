@@ -11,6 +11,7 @@ import oms.Grafica.Graphic;
 public class GraficaHandler {
     
     public static ArrayList<Graphic> graficas = new ArrayList();
+    static ArrayList<ArrayList> ordPool = new ArrayList();
     
     /**
      * Si queremos añadir una nueva grafica acá es donde.
@@ -52,5 +53,23 @@ public class GraficaHandler {
             else j--;//<---------|| CUIDADO ESTO ES UNA CHARRADA!
         }
         return str.toString();
+    }
+    /*
+     * Obtenemos el ask de una determinada grafica.
+     */
+    public Double getAsk(String idgraf){
+        return getGraf(idgraf).getAsk();
+        
+    }
+    
+    public static Graphic getGraf(String id){
+        Graphic temp = null;
+        for(int i=0; i<=graficas.size();i++){
+            if(graficas.get(i).getID().equals(id)){
+                temp= graficas.get(i);
+                break;
+            }
+        }
+        return temp;
     }
 }
