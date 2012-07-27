@@ -8,9 +8,10 @@ import quickfix.FieldNotFound;
  */
 public class fixToJson  {
 
-    public String parseOrder(quickfix.fix42.ExecutionReport msj) throws FieldNotFound{
+    public String parseOrder(quickfix.fix42.ExecutionReport msj, String entry) throws FieldNotFound{
         StringBuffer buffer = new StringBuffer();
         buffer.append("{");
+            buffer.append("\"grafica\" :\""+entry+"\",");
             buffer.append("\"Account\" :\"" + msj.getAccount().getValue()+"\",");
             buffer.append("\"ExecID\" : \"" + msj.getExecID().getValue() + "\",");
             buffer.append("\"OrderID\" :\"" + msj.getClOrdID().getValue() + "\",");
