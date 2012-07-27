@@ -35,7 +35,8 @@ public class Graphic extends Thread {
     private int cont;
     private int dif;
     private String id;
-
+    private Double bid, ask;
+    private ArrayList operaciones;
     /**
      * Constructor!
      *
@@ -254,6 +255,17 @@ public class Graphic extends Thread {
         }
     }
     
+    public Double getBid(){
+        return this.bid;
+    }
+    
+    public Double getAsk(){
+        return this.ask;
+    }
+    
+    public String getID(){
+        return this.id;
+    }
     /*
     public static void main(String[] args) throws IOException {
 

@@ -32,9 +32,9 @@ public class Expert extends Settings {
     private double open=0.0;
     private double bid=0.0;
     private double ask=0.0;
-    private Order orders = new Order();
+    private Order order = new Order();
     private Date date = new oms.Grafica.Date();
-    
+    private idGenerator idord = new idGenerator();
     /**
      * Constructor...
      * @param symbol Indica el par de monedas con el se va a trabajar.
@@ -77,7 +77,7 @@ public class Expert extends Settings {
     
     /**
      * Se llama cuando se recibe un cambio de vela.
-     * @param price precio de apertura de la nueva vela.
+     * @param price precio de apenew idGenerator().getID()rtura de la nueva vela.
      */
     public void onCandle(Double price){
         setPriceBoll(price);
@@ -85,7 +85,7 @@ public class Expert extends Settings {
     }
     public void onOpen(double price){
         open = price;
-        orders.Send(open, '2', new idGenerator().getID());
+        order.Send(open, '2', this.id);
     }
     /**
      * Refrescamos las bandas con el precio de apertura de la vela.
