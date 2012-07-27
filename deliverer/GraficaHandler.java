@@ -50,7 +50,7 @@ public class GraficaHandler {
             if ( (65 + i <= 90) && (65 + i >= 65)){
                 str.append ((char) (65 + i));  
             }
-            else j--;//<---------|| CUIDADO ESTO ES UNA CHARRADA!
+            else j--;//<---------|| ¡CUIDADO ESTO ES UNA CHARRADA!
         }
         return str.toString();
     }

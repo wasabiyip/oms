@@ -141,7 +141,7 @@ public class MessageHandler {
                      * Si es 2 quiere decir que la orden fué aceptada y
                      * procedemos a guardarla en Mongo.
                      */
-                    OrderHandler.orderRecord(new fixToJson().parseOrder(msj));
+                    OrderHandler.orderRecord(msj);
                     if (msj.getSide().getValue() == '1') {
                         OrderHandler.SendStops('1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
                         System.out.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "

@@ -56,22 +56,20 @@ public class OrderHandler {
     }
 
     /**
-     * Guardamos una cadena de Json que representa a una ordén.
-     *
+     * Guardamos una cadena de Json que representa a una ordén. El array ordPool
+     * asocia una orden con la gráfica que la envió, esto es por que cuando enviamos
+     * una orden no tenemos que 
      * @param orden
      * @throws Exception
      */
     public static void orderRecord(ExecutionReport orden) throws Exception {
         String entry = "";
-        System.out.println(orden.getClOrdID().getValue());
         for (int i = 0; i < ordPool.size(); i++) {
-            System.out.println("lala: " +ordPool.get(i).get(1));
             if(ordPool.get(i).get(1).equals(orden.getClOrdID().getValue())){
                 entry = (String) ordPool.get(i).get(0);
                 break;
             }
         }
-        System.out.println("grafica actual :" +entry);
         String json = new fixToJson().parseOrder(orden,entry);
         DBCollection coll = mongo.getCollection("log");
         obj = (DBObject) JSON.parse(json);
