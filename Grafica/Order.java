@@ -1,20 +1,7 @@
 package oms.Grafica;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import oms.Grafica.Settings;
-import oms.dao.MongoDao;
 import oms.deliverer.OrderHandler;
-import oms.deliverer.SenderApp;
 import oms.util.idGenerator;
-import quickfix.IntField;
-import quickfix.Session;
 import quickfix.SessionNotFound;
 import quickfix.field.*;
 
@@ -26,6 +13,12 @@ import quickfix.field.*;
 public class Order {
 
     String ordid;
+    String symbol;
+    String currency;
+    public Order(String symbol){
+        this.symbol = symbol;
+        this.currency = symbol.substring(0, 3);
+    }
     /**
      * Enviamos una orden...
      *
@@ -40,13 +33,12 @@ public class Order {
         nworder.set(new ClOrdID((ordid)));
         nworder.set(new HandlInst('1'));
         nworder.set(new Side(type));
-        nworder.set(new Currency("EUR"));
-        nworder.set(new Symbol("EUR/USD"));
+        nworder.set(new Currency(this.currency));
+        nworder.set(new Symbol(symbol));
         nworder.set(new TransactTime());
         nworder.set(new OrderQty(10000));
         nworder.set(new OrdType('C'));
         nworder.set(new Price(price));
-        System.out.println("Enviando orden...");
         //enviamos orden
         OrderHandler.sendOrder(nworder, id);
         

@@ -1,19 +1,17 @@
 package oms.Grafica;
 
 import oms.Grafica.DAO.MongoDao;
-import oms.util.Console;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import quickfix.FieldNotFound;
+import quickfix.fix42.ExecutionReport;
 
 /**
  * Esta clase Maneja a todas es el "main" de las gráficas, ya que mantiene
@@ -36,7 +34,8 @@ public class Graphic extends Thread {
     private int dif;
     private String id;
     private Double bid, ask;
-    private ArrayList operaciones;
+    //Guardamos las ordenes de que entran en cada gráfica.
+    private ArrayList<ExecutionReport> operaciones = new ArrayList();
     /**
      * Constructor!
      *
@@ -255,16 +254,80 @@ public class Graphic extends Thread {
         }
     }
     
+    /**
+     * Añadimos una orden al array list para que cada gráfica sepa cuales son sus 
+     * ordenés.
+     * @param orden 
+     */
+    public void newOrder(ExecutionReport orden){
+        this.operaciones.add(orden);
+        try {
+            System.out.println("Nueva orden grafica:" + orden.getClOrdID().getValue());
+        } catch (FieldNotFound ex) {
+            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * @return ArrayList de las operaciones.
+     */
+    public ArrayList<ExecutionReport> getOps(){
+        return this.operaciones;
+    }
+    /**
+     * @return ultimo precio de compra.
+     */
     public Double getBid(){
         return this.bid;
     }
     
+    /**
+     * @return Ultimo precio de venta.
+     */
     public Double getAsk(){
         return this.ask;
     }
     
+    /**
+     * @return id de la gráfica.
+     */
     public String getID(){
         return this.id;
+    }
+    /**
+     * 
+     * @return 
+     */
+    public int getTP(){
+        return this.expert.tp;
+    }
+    /**
+     * 
+     * @return 
+     */
+    public int getSL(){
+        return this.expert.sl;
+    }
+    
+    public double getPoint(){
+        return this.expert.Point;
+    }
+    public boolean orderExists(String ordid){
+        boolean check=false;
+        if(!this.operaciones.isEmpty()){
+            for(int i=0;i<this.operaciones.size();i++){
+                try {
+                    if(operaciones.get(i).getClOrdID().getValue().equals(ordid)){
+                        check= true;
+                    }
+                } catch (FieldNotFound ex) {
+                    Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }else
+            check= false;
+        
+        return check;
     }
     /*
     public static void main(String[] args) throws IOException {

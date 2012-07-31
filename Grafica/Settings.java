@@ -24,7 +24,7 @@ public abstract class Settings {
     public Double lots;
     public Integer tp;
     public Integer sl;
-    public static double Point = 0.0001;
+    public double Point = 0.0001;
     public Integer limiteMagic = 0;
     public Integer spreadSalida = 0;
     public Integer velasS = 0;

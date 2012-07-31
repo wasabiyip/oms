@@ -3,11 +3,19 @@ package oms.util;
 import quickfix.FieldNotFound;
 
 /**
- *
+ * Convertimos un mensaje de FIX en una cadena JSON.
  * @author omar
  */
 public class fixToJson  {
 
+    /**
+     * Extraemos datos de un ExecutionReport (datos de una orden entrante) y se
+     * convierte en JSON.
+     * @param msj
+     * @param entry
+     * @return
+     * @throws FieldNotFound 
+     */
     public String parseOrder(quickfix.fix42.ExecutionReport msj, String entry) throws FieldNotFound{
         StringBuffer buffer = new StringBuffer();
         buffer.append("{");

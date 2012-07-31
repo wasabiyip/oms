@@ -3,7 +3,6 @@ package oms.Grafica;
 import java.util.Properties;
 import oms.Grafica.indicators.BollingerBands;
 import oms.Grafica.indicators.Indicador;
-import java.util.Random;
 import oms.util.idGenerator;
 
 /**
@@ -32,7 +31,7 @@ public class Expert extends Settings {
     private double open=0.0;
     private double bid=0.0;
     private double ask=0.0;
-    private Order order = new Order();
+    private Order order;
     private Date date = new oms.Grafica.Date();
     private idGenerator idord = new idGenerator();
     /**
@@ -42,6 +41,7 @@ public class Expert extends Settings {
     public Expert(String symbol, String id) {
         //llamamos a el constructor de el padre (Settings).
         super(symbol);
+        order = new Order(symbol);
         indicador = new Indicador(Graphic.unSlash(this.symbol),5);
         
         /**
@@ -85,7 +85,8 @@ public class Expert extends Settings {
     }
     public void onOpen(double price){
         open = price;
-        order.Send(open, '2', this.id);
+        System.out.println("Orden expert: " + this.ask +" " + this.bid);
+        order.Send(price, '1', this.id);
     }
     /**
      * Refrescamos las bandas con el precio de apertura de la vela.

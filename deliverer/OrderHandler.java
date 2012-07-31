@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Order;
+import oms.Grafica.Settings;
 import oms.dao.MongoDao;
 import oms.util.fixToJson;
 import quickfix.IntField;
@@ -52,9 +53,6 @@ public class OrderHandler {
         }
     }
 
-    public static void notifyOrder() {
-    }
-
     /**
      * Guardamos una cadena de Json que representa a una ordén. El array ordPool
      * asocia una orden con la gráfica que la envió, esto es por que cuando enviamos
@@ -65,8 +63,11 @@ public class OrderHandler {
     public static void orderRecord(ExecutionReport orden) throws Exception {
         String entry = "";
         for (int i = 0; i < ordPool.size(); i++) {
+            //Buscamos la orden que entro en ordPool para obtener el ID de la gráfica
+            //que lo envió y así notificar a la respectiva gráfica.
             if(ordPool.get(i).get(1).equals(orden.getClOrdID().getValue())){
                 entry = (String) ordPool.get(i).get(0);
+                GraficaHandler.orderAccept((String)ordPool.get(i).get(0), orden);
                 break;
             }
         }
@@ -83,38 +84,39 @@ public class OrderHandler {
      * @param ID
      * @param qty
      */
-    public synchronized static void SendStops(char type, String ordid, int qty, double precio) {
-        System.out.println("sending stops : " + precio);
+    public synchronized static void SendStops(String symbol,char type, String ordid, int qty, double precio) {
+        
         quickfix.fix42.NewOrderSingle nwsl = new quickfix.fix42.NewOrderSingle();
         quickfix.fix42.NewOrderSingle nwtp = new quickfix.fix42.NewOrderSingle();
         nwsl.set(new ClOrdID(ordid));
         nwtp.set(new ClOrdID(ordid));
         nwsl.set(new OrdType('3'));
         nwtp.set(new OrdType('F'));
-        nwsl.set(new Symbol("EUR/USD"));
-        nwtp.set(new Symbol("EUR/USD"));
+        nwsl.set(new Symbol(symbol));
+        nwtp.set(new Symbol(symbol));
         nwsl.set(new HandlInst('1'));
         nwtp.set(new HandlInst('1'));
         nwtp.set(new TransactTime());
         nwsl.set(new TransactTime());
         nwtp.set(new OrderQty(qty));
         nwsl.set(new OrderQty(qty));
-        nwtp.set(new Currency("EUR"));
-        nwsl.set(new Currency("EUR"));
+        nwtp.set(new Currency(symbol.substring(0, 3)));
+        nwsl.set(new Currency(symbol.substring(0, 3)));
+        //Asi lo voy a dejar por que soy flojo y además se ve bastante 'pro :)
+        double sl = GraficaHandler.getGraf(getGrafId(ordid)).getSL() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
+        double tp = GraficaHandler.getGraf(getGrafId(ordid)).getTP() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
         if (type == 1) {
-            /*
-             * nwsl.set(new StopPx(MarketPool.getOffer()- (Settings.sl *
-             * Settings.Point))); nwtp.set(new Price(MarketPool.getOffer() +
-             * (Settings.tp*Settings.Point)));
-             */
+            
+            nwsl.set(new StopPx(redondear(GraficaHandler.getAsk(ordid) - sl))); 
+            nwtp.set(new Price(redondear(GraficaHandler.getAsk(ordid) - tp)));
+            
             nwsl.set(new Side('2'));
             nwtp.set(new Side('2'));
         } else {
-            /*
-             * nwsl.set(new StopPx(precio + (Settings.sl * Settings.Point)));
-             * nwtp.set(new Price(MarketPool.getBid() -
-             * (Settings.tp*Settings.Point)));
-             */
+            
+            nwsl.set(new StopPx(redondear(precio + sl)));
+            nwtp.set(new Price(redondear(precio - tp)));
+             
             nwsl.setField(new IntField(7534, 1));
             nwsl.set(new Side('1'));
             nwtp.set(new Side('1'));
@@ -125,6 +127,7 @@ public class OrderHandler {
         } catch (SessionNotFound ex) {
             Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
 
     /**
@@ -162,7 +165,6 @@ public class OrderHandler {
         BasicDBObject query = new BasicDBObject();
         query.put("Status", 1);
         cur = coll.find(query);
-
         return cur;
     }
 
@@ -307,5 +309,18 @@ public class OrderHandler {
         long orden = Long.valueOf(ord).longValue();
         orden = orden + num;
         return Long.toString(orden);
+    }
+    
+    private static Double redondear(double num) {
+        return Math.rint(num * 1000) / 1000;
+    }
+    
+    private static String getGrafId(String ordid){
+        String tmp="";
+        for (int i = 0; i < ordPool.size(); i++) {
+            if(ordPool.get(i).get(1).equals(ordid))
+                tmp = ordPool.get(i).get(0).toString();
+        }
+        return tmp;
     }
 }
