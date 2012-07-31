@@ -295,23 +295,29 @@ public class Graphic extends Thread {
         return this.id;
     }
     /**
-     * 
-     * @return 
+     * @return Tp de la grafica obtenido de archivo .set
      */
     public int getTP(){
         return this.expert.tp;
     }
     /**
-     * 
-     * @return 
+     * @return Sl de la grafica obtenido de archivo .set
      */
     public int getSL(){
         return this.expert.sl;
     }
-    
+    /**
+     * @return Point de la grafica obtenido de archivo .set
+     */
     public double getPoint(){
         return this.expert.Point;
     }
+    
+    /**
+     * ESTE METODO NO ES USADO EN NINGUN LADO - PUEDE QUE LO BORRE
+     * @param ordid
+     * @return 
+     */
     public boolean orderExists(String ordid){
         boolean check=false;
         if(!this.operaciones.isEmpty()){

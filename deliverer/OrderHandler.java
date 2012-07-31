@@ -310,11 +310,20 @@ public class OrderHandler {
         orden = orden + num;
         return Long.toString(orden);
     }
-    
+    /**
+     * redondeamos un double
+     * @param num
+     * @return 
+     */
     private static Double redondear(double num) {
         return Math.rint(num * 1000) / 1000;
     }
-    
+    /**
+     * buscamos en ordPool para obtener el id de una grafica dependiendo de que 
+     * orden entro
+     * @param ordid
+     * @return 
+     */
     private static String getGrafId(String ordid){
         String tmp="";
         for (int i = 0; i < ordPool.size(); i++) {

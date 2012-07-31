@@ -76,14 +76,27 @@ public class GraficaHandler {
     public static Double getAsk(String idgraf) {
         return getGraf(idgraf).getAsk();
     }
-    
+    /**
+     * obtenemos el Tp de una grafica determinada.
+     * @param idgraf
+     * @return 
+     */
     public static int getTp(String idgraf){
         return getGraf(idgraf).getTP();
     }
+    /**
+     * obtenemos el SL de una graica determinada.
+     * @param idgraf
+     * @return 
+     */
     public static int getSl(String idgraf){
         return getGraf(idgraf).getSL();
     }
-
+    /**
+     * Obtenemos una grafica determinada.
+     * @param id
+     * @return 
+     */
     public static Graphic getGraf(String id) {
         Graphic temp = null;
         for (int i = 0; i <= graficas.size(); i++) {
