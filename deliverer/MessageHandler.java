@@ -104,16 +104,18 @@ public class MessageHandler {
          */
         if (msj.getOrdType().getValue() == '3') {
             //StopLoss
-            if (msj.getExecType().getValue() == 0) {
+            if (msj.getExecType().getValue() == '0') {
                 //Nueva    
                 OrderHandler.stopsRecord('3', msj.getClOrdID().getValue(), msj.getStopPx().getValue(),
                         msj.getOrderID().getValue());
+                
+                //GraficaHandler.stopAcept(null, msj);
             } else {
-                //Close
+                //close
             }
         } else if (msj.getOrdType().getValue() == 'F') {
             //TakeProfit
-            if (msj.getExecType().getValue() == 0) {
+            if (msj.getExecType().getValue() == '0') {
                 //Nuevo
                 OrderHandler.stopsRecord('F', msj.getClOrdID().getValue(), msj.getPrice().getValue(),
                         msj.getOrderID().getValue());
@@ -142,13 +144,13 @@ public class MessageHandler {
                     OrderHandler.orderRecord(msj);
                     if (msj.getSide().getValue() == '1') {
                         OrderHandler.SendStops(msj.getSymbol().getValue(),'1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
-                        System.out.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
-                                + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
+                       // System.out.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
+                             //   + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
                     }
                     if (msj.getSide().getValue() == '2') {
                         OrderHandler.SendStops(msj.getSymbol().getValue(),'2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
-                        System.out.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
-                                + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
+                       // System.out.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
+                          //      + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
                     }
                     break;
 

@@ -34,7 +34,12 @@ public class GraficaHandler {
     private void runGrafica(int index) {
         graficas.get(index).start();
     }
-
+    
+    /**
+     * Notificamos a una gráfica que su orden fué aceptada.
+     * @param id identificador de la gráfica.
+     * @param orden 
+     */
     public static void orderAccept(String id, ExecutionReport orden) {
         //recorremo las gráficas en busca de el id correspondiente a la orden que
         //fue aceptada para notificarla de que su orden fue aceptada.
@@ -45,7 +50,7 @@ public class GraficaHandler {
             
         }
     }
-
+    
     /**
      * Este método genera un id único para construir cada gráfica.
      *
@@ -91,6 +96,9 @@ public class GraficaHandler {
      */
     public static int getSl(String idgraf){
         return getGraf(idgraf).getSL();
+    }
+    public static void setStop(String id, String ordid,char type, double value){
+         getGraf(id).setStops(ordid, type, value);
     }
     /**
      * Obtenemos una grafica determinada.

@@ -12,6 +12,7 @@ import oms.Grafica.Order;
 import oms.Grafica.Settings;
 import oms.dao.MongoDao;
 import oms.util.fixToJson;
+import quickfix.FieldNotFound;
 import quickfix.IntField;
 import quickfix.Session;
 import quickfix.SessionNotFound;
@@ -103,6 +104,7 @@ public class OrderHandler {
         nwtp.set(new Currency(symbol.substring(0, 3)));
         nwsl.set(new Currency(symbol.substring(0, 3)));
         //Asi lo voy a dejar por que soy flojo y además se ve bastante 'pro :)
+        //acá calculamos los limites de la orden que entró, 
         double sl = GraficaHandler.getGraf(getGrafId(ordid)).getSL() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
         double tp = GraficaHandler.getGraf(getGrafId(ordid)).getTP() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
         if (type == 1) {
@@ -124,9 +126,15 @@ public class OrderHandler {
         try {
             Session.sendToTarget(nwsl, SenderApp.sessionID);
             Session.sendToTarget(nwtp, SenderApp.sessionID);
+            //notificamos acerca de los stops
+            GraficaHandler.setStop(getGrafId(nwsl.getClOrdID().getValue()),nwsl.getClOrdID().getValue(),nwsl.getOrdType().getValue(), nwsl.getStopPx().getValue());
+            GraficaHandler.setStop(getGrafId(nwsl.getClOrdID().getValue()),nwsl.getClOrdID().getValue(),nwtp.getOrdType().getValue(), nwtp.getPrice().getValue());
         } catch (SessionNotFound ex) {
             Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
+        } catch ( FieldNotFound ex){
+            System.out.println("¡El horror!: No se encontro el campo " + ex);
         }
+        
         
     }
 
@@ -139,10 +147,10 @@ public class OrderHandler {
      * @throws Exception
      */
     public static void stopsRecord(char tipo, String id, Double precio, String order) throws Exception {
-
-        DBCollection coll = mongo.getCollection("operaciones");
+        
+        DBCollection coll = mongo.getCollection("log");
         BasicDBObject stop = new BasicDBObject();
-
+        
         if (tipo == '3') {
             stop.append("$set", new BasicDBObject().append("StopL", order));
 

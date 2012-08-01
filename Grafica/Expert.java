@@ -85,7 +85,6 @@ public class Expert extends Settings {
     }
     public void onOpen(double price){
         open = price;
-        System.out.println("Orden expert: " + this.ask +" " + this.bid);
         order.Send(price, '1', this.id);
     }
     /**

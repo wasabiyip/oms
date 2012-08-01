@@ -35,7 +35,7 @@ public class Graphic extends Thread {
     private String id;
     private Double bid, ask;
     //Guardamos las ordenes de que entran en cada gráfica.
-    private ArrayList<ExecutionReport> operaciones = new ArrayList();
+    private ArrayList<ArrayList> operaciones = new ArrayList();
     /**
      * Constructor!
      *
@@ -260,18 +260,37 @@ public class Graphic extends Thread {
      * @param orden 
      */
     public void newOrder(ExecutionReport orden){
-        this.operaciones.add(orden);
-        try {
-            System.out.println("Nueva orden grafica:" + orden.getClOrdID().getValue());
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+        
+        double sl = getSL() * getPoint();
+        double tp = getTP() *getPoint();
+        ArrayList temp = new ArrayList();
+        temp.add(orden);
+        this.operaciones.add(temp);
+    }
+    /**
+     * Asignamos los Stops a la orden debida.
+     * @param ordid
+     * @param type
+     * @param value 
+     */
+    public void setStops(String ordid,char type, double value){
+        ExecutionReport temp;
+        for (int i = 0; i < operaciones.size(); i++) {
+            temp= (ExecutionReport)operaciones.get(i).get(0);
+            try {
+                if(temp.getClOrdID().getValue() == ordid){
+                    operaciones.get(i).add(type);
+                    operaciones.get(i).add(value);
+                }
+            } catch (FieldNotFound ex) {
+                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
-    
     /**
      * @return ArrayList de las operaciones.
      */
-    public ArrayList<ExecutionReport> getOps(){
+    public ArrayList<ArrayList> getOps(){
         return this.operaciones;
     }
     /**
@@ -317,13 +336,13 @@ public class Graphic extends Thread {
      * ESTE METODO NO ES USADO EN NINGUN LADO - PUEDE QUE LO BORRE
      * @param ordid
      * @return 
-     */
+     *//*
     public boolean orderExists(String ordid){
         boolean check=false;
         if(!this.operaciones.isEmpty()){
             for(int i=0;i<this.operaciones.size();i++){
                 try {
-                    if(operaciones.get(i).getClOrdID().getValue().equals(ordid)){
+                    if(operaciones.get(i).get(0).getClOrdID().getValue().equals(ordid)){
                         check= true;
                     }
                 } catch (FieldNotFound ex) {
@@ -334,7 +353,7 @@ public class Graphic extends Thread {
             check= false;
         
         return check;
-    }
+    }*/
     /*
     public static void main(String[] args) throws IOException {
 
