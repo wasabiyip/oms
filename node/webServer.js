@@ -77,6 +77,10 @@ exports.onOpen= function(data){
 exports.expertState = function(data){
     notify('expert-state', data);
 }
+
+exports.onOrder = function(data){
+    notify('grafica-order', data);
+}
 /*
 al recibir algun evento mandamos llamar a este método
 para que emita un mensaje determinado a los clientes conectados.

@@ -253,6 +253,36 @@ public class Graphic extends Thread {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    /**
+     * notificamos a node que una nueva entro.
+     * @param orden 
+     */
+    private void onOrder(ArrayList orden){
+        System.out.println(orden);
+        try {
+            ExecutionReport report = (ExecutionReport)orden.get(0);
+            double sl = (double)orden.get(1);
+            double tp = (double)orden.get(2); 
+            StringBuffer nworden = new StringBuffer();
+            nworden.append("{");        
+                nworden.append("\"type\":\"onOrder\",");
+                nworden.append("\"data\":");
+                    nworden.append("{");        
+                        nworden.append("\"id\":\""+this.id+"\",");
+                        nworden.append("\"ordid\":\""+report.getClOrdID().getValue()+"\",");
+                        nworden.append("\"tipo\":\""+report.getSide().getValue()+"\","); //tipo de operacion
+                        nworden.append("\"lotes\":\""+(report.getOrderQty().getValue()/100000)+"\","); 
+                        nworden.append("\"symbol\":\""+report.getSymbol().getValue()+"\",");
+                        nworden.append("\"precio\":\""+report.getAvgPx().getValue()+"\",");                
+                        nworden.append("\"sl\":\""+sl+"\",");                
+                        nworden.append("\"tp\":\""+tp+"\"");                
+                    nworden.append("}");
+            nworden.append("}");
+            this.writeNode(nworden.toString());
+        } catch (FieldNotFound ex) {
+            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     /**
      * Añadimos una orden al array list para que cada gráfica sepa cuales son sus 
@@ -277,13 +307,16 @@ public class Graphic extends Thread {
             temp= (ExecutionReport)operaciones.get(i).get(0);
             try {
                 if(temp.getClOrdID().getValue() == ordid){
-                    operaciones.get(i).add(type);
+                    //operaciones.get(i).add(type);
                     operaciones.get(i).add(value);
+                    if(type == 'F')
+                        this.onOrder(operaciones.get(i));
                 }
             } catch (FieldNotFound ex) {
                 Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
     }
     /**
      * @return ArrayList de las operaciones.

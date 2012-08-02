@@ -74,6 +74,10 @@ $(document).ready(function(){
         $("#"+id+" .promedios h3 span").empty().append(data.values.precio);
         
     });
+    
+    socket.on('grafica-order', function(data){
+       console.log(data.id); 
+    });
 });
 //Al recibir graficas-ini construimos la grafica recibida. 
 function buildGrafica(data){

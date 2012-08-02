@@ -103,50 +103,52 @@ function evaluar(msj, socket){
                 //excel.writePrecio(income.entry, income.precio);
             }
             break;
-        //cuando un cliente se desconecta.
-        case 'close':
+            //cuando un cliente se desconecta.
+            case 'close':
 
-            if(server_precios === socket){
-					
-                serverPrecios = null;
-                console.log('Servidor de precios desconectado.');
-            }else{
+                if(server_precios === socket){
 
-                handler.closeGrafica(socket)
-            }
-            break;	
-        //al recibir un evento onTick de un cliente conectado.
-        case 'onOpen':
-            id = handler.getGrafica(socket).settings.ID;
-            msj = {
-                "values":{
-                    "id":id , 
-                    "precio": income.precio
-                    }
-                };
-        webServer.onOpen(msj);     
-        break;
-        //al recibir un evento onClandle de un cliente conectado.
-        case 'onCandle':
-            id = handler.getGrafica(socket).settings.ID;
-            msj = {
-                "values":{
-                    "id":id , 
-                    "vars":income.variables
-                    }
-                };
-        webServer.onCandle(msj);
-        break;
-    case 'expert-state':
-        //handler.state(income.variables);
-        msj = {
-            "values":{
-                "id":income.id, 
-                "vars": income.variables
+                    serverPrecios = null;
+                    console.log('Servidor de precios desconectado.');
+                }else{
+
+                    handler.closeGrafica(socket)
                 }
-            };
-    webServer.expertState(msj);
-    break;
+                break;	
+            //al recibir un evento onTick de un cliente conectado.
+            case 'onOpen':
+                id = handler.getGrafica(socket).settings.ID;
+                msj = {
+                    "values":{
+                        "id":id , 
+                        "precio": income.precio
+                        }
+                    };
+            webServer.onOpen(msj);     
+            break;
+            //al recibir un evento onClandle de un cliente conectado.
+            case 'onCandle':
+                id = handler.getGrafica(socket).settings.ID;
+                msj = {
+                    "values":{
+                        "id":id , 
+                        "vars":income.variables
+                        }
+                    };
+            webServer.onCandle(msj);
+            break;
+        case 'expert-state':
+            //handler.state(income.variables);
+            msj = {
+                "values":{
+                    "id":income.id, 
+                    "vars": income.variables
+                    }
+                };
+            webServer.expertState(msj);
+            break;
+        case 'onOrder':
+            webServer.onOrder(income.data);
     }
     //Cachamos cualquier error y lo imprimimos.
     }catch(error){
