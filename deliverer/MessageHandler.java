@@ -129,11 +129,11 @@ public class MessageHandler {
             //Entrada de orden
             switch (msj.getExecType().getValue()) {
                 case '0':
-                    System.out.println("Procesando orden " + msj.getClOrdID().getValue() + "...");
+                    System.err.println("Procesando orden " + msj.getClOrdID().getValue() + "...");
                     break;
 
                 case '1':
-                    System.out.println("La orden fue: \"Partial filled\"");
+                    System.err.println("La orden fue: \"Partial filled\"");
                     break;
 
                 case '2':
@@ -143,23 +143,23 @@ public class MessageHandler {
                      */
                     OrderHandler.orderRecord(msj);
                     if (msj.getSide().getValue() == '1') {
-                        OrderHandler.SendStops(msj.getSymbol().getValue(),'1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
-                       // System.out.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
-                             //   + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
+                        OrderHandler.SendStops(msj.getSymbol().getValue(),'2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
+                        System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
+                               + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
                     }
                     if (msj.getSide().getValue() == '2') {
-                        OrderHandler.SendStops(msj.getSymbol().getValue(),'2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
-                       // System.out.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
-                          //      + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
+                        OrderHandler.SendStops(msj.getSymbol().getValue(),'1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
+                       System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
+                              + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
                     }
                     break;
 
                 case '4':
-                    System.out.println("La orden: " + msj.getClOrdID().getValue() + " fué rechazada por el servidor (Insufficient Margin).");
+                    System.err.println("La orden: " + msj.getClOrdID().getValue() + " fué rechazada por el servidor (Insufficient Margin).");
                     break;
 
                 case '8':
-                    System.out.println("La orden: " + msj.getClOrdID().getValue() + "fué rechazada por el servidor.");
+                    System.err.println("La orden: " + msj.getClOrdID().getValue() + "fué rechazada por el servidor.");
                     break;
             }
         }

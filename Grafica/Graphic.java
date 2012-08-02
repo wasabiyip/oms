@@ -261,8 +261,6 @@ public class Graphic extends Thread {
      */
     public void newOrder(ExecutionReport orden){
         
-        double sl = getSL() * getPoint();
-        double tp = getTP() *getPoint();
         ArrayList temp = new ArrayList();
         temp.add(orden);
         this.operaciones.add(temp);

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Order;
-import oms.Grafica.Settings;
 import oms.dao.MongoDao;
 import oms.util.fixToJson;
 import quickfix.FieldNotFound;
@@ -112,16 +111,16 @@ public class OrderHandler {
             nwsl.set(new StopPx(redondear(GraficaHandler.getAsk(ordid) - sl))); 
             nwtp.set(new Price(redondear(GraficaHandler.getAsk(ordid) - tp)));
             
-            nwsl.set(new Side('2'));
-            nwtp.set(new Side('2'));
+            nwsl.set(new Side('1'));
+            nwtp.set(new Side('1'));
         } else {
             
             nwsl.set(new StopPx(redondear(precio + sl)));
             nwtp.set(new Price(redondear(precio - tp)));
              
             nwsl.setField(new IntField(7534, 1));
-            nwsl.set(new Side('1'));
-            nwtp.set(new Side('1'));
+            nwsl.set(new Side('2'));
+            nwtp.set(new Side('2'));
         }
         try {
             Session.sendToTarget(nwsl, SenderApp.sessionID);
