@@ -24,7 +24,9 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
     line-height: 1;
-    background-color: #FF6600;
+    color: #1A202C;
+    background-image:url(../imgs/pattern.gif); 
+    background-repeat:repeat
 }
 ol, ul {
     list-style: none;
@@ -50,11 +52,12 @@ q:before, q:after {
 #wrap{
     margin: 10px 5% 25px 35px;
     padding:5px 15px 0 0;
-    background-color: #FFF;
+    background-color: rgba(178,153,122, 0.7);
     position: relative;
     -webkit-border-radius:4px;
     -moz-border-radius:4px;
     -border-radius:4px;
+    color : #000;
 }
 
 #estrategias{
@@ -62,9 +65,13 @@ q:before, q:after {
 }
 
 .grafica{
-    margin: 3px 0px 0px 10px;
-    border-style:dotted solid;
+    margin: 3px 0px 8px 10px;
     padding:10px 0px 10px 10px;
+    background-color: rgba(255, 255, 255, 0.6);
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    -border-radius:3px;
+    color : #343643;
 }
 
 #estrategias h1{
@@ -98,4 +105,34 @@ ul{
 
 .promedios ul li span{
     color:red;
+}
+.operaciones ul li span{
+    margin: 5px;
+}
+
+table{
+    font-family: "Lucida Sans Unicode", "Lucida Grande";
+    font-size: 12px;
+    nargin:45px;
+    width: 530px;
+    text-align:left;
+    border-collapse: collapse;
+}
+
+th{
+    padding:8px;
+    font-weight: normal;
+    font-size: 10px;
+    color:#FFF;
+    background: #D4390D;
+}
+td{
+    background:#fff;
+    padding-left: 5px;
+    
+    color:#000;
+}
+
+tr:hover td{
+    background: rgba(195,187,176,0.1);
 }

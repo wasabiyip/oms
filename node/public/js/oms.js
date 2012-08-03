@@ -76,7 +76,16 @@ $(document).ready(function(){
     });
     
     socket.on('grafica-order', function(data){
-       console.log(data.id); 
+       var graf =  unSlash(data.id);
+       console.log(data);
+       $("#"+ graf + " .operaciones table").append("<tr id="+ data.ordid +"></tr>");
+       delete  data['id'];
+       
+       $.each(data, function(key,val){
+           $("#"+data.ordid).append('<td><span id='+key+ '>'+val+'</span></td>');
+       });
+       $("#"+data.ordid).append('<td><button type=\"button\">cerrrar</button></td>');
+       
     });
 });
 //Al recibir graficas-ini construimos la grafica recibida. 
@@ -93,8 +102,12 @@ function buildGrafica(data){
     $("#"+id).append('<div class=\'settings\'></<div>');
     $("#" +id+ " .settings").append('<ul><h3>Datos del expert</h3></ul>');
     $("#" +id).append('<div class=\'promedios\'></<div>');
+    $("#" +id).append('<div class=\'operaciones\'></<div>');     
     $("#" +id+ " .promedios").append('<h3>Apertura Minuto <span class=apertura></span></h3>');
     $("#" +id+ " .promedios").append('<h3>Promedios</h3><ul></ul>');
+    $("#"+id+" .operaciones").append('<table></table>');
+    $("#"+id+" .operaciones table").append('<tr><th>Orden</th><th>Tipo</th><th>Lotes</th><th>Símbolo</th><th>Precio</th><th>SL</th><th>TP</th></tr>');
+    console.log("fuck!");
     //Borramos estos elementos por que no queremos escribirlos en la pagina
     delete  setts['symbol'];
     delete  setts['ID'];

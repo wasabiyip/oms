@@ -79,7 +79,7 @@ exports.expertState = function(data){
 }
 
 exports.onOrder = function(data){
-    notify('grafica-order', data);
+    notify('grafica-order', data)
 }
 /*
 al recibir algun evento mandamos llamar a este método
