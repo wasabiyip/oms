@@ -1,9 +1,12 @@
 package oms.Grafica.DAO;
 
 import com.mongodb.*;
+import com.mongodb.util.JSON;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.util.fixToJson;
+import quickfix.fix42.ExecutionReport;
 
 /**
  *
@@ -115,5 +118,14 @@ public class MongoDao {
             precios.add(null);
         }
         return precios;
+    }
+    
+    public void recordOrden(String id,ExecutionReport orden, int magicma){
+        DBObject obj;
+        String entry = "";
+        String json = new fixToJson().parseOrder(orden,id,magicma);
+        DBCollection coll = getCollection("operaciones");
+        obj = (DBObject) JSON.parse(json);
+        coll.insert(obj);
     }
 }

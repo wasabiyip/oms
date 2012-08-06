@@ -26,7 +26,7 @@ import quickfix.fix42.NewOrderSingle;
 public class OrderHandler {
 
     static MongoDao mongo = new MongoDao();
-    static DBObject obj;
+    //static DBObject obj;
     /**
      * Este array
      */
@@ -60,21 +60,16 @@ public class OrderHandler {
      * @param orden
      * @throws Exception
      */
-    public static void orderRecord(ExecutionReport orden) throws Exception {
+    public static void orderNotify(ExecutionReport orden) throws Exception {
         String entry = "";
         for (int i = 0; i < ordPool.size(); i++) {
             //Buscamos la orden que entro en ordPool para obtener el ID de la gráfica
             //que lo envió y así notificar a la respectiva gráfica.
             if(ordPool.get(i).get(1).equals(orden.getClOrdID().getValue())){
-                entry = (String) ordPool.get(i).get(0);
-                GraficaHandler.orderAccept((String)ordPool.get(i).get(0), orden);
+                GraficaHandler.orderAccept((String)ordPool.get(i).get(0),orden);
                 break;
             }
         }
-        String json = new fixToJson().parseOrder(orden,entry);
-        DBCollection coll = mongo.getCollection("log");
-        obj = (DBObject) JSON.parse(json);
-        coll.insert(obj);
     }
 
     /**
@@ -167,7 +162,7 @@ public class OrderHandler {
      */
     public static DBCursor getTotal() {
         
-        DBCollection coll = mongo.getCollection("operaciones");
+        DBCollection coll = mongo.getCollection("log");
         DBCursor cur = coll.find();
         BasicDBObject query = new BasicDBObject();
         query.put("Status", 1);

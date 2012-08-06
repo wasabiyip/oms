@@ -98,12 +98,12 @@ function buildGrafica(data){
     ids.push(id);
     //Creamos html de grafica.
     $("#estrategias").append('<div class=\'grafica\' id=' + id +'></div>');
-    $("#"+id).append('<h2>'+ setts.symbol +' bid: <span class="bid"></span> ask: <span class="ask"></span></h2>')
+    $("#"+id).append('<h2>'+ setts.symbol +' bid: <span class="bid">--------</span> ask: <span class="ask">-------</span></h2>')
     $("#"+id).append('<div class=\'settings\'></<div>');
     $("#" +id+ " .settings").append('<ul><h3>Datos del expert</h3></ul>');
     $("#" +id).append('<div class=\'promedios\'></<div>');
     $("#" +id).append('<div class=\'operaciones\'></<div>');     
-    $("#" +id+ " .promedios").append('<h3>Apertura Minuto <span class=apertura></span></h3>');
+    $("#" +id+ " .promedios").append('<h3>Apertura Minuto <span class=apertura>-------</span></h3>');
     $("#" +id+ " .promedios").append('<h3>Promedios</h3><ul></ul>');
     $("#"+id+" .operaciones").append('<table></table>');
     $("#"+id+" .operaciones table").append('<tr><th>Orden</th><th>Tipo</th><th>Lotes</th><th>Símbolo</th><th>Precio</th><th>SL</th><th>TP</th></tr>');

@@ -1,8 +1,12 @@
 package oms.deliverer;
 
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.util.JSON;
 import java.util.ArrayList;
 import java.util.Random;
 import oms.Grafica.Graphic;
+import oms.util.fixToJson;
 import quickfix.fix42.ExecutionReport;
 
 /**
@@ -23,9 +27,7 @@ public class GraficaHandler {
         //Podriamos poner aquí algunas opciones mas como pasar el archivo log.
         graficas.add(new Graphic(symbol, periodo, this.genId(symbol)));
         runGrafica(graficas.size() - 1);
-
     }
-    
     /**
      * Las gráficas son thread así que tenemos que correrlos para que comienzen
      * su trabajo.
@@ -34,7 +36,6 @@ public class GraficaHandler {
     private void runGrafica(int index) {
         graficas.get(index).start();
     }
-    
     /**
      * Notificamos a una gráfica que su orden fué aceptada.
      * @param id identificador de la gráfica.
@@ -46,9 +47,13 @@ public class GraficaHandler {
         for (int i = 0; i < graficas.size(); i++) {
             if(graficas.get(i).getID().equals(id)){
                 graficas.get(i).newOrder(orden);
-            }
-            
+            }   
         }
+        /*
+        String json = new fixToJson().parseOrder(orden,id, magic);
+        DBCollection coll = getCollection("log");
+        obj = (DBObject) JSON.parse(json);
+        coll.insert(obj);*/
     }
     
     /**
@@ -107,7 +112,7 @@ public class GraficaHandler {
      */
     public static Graphic getGraf(String id) {
         Graphic temp = null;
-        for (int i = 0; i <= graficas.size(); i++) {
+        for (int i = 0; i < graficas.size(); i++) {
             if (graficas.get(i).getID().equals(id)) {
                 temp = graficas.get(i);
                 break;

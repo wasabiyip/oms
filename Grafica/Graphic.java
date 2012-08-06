@@ -36,6 +36,7 @@ public class Graphic extends Thread {
     private Double bid, ask;
     //Guardamos las ordenes de que entran en cada gráfica.
     private ArrayList<ArrayList> operaciones = new ArrayList();
+    MongoDao dao = new MongoDao();
     /**
      * Constructor!
      *
@@ -180,8 +181,6 @@ public class Graphic extends Thread {
      */
     private ArrayList getHistorial(int cant) {
         ArrayList data = new ArrayList();
-        MongoDao dao = new MongoDao();
-
         //Utilizamos unSlash para quitar el / ya que en la base de datos tenemos las monedas
         //sin este.
         ArrayList temp = dao.getCandleData(this.unSlash(symbol), cant);
@@ -223,7 +222,6 @@ public class Graphic extends Thread {
                     txt.append("\"id\":\"" + expert.id + "\",");
                     txt.append(expert.getExpertState());
                     txt.append("}");
-                    System.out.println(txt.toString());
                     this.writeNode(txt.toString());
                     break;
                 case "ask":
@@ -258,7 +256,6 @@ public class Graphic extends Thread {
      * @param orden 
      */
     private void onOrder(ArrayList orden){
-        System.out.println(orden);
         try {
             ExecutionReport report = (ExecutionReport)orden.get(0);
             double sl = (double)orden.get(1);
@@ -293,6 +290,7 @@ public class Graphic extends Thread {
         
         ArrayList temp = new ArrayList();
         temp.add(orden);
+        this.dao.recordOrden(this.id,orden,this.expert.MAGICMA);
         this.operaciones.add(temp);
     }
     /**
@@ -361,6 +359,10 @@ public class Graphic extends Thread {
      */
     public double getPoint(){
         return this.expert.Point;
+    }
+    
+    public int getMagic(){
+        return this.expert.MAGICMA;
     }
     
     /**

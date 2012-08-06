@@ -15,9 +15,11 @@ public class Order {
     String ordid;
     String symbol;
     String currency;
-    public Order(String symbol){
+    int magicma;
+    public Order(String symbol, int magicma){
         this.symbol = symbol;
         this.currency = symbol.substring(0, 3);
+        this.magicma = magicma;
     }
     /**
      * Enviamos una orden...
@@ -41,6 +43,5 @@ public class Order {
         nworder.set(new Price(price));
         //enviamos orden
         OrderHandler.sendOrder(nworder, id);
-        
     }
 }
