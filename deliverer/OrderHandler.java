@@ -8,6 +8,7 @@ import com.mongodb.util.JSON;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.Grafica.Graphic;
 import oms.Grafica.Order;
 import oms.dao.MongoDao;
 import oms.util.fixToJson;
@@ -118,6 +119,7 @@ public class OrderHandler {
             nwtp.set(new Side('2'));
         }
         try {
+            System.out.println("Sendtops");
             Session.sendToTarget(nwsl, SenderApp.sessionID);
             Session.sendToTarget(nwtp, SenderApp.sessionID);
             //notificamos acerca de los stops
@@ -141,15 +143,14 @@ public class OrderHandler {
      * @throws Exception
      */
     public static void stopsRecord(char tipo, String id, Double precio, String order) throws Exception {
-        
-        DBCollection coll = mongo.getCollection("log");
+        DBCollection coll = Graphic.dao.getCollection("operaciones");
         BasicDBObject stop = new BasicDBObject();
-        
         if (tipo == '3') {
             stop.append("$set", new BasicDBObject().append("StopL", order));
-
+            stop.append("$set", new BasicDBObject().append("StopLV", precio));
         } else {
             stop.append("$set", new BasicDBObject().append("TakeP", order));
+            stop.append("$set", new BasicDBObject().append("TakePV", precio));
         }
         coll.update(new BasicDBObject().append("OrderID", id), stop);
     }

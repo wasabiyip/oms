@@ -37,7 +37,7 @@ public class Graphic extends Thread {
     private Double bid, ask;
     //Guardamos las ordenes de que entran en cada gráfica.
     private ArrayList<ArrayList> operaciones = new ArrayList();
-    MongoDao dao = new MongoDao();
+    public static MongoDao dao = new MongoDao();
     /**
      * Constructor!
      *
@@ -289,7 +289,6 @@ public class Graphic extends Thread {
     private void ordersInit(){
          ArrayList<DBObject>temp=this.expert.order.getTotal();
          StringBuffer nworden = new StringBuffer();
-         System.out.println("order-init");
          for(int i=0; i<temp.size();i++){
             nworden.append("{");        
                 nworden.append("\"type\":\"onOrder\",");
@@ -300,14 +299,17 @@ public class Graphic extends Thread {
                         nworden.append("\"tipo\":\""+temp.get(i).get("Type")+"\","); //tipo de operacion
                         nworden.append("\"lotes\":\""+((Double)temp.get(i).get("Size")/100000)+"\","); 
                         nworden.append("\"symbol\":\""+temp.get(i).get("Symbol")+"\",");
-                        nworden.append("\"precio\":\""+temp.get(i).get("Price")+"\"");                
+                        nworden.append("\"precio\":\""+temp.get(i).get("Price")+"\",");   
+                        nworden.append("\"sl\":\""+temp.get(i).get("StopLV") +"\",");                
+                        nworden.append("\"tp\":\""+temp.get(i).get("TakePV")+"\"");
                     nworden.append("}");
-            nworden.append("}");
+            nworden.append("}\n");
             try {
                 Thread.sleep(1);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
             }
+             System.out.println("send ord init " + nworden.toString());
             this.writeNode(nworden.toString());
          }
     }

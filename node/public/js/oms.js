@@ -76,6 +76,7 @@ $(document).ready(function(){
     });
     
     socket.on('grafica-order', function(data){
+        
        var graf =  unSlash(data.id);
        console.log(data);
        $("#"+ graf + " .operaciones table").append("<tr id="+ data.ordid +"></tr>");
@@ -107,7 +108,7 @@ function buildGrafica(data){
     $("#" +id+ " .promedios").append('<h3>Promedios</h3><ul></ul>');
     $("#"+id+" .operaciones").append('<table></table>');
     $("#"+id+" .operaciones table").append('<tr><th>Orden</th><th>Tipo</th><th>Lotes</th><th>Símbolo</th><th>Precio</th><th>SL</th><th>TP</th></tr>');
-    console.log("fuck!");
+    
     //Borramos estos elementos por que no queremos escribirlos en la pagina
     delete  setts['symbol'];
     delete  setts['ID'];

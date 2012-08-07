@@ -88,7 +88,10 @@ public class Expert extends Settings {
     public void onOpen(double price){
         open = price;
         cont++;
-        //order.Send(price, '2', this.id);
+        if (cont==1){
+            order.Send(price, '2', this.id);
+            cont++;
+        }
     }
     /**
      * Refrescamos las bandas con el precio de apertura de la vela.
