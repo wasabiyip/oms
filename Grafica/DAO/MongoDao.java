@@ -128,4 +128,20 @@ public class MongoDao {
         obj = (DBObject) JSON.parse(json);
         coll.insert(obj);
     }
+    
+    /**
+     * Obtenemos el número total de ordenés por MAGICMA.
+     *
+     * @return
+     * @throws Exception
+     */
+    public DBCursor getTotalMagic(int magic) {
+        
+        DBCollection coll = getCollection("operaciones");
+        BasicDBObject query = new BasicDBObject();
+        query.put("Status", 1);
+        query.put("MAGICMA", magic);
+        return coll.find(query);
+    }
+
 }

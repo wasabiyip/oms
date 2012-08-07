@@ -1,5 +1,9 @@
 package oms.Grafica;
 
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import java.util.ArrayList;
+import oms.Grafica.DAO.MongoDao;
 import oms.deliverer.OrderHandler;
 import oms.util.idGenerator;
 import quickfix.SessionNotFound;
@@ -16,10 +20,13 @@ public class Order {
     String symbol;
     String currency;
     int magicma;
+    MongoDao dao = new MongoDao();
     public Order(String symbol, int magicma){
         this.symbol = symbol;
         this.currency = symbol.substring(0, 3);
         this.magicma = magicma;
+        dao.setDB("history");
+        dao.setCollection("operaciones");
     }
     /**
      * Enviamos una orden...
@@ -44,4 +51,12 @@ public class Order {
         //enviamos orden
         OrderHandler.sendOrder(nworder, id);
     }
+    public ArrayList<DBObject> getTotal(){
+        ArrayList temp = new ArrayList();
+        DBCursor res = dao.getTotalMagic(this.magicma);
+        while(res.hasNext()){
+            temp.add(res.next());
+        }
+        return temp;
+        }
 }

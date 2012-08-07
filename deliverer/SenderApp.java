@@ -58,7 +58,7 @@ public class SenderApp extends MessageCracker implements Application{
     public void onLogon(SessionID id) {
         SenderApp.sessionID = id;
         this.graficaHandler.addGrafica("EUR/USD", 5);
-        //this.graficaHandler.addGrafica("USD/JPY", 5);
+        this.graficaHandler.addGrafica("USD/JPY", 5);
         //this.graficaHandler.addGrafica("USD/CHF", 5);
     }
     

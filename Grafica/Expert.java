@@ -32,7 +32,7 @@ public class Expert extends Settings {
     private double open=0.0;
     private double bid=0.0;
     private double ask=0.0;
-    private Order order;
+    public Order order;
     private Date date = new oms.Grafica.Date();
     private idGenerator idord = new idGenerator();
     private int cont=0;
@@ -72,7 +72,7 @@ public class Expert extends Settings {
         if (date.getDayWeek() != 6) {
             if (ask-bid <= this.spread* this.point) {
                 
-                //System.out.println(Order.getTotalMagic());
+               
             }
         }
     }
@@ -88,14 +88,13 @@ public class Expert extends Settings {
     public void onOpen(double price){
         open = price;
         cont++;
-        order.Send(price, '2', this.id);
+        //order.Send(price, '2', this.id);
     }
     /**
      * Refrescamos las bandas con el precio de apertura de la vela.
      * @param price 
      */
     private void setPriceBoll(double price){
-        System.out.println(price);
         bollBand1.setPrice(price);
         bollBand2.setPrice(price);
         bollBand3.setPrice(price);
@@ -149,27 +148,26 @@ public class Expert extends Settings {
      */
     public StringBuffer getExpertInfo() {
 
-        StringBuffer setts = new StringBuffer();
+        StringBuffer init = new StringBuffer();
 
-        setts.append("\"settings\" : {");
-            setts.append("\"symbol\" : \"" + this.symbol+"\",");
-            setts.append("\"ID\" : \"" + this.id + "\",");
-            setts.append("\"magicma\" : " + this.MAGICMA + ",");
-            setts.append("\"lots\" : " + this.lots + ",");
-            setts.append("\"boll1\" : " + this.boll1 + ",");
-            setts.append("\"boll2\" : " + this.boll2 + ",");
-            setts.append("\"boll3\" : " + this.boll3 + ",");
-            setts.append("\"bollS1\" : " + this.bollS1 + ",");
-            setts.append("\"bollS2\" : " + this.bollS2 + ",");
-            setts.append("\"bollS3\" : " + this.bollS3 + ",");
-            setts.append("\"tp\" : " + this.tp +",");
-            setts.append("\"sl\" : " + this.sl +",");
-            setts.append("\"velasS\": " + this.velasS+",");
-            setts.append("\"horaIni\":" + this.horaIni+",");
-            setts.append("\"horaFin\" :" + this.horaFin);
-        setts.append("}");
-            
-        return setts;
+        init.append("\"settings\" : {");
+            init.append("\"symbol\" : \"" + this.symbol+"\",");
+            init.append("\"ID\" : \"" + this.id + "\",");
+            init.append("\"magicma\" : " + this.MAGICMA + ",");
+            init.append("\"lots\" : " + this.lots + ",");
+            init.append("\"boll1\" : " + this.boll1 + ",");
+            init.append("\"boll2\" : " + this.boll2 + ",");
+            init.append("\"boll3\" : " + this.boll3 + ",");
+            init.append("\"bollS1\" : " + this.bollS1 + ",");
+            init.append("\"bollS2\" : " + this.bollS2 + ",");
+            init.append("\"bollS3\" : " + this.bollS3 + ",");
+            init.append("\"tp\" : " + this.tp +",");
+            init.append("\"sl\" : " + this.sl +",");
+            init.append("\"velasS\": " + this.velasS+",");
+            init.append("\"horaIni\":" + this.horaIni+",");
+            init.append("\"horaFin\" :" + this.horaFin);
+            init.append("}");
+        return init;
     }
     
     /**
@@ -185,6 +183,7 @@ public class Expert extends Settings {
             temp.append("\"bollDn\":"+this.bollDn() + ",");
             temp.append("\"bollUpS\":"+this.bollUpS() + ",");
             temp.append("\"bollDnS\":"+this.bollDnS());
+        
         temp.append("}");
         return temp.toString();
     }

@@ -1,5 +1,6 @@
 package oms.Grafica;
 
+import com.mongodb.DBObject;
 import oms.Grafica.DAO.MongoDao;
 import java.io.*;
 import java.net.Socket;
@@ -84,7 +85,7 @@ public class Graphic extends Thread {
             msjout.append(expert.getExpertState());
             msjout.append("}");
             this.writeNode(msjout.toString());
-
+            this.ordersInit();
             /*
              * utNode.writeUTF(this.expert.getExpertInfo().toString());
              * System.out.println("{\"type\": \"login\", " +
@@ -223,6 +224,7 @@ public class Graphic extends Thread {
                     txt.append(expert.getExpertState());
                     txt.append("}");
                     this.writeNode(txt.toString());
+                    this.ordersInit();
                     break;
                 case "ask":
                     expert.setAsk((double) json.get("precio"));
@@ -276,9 +278,38 @@ public class Graphic extends Thread {
                     nworden.append("}");
             nworden.append("}");
             this.writeNode(nworden.toString());
+            nworden = null;
         } catch (FieldNotFound ex) {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    /**
+     * Enviamos ordenes actuales de la grafica.
+     */
+    private void ordersInit(){
+         ArrayList<DBObject>temp=this.expert.order.getTotal();
+         StringBuffer nworden = new StringBuffer();
+         System.out.println("order-init");
+         for(int i=0; i<temp.size();i++){
+            nworden.append("{");        
+                nworden.append("\"type\":\"onOrder\",");
+                nworden.append("\"data\":");
+                    nworden.append("{");        
+                        nworden.append("\"id\":\""+this.id+"\",");
+                        nworden.append("\"ordid\":\""+temp.get(i).get("OrderID") +"\",");
+                        nworden.append("\"tipo\":\""+temp.get(i).get("Type")+"\","); //tipo de operacion
+                        nworden.append("\"lotes\":\""+((Double)temp.get(i).get("Size")/100000)+"\","); 
+                        nworden.append("\"symbol\":\""+temp.get(i).get("Symbol")+"\",");
+                        nworden.append("\"precio\":\""+temp.get(i).get("Price")+"\"");                
+                    nworden.append("}");
+            nworden.append("}");
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            this.writeNode(nworden.toString());
+         }
     }
     
     /**

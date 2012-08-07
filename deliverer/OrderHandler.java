@@ -170,23 +170,7 @@ public class OrderHandler {
         return cur;
     }
 
-    /**
-     * Obtenemos el número total de ordenés por MAGICMA.
-     *
-     * @return
-     * @throws Exception
-     */
-    public static int getTotalMagic() {
-        
-        DBCollection coll = mongo.getCollection("operaciones");
-        DBCursor cur = coll.find();
-        BasicDBObject query = new BasicDBObject();
-        query.put("Status", 1);
-        //query.put("MAGICMA", Settings.MAGICMA);
-        cur = coll.find(query);
-        return cur.count();
-    }
-
+    
     public static void closeStops(String ID, char side, String order) {
 
         quickfix.fix42.OrderCancelRequest stop = new quickfix.fix42.OrderCancelRequest();
