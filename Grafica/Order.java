@@ -50,7 +50,7 @@ public class Order {
         nworder.set(new Price(price));
         //enviamos orden
         OrderHandler.sendOrder(nworder, id);
-    }
+    }/*
     public ArrayList<DBObject> getTotal(){
         ArrayList temp = new ArrayList();
         DBCursor res = dao.getTotalMagic(this.magicma);
@@ -58,5 +58,5 @@ public class Order {
             temp.add(res.next());
         }
         return temp;
-        }
+        }*/
 }

@@ -1,5 +1,6 @@
 package oms.Grafica;
 
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import oms.Grafica.DAO.MongoDao;
 import java.io.*;
@@ -85,7 +86,7 @@ public class Graphic extends Thread {
             msjout.append(expert.getExpertState());
             msjout.append("}");
             this.writeNode(msjout.toString());
-            this.ordersInit();
+            
             /*
              * utNode.writeUTF(this.expert.getExpertInfo().toString());
              * System.out.println("{\"type\": \"login\", " +
@@ -287,8 +288,9 @@ public class Graphic extends Thread {
      * Enviamos ordenes actuales de la grafica.
      */
     private void ordersInit(){
-         ArrayList<DBObject>temp=this.expert.order.getTotal();
+         ArrayList<DBObject>temp=dao.getTotalGraf(this.id);
          StringBuffer nworden = new StringBuffer();
+         System.out.println("temp size "+ temp.size());
          for(int i=0; i<temp.size();i++){
             nworden.append("{");        
                 nworden.append("\"type\":\"onOrder\",");
@@ -309,7 +311,6 @@ public class Graphic extends Thread {
             } catch (InterruptedException ex) {
                 Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
             }
-             System.out.println("send ord init " + nworden.toString());
             this.writeNode(nworden.toString());
          }
     }

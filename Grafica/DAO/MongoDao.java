@@ -130,18 +130,37 @@ public class MongoDao {
     }
     
     /**
-     * Obtenemos el número total de ordenés por MAGICMA.
+     * Obtenemos el número total de ordenés por Grafica.
      *
      * @return
      * @throws Exception
      */
-    public ArrayList <DBObject> getTotalMagic(String id) {
+    public ArrayList <DBObject> getTotalGraf(String id) {
         ArrayList <DBObject> temp = new ArrayList();
         DBCursor res;
         DBCollection coll = getCollection("operaciones");
         BasicDBObject query = new BasicDBObject();
         query.put("Status", 1);
         query.put("grafica", id);
+        res = coll.find(query);
+        while(res.hasNext()){
+            temp.add(res.next());
+        }
+        return temp;
+    }
+    /**
+     * Obtenemos el número total de ordenés por Magic number.
+     *
+     * @return
+     * @throws Exception
+     */
+    public ArrayList <DBObject> getTotalMagic(int magic) {
+        ArrayList <DBObject> temp = new ArrayList();
+        DBCursor res;
+        DBCollection coll = getCollection("operaciones");
+        BasicDBObject query = new BasicDBObject();
+        query.put("Status", 1);
+        query.put("MAGICMA", magic);
         res = coll.find(query);
         while(res.hasNext()){
             temp.add(res.next());

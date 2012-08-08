@@ -89,7 +89,7 @@ public class Expert extends Settings {
         open = price;
         cont++;
         if (cont==1){
-            order.Send(price, '2', this.id);
+            //order.Send(price, '2', this.id);
             cont++;
         }
     }
