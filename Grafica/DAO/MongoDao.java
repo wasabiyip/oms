@@ -135,13 +135,18 @@ public class MongoDao {
      * @return
      * @throws Exception
      */
-    public DBCursor getTotalMagic(int magic) {
-        
+    public ArrayList <DBObject> getTotalMagic(String id) {
+        ArrayList <DBObject> temp = new ArrayList();
+        DBCursor res;
         DBCollection coll = getCollection("operaciones");
         BasicDBObject query = new BasicDBObject();
         query.put("Status", 1);
-        query.put("MAGICMA", magic);
-        return coll.find(query);
+        query.put("grafica", id);
+        res = coll.find(query);
+        while(res.hasNext()){
+            temp.add(res.next());
+        }
+        return temp;
     }
 
 }
