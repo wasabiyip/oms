@@ -81,7 +81,7 @@ public class OrderHandler {
      * @param qty
      */
     public synchronized static void SendStops(String symbol,char type, String ordid, int qty, double precio) {
-        
+        System.out.println("send Stop");
         quickfix.fix42.NewOrderSingle nwsl = new quickfix.fix42.NewOrderSingle();
         quickfix.fix42.NewOrderSingle nwtp = new quickfix.fix42.NewOrderSingle();
         nwsl.set(new ClOrdID(ordid));
@@ -107,16 +107,16 @@ public class OrderHandler {
             nwsl.set(new StopPx(redondear(GraficaHandler.getAsk(ordid) - sl))); 
             nwtp.set(new Price(redondear(GraficaHandler.getAsk(ordid) - tp)));
             
-            nwsl.set(new Side('1'));
-            nwtp.set(new Side('1'));
+            nwsl.set(new Side('2'));
+            nwtp.set(new Side('2'));
         } else {
             
             nwsl.set(new StopPx(redondear(precio + sl)));
             nwtp.set(new Price(redondear(precio - tp)));
              
             nwsl.setField(new IntField(7534, 1));
-            nwsl.set(new Side('2'));
-            nwtp.set(new Side('2'));
+            nwsl.set(new Side('1'));
+            nwtp.set(new Side('1'));
         }
         try {
             System.out.println("Sendtops");
@@ -143,16 +143,19 @@ public class OrderHandler {
      * @throws Exception
      */
     public static void stopsRecord(char tipo, String id, Double precio, String order) throws Exception {
+        System.out.println("Stop record: " +tipo + " " + id +" "+order);
         DBCollection coll = Graphic.dao.getCollection("operaciones");
         BasicDBObject stop = new BasicDBObject();
+        BasicDBObject stopval = new BasicDBObject();
         if (tipo == '3') {
             stop.append("$set", new BasicDBObject().append("StopL", order));
-            stop.append("$set", new BasicDBObject().append("StopLV", precio));
+            stopval.append("$set", new BasicDBObject().append("StopLV", precio));
         } else {
             stop.append("$set", new BasicDBObject().append("TakeP", order));
-            stop.append("$set", new BasicDBObject().append("TakePV", precio));
+            stopval.append("$set", new BasicDBObject().append("TakePV", precio));
         }
         coll.update(new BasicDBObject().append("OrderID", id), stop);
+        coll.update(new BasicDBObject().append("OrderID", id), stopval);
     }
 
     /**
