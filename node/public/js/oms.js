@@ -1,8 +1,9 @@
 //Manejador de eventos en cliente...
 var ids= [];
+
 $(document).ready(function(){
 	
-    var socket  = io.connect(document.location.href),
+    var socket = io.connect(document.location.href),
     text = $('#text');
     
     socket.on('connect', function () {
@@ -78,16 +79,32 @@ $(document).ready(function(){
     socket.on('grafica-order', function(data){
         
        var graf =  unSlash(data.id);
-       console.log(data);
+       var ord = data.ordid;
        $("#"+ graf + " .operaciones table").append("<tr id="+ data.ordid +"></tr>");
        delete  data['id'];
        
        $.each(data, function(key,val){
            $("#"+data.ordid).append('<td><span id='+key+ '>'+val+'</span></td>');
        });
-       $("#"+data.ordid).append('<td><button type=\"button\">cerrrar</button></td>');
+       $("#"+data.ordid).append('<td><button type=\"button\" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">cerrrar</button></td>');
        
     });
+    closeOrder= function(grafica,order){
+        
+        var res;
+        var ask = confirm("¿Estas seguro que quieres cerrar la orden " + order+"?");
+        var str = {
+                    "type":"order-close",
+                    "grafica":Slash(grafica),
+                    "id":order
+                };
+        if (ask==true){
+            $("#"+order).remove();
+            socket.emit('order-close',str);
+        }else{
+          //nada  
+        }        
+    }
 });
 //Al recibir graficas-ini construimos la grafica recibida. 
 function buildGrafica(data){
@@ -120,4 +137,15 @@ function buildGrafica(data){
 
 function unSlash(cadena){
     return cadena.replace("/","");
+}
+function Slash(cadena){
+    var text = cadena.split("");
+    var res ="";
+    for(i=0; i<text.length; i++){
+        res +=text[i];
+        if(i==2)
+            res += '/';
+    }
+    console.log(res);
+    return res;
 }

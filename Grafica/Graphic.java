@@ -208,7 +208,7 @@ public class Graphic extends Thread {
      * @param msj
      */
     private void handler(String msj) {
-
+        
         try {
             JSONObject root = (JSONObject) new JSONParser().parse("{" + msj);
             JSONObject json = (JSONObject) root.get("msj");
@@ -232,6 +232,9 @@ public class Graphic extends Thread {
                     break;
                 case "bid":
                     expert.onTick((double) json.get("precio"));
+                    break;
+                case "close-order":
+                    System.out.println("Cerrando orden "+ json.get("value"));
                     break;
                 default:
                     System.out.println("Mensaje no identificado"+ json.toString());

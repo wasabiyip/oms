@@ -95,6 +95,21 @@ exports.getSetts= function(){
     }
     return setts;
 }
+
+exports.closeOrder = function(close){
+    msj = JSON.stringify({
+        "msj" :{
+            "type":"close-order",
+            "value":close.id
+        }
+    });
+    for(i=0; i<Graficas.length;i++){
+        console.log(Graficas[i].getSetts().ID);
+        if(Graficas[i].getSetts().ID===close.grafica){
+            Graficas[i].getSocket().write(msj +"\n");
+        }
+    }
+}
 //-------------------------------------------------------------------//
 /*
 	Objeto Grafica, cada vez  que se conecta una grafica creamos un objeto

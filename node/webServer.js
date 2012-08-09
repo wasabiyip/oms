@@ -49,6 +49,11 @@ server.sockets.on('connection', function (client){
         console.log(msj);
         handler.expertState(msj);
     });
+    
+    client.on('order-close', function(msj){
+        console.log(msj);
+        handler.closeOrder(msj);
+    })
 });
 
 exports.clientsLength = function(){
