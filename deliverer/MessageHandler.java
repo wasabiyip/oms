@@ -101,30 +101,14 @@ public class MessageHandler {
          * revisamos que el OrderID no exista, por que si existe quiere decir
          * que la orden entrante es el cierre de una existente.
          */
-        if (msj.getOrdType().getValue() == '3') {
-            //StopLoss
-            if (msj.getExecType().getValue() == '0') {
-                //Nueva    
-                OrderHandler.stopsRecord('3', msj.getClOrdID().getValue(), msj.getStopPx().getValue(),
-                        msj.getOrderID().getValue());
-                
-                //GraficaHandler.stopAcept(null, msj);
-            } else {
-                //close
-            }
-        } else if (msj.getOrdType().getValue() == 'F') {
-            //TakeProfit
-            if (msj.getExecType().getValue() == '0') {
-                //Nuevo
-                OrderHandler.stopsRecord('F', msj.getClOrdID().getValue(), msj.getPrice().getValue(),
-                        msj.getOrderID().getValue());
-            } else {
-                //Close
-            }
-        } else if (OrderHandler.Exists(msj) && msj.getOrdStatus().getValue() == '2') {
-            //Cerramos los stops de la orden que recibimos un cierre.
+        if (msj.getOrdType().getValue() == 'W') {
+            //Entro OCO
+            OrderHandler.ocoRecord(msj);
             
-            OrderHandler.closeStops(msj.getClOrdID().getValue());
+            
+        } else if (OrderHandler.Exists(msj) && msj.getOrdStatus().getValue() == '2') {
+            //Cerramos la OCO de la orden que recibimos un cierre.
+            OrderHandler.closeOCO(msj.getClOrdID().getValue());
         } else {
             //Entrada de orden
             switch (msj.getExecType().getValue()) {
@@ -143,12 +127,12 @@ public class MessageHandler {
                      */
                     OrderHandler.orderNotify(msj);
                     if (msj.getSide().getValue() == '1') {
-                        OrderHandler.SendStops(msj.getSymbol().getValue(),'2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
+                        OrderHandler.SendOCO(msj.getSymbol().getValue(),'2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
                         System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
                                + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
                     }
                     if (msj.getSide().getValue() == '2') {
-                        OrderHandler.SendStops(msj.getSymbol().getValue(),'1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
+                        OrderHandler.SendOCO(msj.getSymbol().getValue(),'1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
                        System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
                               + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
                     }

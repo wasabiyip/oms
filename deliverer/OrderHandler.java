@@ -10,12 +10,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Graphic;
 import oms.Grafica.Order;
-import oms.dao.MongoDao;
+import oms.dao.MongoDao;    
 import oms.util.fixToJson;
-import quickfix.FieldNotFound;
-import quickfix.IntField;
-import quickfix.Session;
-import quickfix.SessionNotFound;
+import quickfix.*;
 import quickfix.field.*;
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.NewOrderSingle;
@@ -85,86 +82,69 @@ public class OrderHandler {
     }
 
     /**
-     * Enviamos StropLoss y TakeProfit por cada operacion.
+     * Enviamos OCO (One Cancels the Other) orden.
      *
      * @param type
      * @param ID
      * @param qty
      */
-    public synchronized static void SendStops(String symbol,char type, String ordid, int qty, double precio) {
-        quickfix.fix42.NewOrderSingle nwsl = new quickfix.fix42.NewOrderSingle();
-        quickfix.fix42.NewOrderSingle nwtp = new quickfix.fix42.NewOrderSingle();
-        nwsl.set(new ClOrdID(ordid));
-        nwtp.set(new ClOrdID(ordid));
-        nwsl.set(new OrdType('3'));
-        nwtp.set(new OrdType('F'));
-        nwsl.set(new Symbol(symbol));
-        nwtp.set(new Symbol(symbol));
-        nwsl.set(new HandlInst('1'));
-        nwtp.set(new HandlInst('1'));
-        nwtp.set(new TransactTime());
-        nwsl.set(new TransactTime());
-        nwtp.set(new OrderQty(qty));
-        nwsl.set(new OrderQty(qty));
-        nwtp.set(new Currency(symbol.substring(0, 3)));
-        nwsl.set(new Currency(symbol.substring(0, 3)));
-        //Asi lo voy a dejar por que soy flojo y además se ve bastante 'pro :)
-        //acá calculamos los limites de la orden que entró, 
+    public synchronized static void SendOCO(String symbol,char type, String ordid, int qty, double precio) {
+        quickfix.fix42.NewOrderSingle oco = new quickfix.fix42.NewOrderSingle();
+        char tipo = type =='1'?'2':'1';
+        oco.set(new ClOrdID(ordid));
+        oco.set(new HandlInst('1'));
+        oco.set(new Currency(symbol.substring(0,3)));
+        oco.set(new Symbol(symbol));
+        oco.set(new TransactTime());
+        oco.set(new OrderQty(qty));
+        oco.set(new OrdType('W'));
+        oco.set(new Side(tipo));
+        
+        oco.setField(new CharField(7541,'3'));
+        oco.setField(new CharField(7553,tipo));
         double sl = GraficaHandler.getGraf(getGrafId(ordid)).getSL() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
         double tp = GraficaHandler.getGraf(getGrafId(ordid)).getTP() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
         if (type == 1) {
+            oco.setField(new DoubleField(7540, redondear(GraficaHandler.getAsk(ordid) - sl)));
+            oco.setField(new DoubleField(7542, redondear(GraficaHandler.getAsk(ordid) + tp)));
+            oco.setField(new CharField(7543,'2'));
             
-            nwsl.set(new StopPx(redondear(GraficaHandler.getAsk(ordid) - sl))); 
-            nwtp.set(new Price(redondear(GraficaHandler.getAsk(ordid) - tp)));
-            
-            nwsl.set(new Side('2'));
-            nwtp.set(new Side('2'));
-        } else {
-            
-            nwsl.set(new StopPx(redondear(precio + sl)));
-            nwtp.set(new Price(redondear(precio - tp)));
-             
-            nwsl.setField(new IntField(7534, 1));
-            nwsl.set(new Side('1'));
-            nwtp.set(new Side('1'));
+        }else{
+            oco.setField(new DoubleField(7540, redondear(precio + sl)));
+            oco.setField(new DoubleField(7542, redondear(precio - tp)));
+            oco.setField(new CharField(7543,'2'));
         }
-        try {
-            Session.sendToTarget(nwsl, SenderApp.sessionID);
-            Session.sendToTarget(nwtp, SenderApp.sessionID);
-            //notificamos acerca de los stops
-            GraficaHandler.setStop(getGrafId(nwsl.getClOrdID().getValue()),nwsl.getClOrdID().getValue(),nwsl.getOrdType().getValue(), nwsl.getStopPx().getValue());
-            GraficaHandler.setStop(getGrafId(nwsl.getClOrdID().getValue()),nwsl.getClOrdID().getValue(),nwtp.getOrdType().getValue(), nwtp.getPrice().getValue());
-        } catch (SessionNotFound ex) {
-            Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
-        } catch ( FieldNotFound ex){
-            System.out.println("¡El horror!: No se encontro el campo " + ex);
+        try{
+            Session.sendToTarget(oco,SenderApp.sessionID);
+        }catch (SessionNotFound ex){
+            System.err.println("El horror! No se pudo enviar OCO " + ex );
         }
-        
-        
     }
 
     /**
-     * Modificamos el registro de una orden y le agregamos los limites.
+     * Modificamos el registro de la orden determinada, y le agregamos los SL y TP calculados
+     * previamente.
      *
      * @param tipo
      * @param id
      * @param precio
      * @throws Exception
      */
-    public static void stopsRecord(char tipo, String id, Double precio, String order) throws Exception {
-        System.out.println("Stop record: " +tipo + " " + id +" "+order);
+    public static void ocoRecord(ExecutionReport msj) throws Exception {
+        System.out.println("OCO record: "+ msj.getOrderID().getValue());
         DBCollection coll = Graphic.dao.getCollection("operaciones");
-        BasicDBObject stop = new BasicDBObject();
-        BasicDBObject stopval = new BasicDBObject();
-        if (tipo == '3') {
-            stop.append("$set", new BasicDBObject().append("StopL", order));
-            stopval.append("$set", new BasicDBObject().append("StopLV", precio));
-        } else {
-            stop.append("$set", new BasicDBObject().append("TakeP", order));
-            stopval.append("$set", new BasicDBObject().append("TakePV", precio));
-        }
-        coll.update(new BasicDBObject().append("OrderID", id), stop);
-        coll.update(new BasicDBObject().append("OrderID", id), stopval);
+        BasicDBObject oco = new BasicDBObject();
+        BasicDBObject sl = new BasicDBObject();
+        BasicDBObject tp = new BasicDBObject();
+                
+        oco.append("$set", new BasicDBObject().append("OCOV", msj.getOrderID().getValue()));
+        sl.append("$set", new BasicDBObject().append("StopL", msj.getField(new DoubleField(7542)).getValue()));
+        tp.append("$set", new BasicDBObject().append("TakeP", msj.getField(new DoubleField(7540)).getValue()));
+        System.out.println(msj.getField(new DoubleField(7540)));
+        System.out.println(msj.getField(new DoubleField(7542)));
+        coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), oco);
+        coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), sl);
+        coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), tp);
     }
 
     /**
@@ -183,8 +163,11 @@ public class OrderHandler {
         return cur;
     }
 
-    
-    public static void closeStops(String order) {
+    /**
+     * Enviamos el request para borrar la OCO de una orden determinada.
+     * @param order 
+     */
+    public static void closeOCO(String order) {
         
         DBCollection coll = mongo.getCollection("operaciones");
         BasicDBObject query = new BasicDBObject();
@@ -225,35 +208,6 @@ public class OrderHandler {
         }
     }
     
-    /**
-     * Cerramos una orden enviando la orden opuesta al tipo que se recibe.
-     *
-     * @param tipo
-     *//*
-    public void Close(Integer tipo) {
-        
-        DBCollection coll = mongo.getCollection("operaciones");
-        BasicDBObject query = new BasicDBObject();
-        DBObject temp;
-        query.put("Status", 1);
-        //query.put("MAGICMA", Settings.MAGICMA);
-        DBCursor cur = coll.find(query);
-
-        while (cur.hasNext()) {
-            temp = cur.next();
-
-            if (((Integer) temp.get("Type")) == tipo) {
-                if (tipo == 1) {
-                    //Send(MarketPool.getOffer(), '2',(String) temp.get("OrderID"));
-                    closeStops((String) temp.get("OrderID"), '2', temp.get("NoOrder").toString());
-                } else {
-                    //Send(MarketPool.getBid(), '1', (String) temp.get("OrderID"));
-                    closeStops((String) temp.get("OrderID"), '1', temp.get("NoOrder").toString());
-                }
-            }
-        }
-    }
-
     /**
      * Sabiendo que una orden ya existe y que la orden recibida es de cierre,
      * este método cambia el status de la orden a 0 para que ya no este activa,
