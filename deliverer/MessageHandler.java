@@ -85,7 +85,6 @@ public class MessageHandler {
         } catch (Exception ex) {
             System.out.println(ex);
         }
-
     }
 
     /**
@@ -122,9 +121,10 @@ public class MessageHandler {
             } else {
                 //Close
             }
-        /*} else if (Order.Exists(msj) && msj.getOrdStatus().getValue() == '2') {
-            //Cierre de operacion
-            System.out.println("Cerrando orden: " + msj.getExecID().getValue());*/
+        } else if (OrderHandler.Exists(msj) && msj.getOrdStatus().getValue() == '2') {
+            //Cerramos los stops de la orden que recibimos un cierre.
+            
+            OrderHandler.closeStops(msj.getClOrdID().getValue());
         } else {
             //Entrada de orden
             switch (msj.getExecType().getValue()) {

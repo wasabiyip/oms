@@ -167,5 +167,21 @@ public class MongoDao {
         }
         return temp;
     }
+    
+    public DBObject getOrder(String ordid){
+        DBObject temp = null ;
+        DBCursor res;
+        DBCollection coll = getCollection("operaciones");
+        BasicDBObject query = new BasicDBObject();
+        query.put("OrderID", ordid);
+        res = coll.find(query);
+        while(res.hasNext()){
+            temp = res.next();
+        }
+        if(res.count()>1)
+            System.err.println("Colapso en oms.Grafica.DAO.MongoDao se encontro mas de una orden");
+        
+        return temp;
+    }
 
 }

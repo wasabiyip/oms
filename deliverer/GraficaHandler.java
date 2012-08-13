@@ -86,6 +86,12 @@ public class GraficaHandler {
     public static Double getAsk(String idgraf) {
         return getGraf(idgraf).getAsk();
     }
+    /*
+     * Obtenemos el ask de una determinada grafica.
+     */
+    public static Double getBid(String idgraf) {
+        return getGraf(idgraf).getBid();
+    }
     /**
      * obtenemos el Tp de una grafica determinada.
      * @param idgraf
@@ -113,6 +119,7 @@ public class GraficaHandler {
     public static Graphic getGraf(String id) {
         Graphic temp = null;
         for (int i = 0; i < graficas.size(); i++) {
+            System.out.println(graficas.get(i).getID());
             if (graficas.get(i).getID().equals(id)) {
                 temp = graficas.get(i);
                 break;

@@ -3,7 +3,6 @@ package oms.Grafica;
 import java.util.Properties;
 import oms.Grafica.indicators.BollingerBands;
 import oms.Grafica.indicators.Indicador;
-import oms.deliverer.OrderHandler;
 import oms.util.idGenerator;
 
 /**
@@ -89,7 +88,7 @@ public class Expert extends Settings {
         open = price;
         cont++;
         if (cont==1){
-            order.Send(price, '2', this.id);
+            order.Open(price, '2', this.id);
             cont++;
         }
     }

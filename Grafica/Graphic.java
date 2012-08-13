@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.deliverer.OrderHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -228,13 +229,15 @@ public class Graphic extends Thread {
                     this.ordersInit();
                     break;
                 case "ask":
+                    this.ask = (double) json.get("precio");
                     expert.setAsk((double) json.get("precio"));
                     break;
                 case "bid":
+                    this.bid = (double) json.get("precio");
                     expert.onTick((double) json.get("precio"));
                     break;
                 case "close-order":
-                    System.out.println("Cerrando orden "+ json.get("value"));
+                    expert.order.Close(this.id, dao.getOrder((String)json.get("value")));
                     break;
                 default:
                     System.out.println("Mensaje no identificado"+ json.toString());

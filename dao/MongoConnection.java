@@ -69,7 +69,7 @@ public class MongoConnection extends IMongoDAO {
      */
     public DB getDataBase(){
         
-        this.db = m.getDB(super.datab);
+        this.db = m.getDB("history");
         return this.db;
     }
 }

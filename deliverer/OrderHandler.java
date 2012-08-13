@@ -40,17 +40,28 @@ public class OrderHandler {
      *
      * @param msj
      */
-    public synchronized static void sendOrder(NewOrderSingle msj, String id) {
+    public synchronized static void sendOrder(NewOrderSingle msj, String id, boolean tipo ) {
         ArrayList temp = new ArrayList();
         try {
-            temp.add(id);
-            temp.add(msj.getClOrdID().getValue());
-            ordPool.add(temp);
             Session.sendToTarget(msj, SenderApp.sessionID);
         } catch (SessionNotFound ex) {
             Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception e){
-            System.err.println("El horror! - ClOrdID no encontrado...");
+        } 
+        if (tipo){
+            temp.add(id);
+            try {
+                temp.add(msj.getClOrdID().getValue());
+            } catch (FieldNotFound ex) {
+                Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            ordPool.add(temp);
+        }
+        else{
+            for(int i=0; i<ordPool.size();i++){
+                if(ordPool.get(i).get(0) == id){
+                    ordPool.remove(i);
+                }
+            }
         }
     }
 
@@ -81,7 +92,6 @@ public class OrderHandler {
      * @param qty
      */
     public synchronized static void SendStops(String symbol,char type, String ordid, int qty, double precio) {
-        System.out.println("send Stop");
         quickfix.fix42.NewOrderSingle nwsl = new quickfix.fix42.NewOrderSingle();
         quickfix.fix42.NewOrderSingle nwtp = new quickfix.fix42.NewOrderSingle();
         nwsl.set(new ClOrdID(ordid));
@@ -119,7 +129,6 @@ public class OrderHandler {
             nwtp.set(new Side('1'));
         }
         try {
-            System.out.println("Sendtops");
             Session.sendToTarget(nwsl, SenderApp.sessionID);
             Session.sendToTarget(nwtp, SenderApp.sessionID);
             //notificamos acerca de los stops
@@ -175,39 +184,52 @@ public class OrderHandler {
     }
 
     
-    public static void closeStops(String ID, char side, String order) {
+    public static void closeStops(String order) {
+        
+        DBCollection coll = mongo.getCollection("operaciones");
+        BasicDBObject query = new BasicDBObject();
+        DBObject temp;
+        query.put("OrderID", order);
+        DBCursor cur = coll.find(query);
+        DBObject res = cur.next();
+        String tp = (String) res.get("TakeP");
+        String sl = (String) res.get("StopL");
+        String symbol = (String) res.get("Symbol");
+        int side = ((int)res.get("Type"))==1? 2 : 1; //Guardamos el valor contrario al tipo de orden que queremos cerrar.
+        if(cur.size()==1){//nos aseguramos que solo se encontro una orden
 
-        quickfix.fix42.OrderCancelRequest stop = new quickfix.fix42.OrderCancelRequest();
-        quickfix.fix42.OrderCancelRequest take = new quickfix.fix42.OrderCancelRequest();
+            quickfix.fix42.OrderCancelRequest stop = new quickfix.fix42.OrderCancelRequest();
+            quickfix.fix42.OrderCancelRequest take = new quickfix.fix42.OrderCancelRequest();
+                       
 
-        stop.set(new ClOrdID(ID + "SL"));
-        take.set(new ClOrdID(ID + "TP"));
-        stop.set(new OrigClOrdID(ID));
-        take.set(new OrigClOrdID(ID));
-        stop.set(new Symbol("EUR/USD"));
-        take.set(new Symbol("EUR/USD"));
-        stop.set(new OrderID(sumLong(order, 1)));
-        take.set(new OrderID(sumLong(order, 2)));
-        stop.setChar(40, '3');
-        take.setChar(40, 'F');
-        stop.set(new Side(side));
-        take.set(new Side(side));
-        stop.set(new TransactTime());
-        take.set(new TransactTime());
-        try {
-            Session.sendToTarget(take, SenderApp.sessionID);
-            Session.sendToTarget(stop, SenderApp.sessionID);
-        } catch (SessionNotFound ex) {
-            Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
+            stop.set(new ClOrdID(order));
+            take.set(new ClOrdID(order));
+            stop.set(new OrigClOrdID(order));
+            take.set(new OrigClOrdID(order));
+            stop.set(new Symbol(symbol));
+            take.set(new Symbol(symbol));
+            stop.set(new OrderID(sl));
+            take.set(new OrderID(tp));
+            stop.setChar(40, '3');
+            take.setChar(40, 'F');
+            stop.set(new Side((char)side));
+            take.set(new Side((char)side));
+            stop.set(new TransactTime());
+            take.set(new TransactTime());
+            try {
+                Session.sendToTarget(take, SenderApp.sessionID);
+                Session.sendToTarget(stop, SenderApp.sessionID);
+            } catch (SessionNotFound ex) {
+                Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-
     }
-
+    
     /**
      * Cerramos una orden enviando la orden opuesta al tipo que se recibe.
      *
      * @param tipo
-     */
+     *//*
     public void Close(Integer tipo) {
         
         DBCollection coll = mongo.getCollection("operaciones");
@@ -262,9 +284,8 @@ public class OrderHandler {
         if (cur.count() > 0) {
             shutDown(id, price, coll);
             return true;
-        } else {
+        } else 
             return false;
-        }
     }
 
     /**
