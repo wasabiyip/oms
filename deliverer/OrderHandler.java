@@ -4,14 +4,12 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.util.JSON;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Graphic;
 import oms.Grafica.Order;
 import oms.dao.MongoDao;    
-import oms.util.fixToJson;
 import quickfix.*;
 import quickfix.field.*;
 import quickfix.fix42.ExecutionReport;
@@ -131,17 +129,15 @@ public class OrderHandler {
      * @throws Exception
      */
     public static void ocoRecord(ExecutionReport msj) throws Exception {
-        System.out.println("OCO record: "+ msj.getOrderID().getValue());
+        System.err.println("OCO record: "+ msj.getOrderID().getValue());
         DBCollection coll = Graphic.dao.getCollection("operaciones");
         BasicDBObject oco = new BasicDBObject();
         BasicDBObject sl = new BasicDBObject();
         BasicDBObject tp = new BasicDBObject();
                 
-        oco.append("$set", new BasicDBObject().append("OCOV", msj.getOrderID().getValue()));
+        oco.append("$set", new BasicDBObject().append("OCO", msj.getOrderID().getValue()));
         sl.append("$set", new BasicDBObject().append("StopL", msj.getField(new DoubleField(7542)).getValue()));
         tp.append("$set", new BasicDBObject().append("TakeP", msj.getField(new DoubleField(7540)).getValue()));
-        System.out.println(msj.getField(new DoubleField(7540)));
-        System.out.println(msj.getField(new DoubleField(7542)));
         coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), oco);
         coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), sl);
         coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), tp);
@@ -179,12 +175,11 @@ public class OrderHandler {
         String sl = (String) res.get("StopL");
         String symbol = (String) res.get("Symbol");
         int side = ((int)res.get("Type"))==1? 2 : 1; //Guardamos el valor contrario al tipo de orden que queremos cerrar.
+        
         if(cur.size()==1){//nos aseguramos que solo se encontro una orden
 
             quickfix.fix42.OrderCancelRequest stop = new quickfix.fix42.OrderCancelRequest();
             quickfix.fix42.OrderCancelRequest take = new quickfix.fix42.OrderCancelRequest();
-                       
-
             stop.set(new ClOrdID(order));
             take.set(new ClOrdID(order));
             stop.set(new OrigClOrdID(order));
@@ -202,7 +197,7 @@ public class OrderHandler {
             try {
                 Session.sendToTarget(take, SenderApp.sessionID);
                 Session.sendToTarget(stop, SenderApp.sessionID);
-            } catch (SessionNotFound ex) {
+            }catch (SessionNotFound ex) {
                 Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -234,7 +229,6 @@ public class OrderHandler {
         BasicDBObject query = new BasicDBObject();
         query.put("OrderID", id);
         DBCursor cur = coll.find(query);
-
         if (cur.count() > 0) {
             shutDown(id, price, coll);
             return true;
@@ -257,7 +251,6 @@ public class OrderHandler {
         query.put("Status", 0);
         DBCursor cur = coll.find(query);
         return (Integer) cur.next().get("NoOrder");
-
     }
 
     public static String getCl() throws Exception {

@@ -1,6 +1,5 @@
 package oms.Grafica;
 
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import oms.Grafica.DAO.MongoDao;
 import java.io.*;
@@ -9,7 +8,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import oms.deliverer.OrderHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
