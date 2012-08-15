@@ -122,7 +122,6 @@ public class OrderHandler {
     /**
      * Modificamos el registro de la orden determinada, y le agregamos los SL y TP calculados
      * previamente.
-     *
      * @param tipo
      * @param id
      * @param precio
@@ -174,16 +173,15 @@ public class OrderHandler {
         DBObject res = cur.next();
         String id = (String) res.get("OCO");
         String symbol = (String) res.get("Symbol");
-        int side = ((int)res.get("Type"))==1? 2 : 1; //Guardamos el valor contrario al tipo de orden que queremos cerrar.
-        
+        char side = ((int)res.get("Type"))==1? '2' : '1'; //Guardamos el valor contrario al tipo de orden que queremos cerrar.
         if(cur.size()==1){//nos aseguramos que solo se encontro una orden
             quickfix.fix42.OrderCancelRequest oco = new quickfix.fix42.OrderCancelRequest();
             oco.set(new ClOrdID(order+"0"));
-            oco.set(new OrigClOrdID(order));
+            oco.set(new OrigClOrdID(id));
             oco.set(new Symbol(symbol));
             oco.set(new OrderID(id));
             oco.setChar(40, 'W');
-            oco.set(new Side((char)side));
+            oco.set(new Side(side));
             oco.set(new TransactTime());
             try {
                 Session.sendToTarget(oco, SenderApp.sessionID);
@@ -224,6 +222,21 @@ public class OrderHandler {
             return true;
         } else 
             return false;
+    }
+    
+    public static boolean ocoExists(quickfix.fix42.ExecutionReport msj){
+        boolean temp = false;
+        try {
+            DBCollection coll = mongo.getCollection("operaciones");
+            BasicDBObject query = new BasicDBObject();
+            query.put("OCO", msj.getOrderID().getValue());
+            DBCursor cur = coll.find(query);
+            if (cur.count() > 0) 
+                temp = true;
+        } catch (FieldNotFound ex) {
+            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return temp;
     }
 
     /**

@@ -264,7 +264,6 @@ public class Graphic extends Thread {
      */
     private void onOrder(ArrayList orden){
         try {
-            System.out.println(orden);
             ExecutionReport report = (ExecutionReport)orden.get(0);
             double sl = (double)orden.get(1);
             double tp = (double)orden.get(2); 

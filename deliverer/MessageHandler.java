@@ -101,7 +101,7 @@ public class MessageHandler {
          * revisamos que el OrderID no exista, por que si existe quiere decir
          * que la orden entrante es el cierre de una existente.
          */
-        if (msj.getOrdType().getValue() == 'W') {
+        if (msj.getOrdType().getValue() == 'W' && !OrderHandler.ocoExists(msj)) {
             //Entro OCO
             OrderHandler.ocoRecord(msj);
             
@@ -138,7 +138,7 @@ public class MessageHandler {
                     break;
 
                 case '4':
-                    System.err.println("La orden: " + msj.getClOrdID().getValue() + " fué rechazada por el servidor (Insufficient Margin).");
+                    //System.err.println("La orden: " + msj.getClOrdID().getValue() + " fué rechazada por el servidor (Insufficient Margin).");
                     break;
 
                 case '8':

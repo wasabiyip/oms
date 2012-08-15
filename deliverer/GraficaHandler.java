@@ -116,7 +116,6 @@ public class GraficaHandler {
     public static Graphic getGraf(String id) {
         Graphic temp = null;
         for (int i = 0; i < graficas.size(); i++) {
-            System.out.println(graficas.get(i).getID());
             if (graficas.get(i).getID().equals(id)) {
                 temp = graficas.get(i);
                 break;
