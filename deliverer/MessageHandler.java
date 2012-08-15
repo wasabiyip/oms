@@ -105,7 +105,6 @@ public class MessageHandler {
             //Entro OCO
             OrderHandler.ocoRecord(msj);
             
-            
         } else if (OrderHandler.Exists(msj) && msj.getOrdStatus().getValue() == '2') {
             //Cerramos la OCO de la orden que recibimos un cierre.
             OrderHandler.closeOCO(msj.getClOrdID().getValue());

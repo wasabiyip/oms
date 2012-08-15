@@ -104,8 +104,9 @@ public class GraficaHandler {
     public static int getSl(String idgraf){
         return getGraf(idgraf).getSL();
     }
-    public static void setStop(String id, String ordid,char type, double value){
-         getGraf(id).setStops(ordid, type, value);
+    
+    public static void setStop(String id, String ordid,double sl, double tp){
+         getGraf(id).setStops(ordid, sl, tp);
     }
     /**
      * Obtenemos una grafica determinada.

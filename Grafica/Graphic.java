@@ -264,6 +264,7 @@ public class Graphic extends Thread {
      */
     private void onOrder(ArrayList orden){
         try {
+            System.out.println(orden);
             ExecutionReport report = (ExecutionReport)orden.get(0);
             double sl = (double)orden.get(1);
             double tp = (double)orden.get(2); 
@@ -294,7 +295,6 @@ public class Graphic extends Thread {
     private void ordersInit(){
          ArrayList<DBObject>temp=dao.getTotalGraf(this.id);
          StringBuffer nworden = new StringBuffer();
-         System.out.println("temp size "+ temp.size());
          for(int i=0; i<temp.size();i++){
             nworden.append("{");        
                 nworden.append("\"type\":\"onOrder\",");
@@ -306,8 +306,8 @@ public class Graphic extends Thread {
                         nworden.append("\"lotes\":\""+((Double)temp.get(i).get("Size")/100000)+"\","); 
                         nworden.append("\"symbol\":\""+temp.get(i).get("Symbol")+"\",");
                         nworden.append("\"precio\":\""+temp.get(i).get("Price")+"\",");   
-                        nworden.append("\"sl\":\""+temp.get(i).get("StopLV") +"\",");                
-                        nworden.append("\"tp\":\""+temp.get(i).get("TakePV")+"\"");
+                        nworden.append("\"sl\":\""+temp.get(i).get("StopL") +"\",");                
+                        nworden.append("\"tp\":\""+temp.get(i).get("TakeP")+"\"");
                     nworden.append("}");
             nworden.append("}\n");
             try {
@@ -337,16 +337,15 @@ public class Graphic extends Thread {
      * @param type
      * @param value 
      */
-    public void setStops(String ordid,char type, double value){
+    public void setStops(String ordid,double tp, double sl){
         ExecutionReport temp;
         for (int i = 0; i < operaciones.size(); i++) {
             temp= (ExecutionReport)operaciones.get(i).get(0);
-            try {
-                if(temp.getClOrdID().getValue() == ordid){
-                    //operaciones.get(i).add(type);
-                    operaciones.get(i).add(value);
-                    if(type == 'F')
-                        this.onOrder(operaciones.get(i));
+            try {//¡¡¡Siempre tenemos que comparar cadenas asi por que si no es un dolor de cabeza!!!
+                if(temp.getClOrdID().getValue().equals(ordid)){
+                    operaciones.get(i).add(tp);
+                    operaciones.get(i).add(sl);
+                    this.onOrder(operaciones.get(i));
                 }
             } catch (FieldNotFound ex) {
                 Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);

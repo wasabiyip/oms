@@ -141,6 +141,7 @@ public class OrderHandler {
         coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), oco);
         coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), sl);
         coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), tp);
+        GraficaHandler.setStop(getGrafId(msj.getClOrdID().getValue()), msj.getClOrdID().getValue(),msj.getField(new DoubleField(7542)).getValue(), msj.getField(new DoubleField(7540)).getValue());
     }
 
     /**
@@ -171,32 +172,21 @@ public class OrderHandler {
         query.put("OrderID", order);
         DBCursor cur = coll.find(query);
         DBObject res = cur.next();
-        String tp = (String) res.get("TakeP");
-        String sl = (String) res.get("StopL");
+        String id = (String) res.get("OCO");
         String symbol = (String) res.get("Symbol");
         int side = ((int)res.get("Type"))==1? 2 : 1; //Guardamos el valor contrario al tipo de orden que queremos cerrar.
         
         if(cur.size()==1){//nos aseguramos que solo se encontro una orden
-
-            quickfix.fix42.OrderCancelRequest stop = new quickfix.fix42.OrderCancelRequest();
-            quickfix.fix42.OrderCancelRequest take = new quickfix.fix42.OrderCancelRequest();
-            stop.set(new ClOrdID(order));
-            take.set(new ClOrdID(order));
-            stop.set(new OrigClOrdID(order));
-            take.set(new OrigClOrdID(order));
-            stop.set(new Symbol(symbol));
-            take.set(new Symbol(symbol));
-            stop.set(new OrderID(sl));
-            take.set(new OrderID(tp));
-            stop.setChar(40, '3');
-            take.setChar(40, 'F');
-            stop.set(new Side((char)side));
-            take.set(new Side((char)side));
-            stop.set(new TransactTime());
-            take.set(new TransactTime());
+            quickfix.fix42.OrderCancelRequest oco = new quickfix.fix42.OrderCancelRequest();
+            oco.set(new ClOrdID(order+"0"));
+            oco.set(new OrigClOrdID(order));
+            oco.set(new Symbol(symbol));
+            oco.set(new OrderID(id));
+            oco.setChar(40, 'W');
+            oco.set(new Side((char)side));
+            oco.set(new TransactTime());
             try {
-                Session.sendToTarget(take, SenderApp.sessionID);
-                Session.sendToTarget(stop, SenderApp.sessionID);
+                Session.sendToTarget(oco, SenderApp.sessionID);
             }catch (SessionNotFound ex) {
                 Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
             }
