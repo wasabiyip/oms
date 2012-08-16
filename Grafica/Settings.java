@@ -26,6 +26,7 @@ public abstract class Settings {
     public Integer sl;
     public double Point = 0.0001;
     public Integer limiteMagic = 0;
+    public Integer limiteCruce = 0;
     public Integer spreadSalida = 0;
     public Integer velasS = 0;
     public Double horaIni = 0.0;
@@ -50,9 +51,10 @@ public abstract class Settings {
             lots = new Double(config.getProperty("Lots"));
             tp = new Integer(config.getProperty("tp"));
             sl = new Integer(config.getProperty("sl"));
-            velasS = new Integer(config.getProperty("numvelasS"));
+            //velasS = new Integer(config.getProperty("numvelasS"));
             horaIni = new Double(config.getProperty("horainicial"));
             horaFin = new Double(config.getProperty("horafinal"));
+            limiteCruce = new Integer(config.getProperty("limiteCruce"));
 
         } catch (IOException ex) {
             Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);

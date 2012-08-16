@@ -1,6 +1,10 @@
 package oms.Grafica;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import java.util.Properties;
+import oms.Grafica.DAO.MongoDao;
 import oms.Grafica.indicators.BollingerBands;
 import oms.Grafica.indicators.Indicador;
 import oms.util.idGenerator;
@@ -28,7 +32,7 @@ public class Expert extends Settings {
     private int velasCont = 0;
     private double point = 0.0001;
     private int velas = 0;
-    private double open=0.0;
+    private double open_min=0.0;
     private double bid=0.0;
     private double ask=0.0;
     public Order order;
@@ -42,7 +46,7 @@ public class Expert extends Settings {
     public Expert(String symbol, String id) {
         //llamamos a el constructor de el padre (Settings).
         super(symbol);
-        order = new Order(symbol,this.MAGICMA);
+        order = new Order(symbol,this.MAGICMA, id);
         indicador = new Indicador(Graphic.unSlash(this.symbol),5);
         
         /**
@@ -59,21 +63,32 @@ public class Expert extends Settings {
     }
     
     /**
-     * Se llama cuando un se recibe un precio de apertura de minuto.
+     * Se llama cuando un se recibe un bid.
      * **NOTA:
      * Este método es muy importante ya que es el que trata la apertura y cierre
-     * de operaciones, así que tratalo con RESPETO!
+     * de operaciones, así que: ¡tratalo con RESPETO!
      * @param price precio de apertura del minuto!
      */
     public void onTick(Double bid) {
         this.bid = bid;
         //Si no es sabado
-        if (date.getDayWeek() != 6) {
+       
+        if (date.getDayWeek() != 6 && open_min>0) {
             if (ask-bid <= this.spread* this.point) {
-                
-               
+                //System.out.println((this.open_min + this.boll_special) +" - "+ this.bollDn());
+                //System.out.println(  this.bollDn() + " - "+this.open_min + " "+ this.boll_special+ " - "+this.bollUp());
+                if((this.open_min + this.boll_special)<=this.bollDn() && limiteCruce()){
+                    //Compra
+                    System.err.println("Venta desde expert");
+                    order.Open(this.ask, '2');
+                }else if((this.open_min - this.boll_special)>=this.bollUp() && limiteCruce()){
+                    //Venta
+                    System.err.println("Compra desde expert");
+                    order.Open(this.bid, '1');
+                }
             }
         }
+        
     }
     
     /**
@@ -85,12 +100,7 @@ public class Expert extends Settings {
          
     }
     public void onOpen(double price){
-        open = price;
-        cont++;
-        if (cont==1){
-            order.Open(price, '2', this.id);
-            cont++;
-        }
+        open_min = price;
     }
     /**
      * Refrescamos las bandas con el precio de apertura de la vela.
@@ -189,13 +199,24 @@ public class Expert extends Settings {
         temp.append("}");
         return temp.toString();
     }
-    
-    
     /**
      * Guardamos el valor del ask.
      * @param ask 
      */
     public void setAsk(Double ask){
         this.ask = ask;
+    }
+    
+    /**
+     * regresamos si nos encontramos dentro del limite de operaciones por cruce.
+     * (por cruce significa por el symbol).
+     * @return 
+     */
+    public boolean limiteCruce(){
+        boolean temp = false;
+        int count = Graphic.dao.getTotalCruce(this.symbol);
+        if(count<this.limiteCruce)
+            temp = true;
+        return temp;
     }
 }

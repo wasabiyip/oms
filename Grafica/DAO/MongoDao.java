@@ -22,7 +22,7 @@ public class MongoDao {
     private BasicDBObject fechaMin;
     private BasicDBObject sort;
     private ArrayList<Double> arrList = new ArrayList();
-
+    
     /**
      * Constructor Obtiene la conexión con mongo y hace un query con el
      * parametro recibido.
@@ -164,8 +164,23 @@ public class MongoDao {
         res = coll.find(query);
         while(res.hasNext()){
             temp.add(res.next());
-        }
+    }
         return temp;
+    }
+    /**
+     * Obtenemos el número todatal de ordenes de un cruce determinado.
+     * @param symbol
+     * @return 
+     */
+    public int getTotalCruce(String symbol){
+        ArrayList <DBObject> temp = new ArrayList();
+        DBCursor res;
+        DBCollection coll = getCollection("operaciones");
+        BasicDBObject query = new BasicDBObject();
+        query.put("Status", 1);
+        query.put("Symbol", symbol);
+        res = coll.find(query);
+        return res.count();
     }
     
     public DBObject getOrder(String ordid){

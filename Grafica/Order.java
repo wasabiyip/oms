@@ -1,5 +1,8 @@
 package oms.Grafica;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import oms.Grafica.DAO.MongoDao;
 import oms.deliverer.GraficaHandler;
@@ -20,12 +23,14 @@ public class Order {
     String currency;
     int magicma;
     MongoDao dao = new MongoDao();
-    public Order(String symbol, int magicma){
+    String grafid;
+    public Order(String symbol, int magicma, String grafid){
         this.symbol = symbol;
         this.currency = symbol.substring(0, 3);
         this.magicma = magicma;
         dao.setDB("history");
         dao.setCollection("operaciones");
+        this.grafid = grafid;
     }
     /**
      * Enviamos una orden, si tipo es true entonces la ordene es apertura y si es
@@ -89,8 +94,8 @@ public class Order {
      * @param type
      * @param id 
      */
-    public void Open(double price, char type, String id ){
-        this.Send(price, type, id, true);
+    public void Open(double price, char type){
+        this.Send(price, type, this.grafid, true);
     }
     /*
     public ArrayList<DBObject> getTotal(){

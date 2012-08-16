@@ -208,7 +208,12 @@ public class OrderHandler {
         coll.update(new BasicDBObject().append("OrderID", id), set);
         coll.update(new BasicDBObject().append("OrderID", id), push);
     }
-
+    /**
+     * Revisamos si existe una orden.
+     * @param msj
+     * @return
+     * @throws Exception 
+     */
     public static boolean Exists(quickfix.fix42.ExecutionReport msj) throws Exception {
         
         String id = msj.getClOrdID().getValue();
@@ -223,7 +228,11 @@ public class OrderHandler {
         } else 
             return false;
     }
-    
+    /**
+     * verificamos si existe una orden con el valor de oco especificado.
+     * @param msj orden a evaluar.
+     * @return 
+     */
     public static boolean ocoExists(quickfix.fix42.ExecutionReport msj){
         boolean temp = false;
         try {
