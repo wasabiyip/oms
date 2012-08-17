@@ -195,8 +195,6 @@ public class MongoDao {
         }
         if(res.count()>1)
             System.err.println("Colapso en oms.Grafica.DAO.MongoDao se encontro mas de una orden");
-        
         return temp;
     }
-
 }

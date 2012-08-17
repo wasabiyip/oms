@@ -112,7 +112,7 @@ public class MessageHandler {
             //Entrada de orden
             switch (msj.getExecType().getValue()) {
                 case '0':
-                    System.err.println("Procesando orden " + msj.getClOrdID().getValue() + "...");
+                    System.err.println("Pensando " + msj.getClOrdID().getValue() + "...");
                     break;
 
                 case '1':

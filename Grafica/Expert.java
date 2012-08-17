@@ -12,7 +12,8 @@ import oms.util.idGenerator;
 /**
  * Un Expert es el la parte del código que controla la apertura y cierre de las
  * operaciones, esto se hace mediante el uso de indicadores en nuestro caso 
- * particular usamos las "Bollinger Bands".
+ * particular usamos las "Bollinger Bands". Está basada en el expert "Bollinger
+ * sin FIFO 1_8 velas entrada y salida minuto Spread SV".
  * @author omar
  */
 public class Expert extends Settings {
@@ -39,6 +40,14 @@ public class Expert extends Settings {
     private Date date = new oms.Grafica.Date();
     private idGenerator idord = new idGenerator();
     private int cont=0;
+    //Esta la usamos para que no entre a revisar la salida de operaciones si no 
+    //hay operaciones.
+    private boolean lock= true;
+    //La usamos para guardar el tipo de orden que esta entrando. 1 es compra y 2 
+    //es venta
+    private char currentOrderType= '0';
+    private double askMinuto;
+    private double bollSell;
     /**
      * Constructor...
      * @param symbol Indica el par de monedas con el se va a trabajar.
@@ -70,25 +79,52 @@ public class Expert extends Settings {
      * @param price precio de apertura del minuto!
      */
     public void onTick(Double bid) {
+        askMinuto = this.open_min + (ask-bid);
         this.bid = bid;
+        bollSell = this.bollDnS() ; //TODO añadir varieble externa spread-ask
         //Si no es sabado
-       
-        if (date.getDayWeek() != 6 && open_min>0) {
-            if (ask-bid <= this.spread* this.point) {
-                //System.out.println((this.open_min + this.boll_special) +" - "+ this.bollDn());
-                //System.out.println(  this.bollDn() + " - "+this.open_min + " "+ this.boll_special+ " - "+this.bollUp());
-                if((this.open_min + this.boll_special)<=this.bollDn() && limiteCruce()){
+        if (date.getDayWeek() != 6 && open_min > 0) {
+            //Revisamos que los precios se encuentren dentro de el rango de entrada.
+            if (ask - bid <= this.spread * this.point) {
+                //entrada de operaciones
+                if ((this.open_min + this.boll_special) <= this.bollDn() && limiteCruce()) {
                     //Compra
                     System.err.println("Venta desde expert");
-                    order.Open(this.ask, '2');
-                }else if((this.open_min - this.boll_special)>=this.bollUp() && limiteCruce()){
+                    this.lock = false;
+                    currentOrderType = '1';
+                    order.Open(this.bid, '1');
+                } else if ((this.open_min - this.boll_special) >= this.bollUp() && limiteCruce()) {
                     //Venta
                     System.err.println("Compra desde expert");
-                    order.Open(this.bid, '1');
+                    this.lock = false;
+                    currentOrderType = '1';
+                    order.Open(this.ask, '2');
+                }
+                //Revisamos que halla entrado alguna operación y que los precios se 
+                //encuentren dentro de el rango de salida.    
+            } else if (!lock && (ask - bid <= this.spreadSalida * this.point)) {
+                if (this.salidaBollinger) {
+                    //Cierre de compras por promedios bollinger.
+                    if (this.currentOrderType == '1') {
+                        //si el precio de apertura supera a el promedio de salida
+                        //entonces debemos cerrar todas las compras
+                        if (this.open_min >= this.bollUpS()) {
+                            lock = true;
+                        }
+                    } else if (this.currentOrderType == '2') {
+                        //si el precio de apertura es inferior a el promedio de salida
+                        //entonces debemos cerrar todas las ventas.
+                        if (this.open_min <= this.bollDnS()) {
+                            lock = true;
+                        }
+                    } else if (this.currentOrderType == '0') {
+                        //TODO borrar esto eventualmente...
+                        System.err.println("¡El horror! buscamos tipos de operaciones y encontramos 0");
+                    }
+                } else if (this.salidaHora) {
                 }
             }
         }
-        
     }
     
     /**

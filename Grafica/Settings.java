@@ -32,6 +32,8 @@ public abstract class Settings {
     public Double horaIni = 0.0;
     public Double horaFin = 0.0;
     public String symbol;
+    public boolean salidaHora;
+    public boolean salidaBollinger;
 
     public Settings(String symbol) {
         this.symbol = symbol;
@@ -55,7 +57,9 @@ public abstract class Settings {
             horaIni = new Double(config.getProperty("horainicial"));
             horaFin = new Double(config.getProperty("horafinal"));
             limiteCruce = new Integer(config.getProperty("limiteCruce"));
-
+            salidaHora = new Boolean(config.getProperty("SalidaHora"));
+            salidaBollinger = new Boolean(config.getProperty("Salida"));
+            spreadSalida = new Integer(config.getProperty("spread_salida"));
         } catch (IOException ex) {
             Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
         }
