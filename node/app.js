@@ -149,6 +149,9 @@ function evaluar(msj, socket){
             break;
         case 'onOrder':
             webServer.onOrder(income.data);
+            break;
+        case 'onOrderClose':
+            webServer.onOrderClose(income.data)
     }
     //Cachamos cualquier error y lo imprimimos.
     }catch(error){

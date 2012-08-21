@@ -21,7 +21,7 @@ import quickfix.fix42.NewOrderSingle;
  */
 public class OrderHandler {
 
-    static MongoDao mongo = new MongoDao();
+    public static MongoDao mongo = new MongoDao();
     //static DBObject obj;
     /**
      * Este array
@@ -189,6 +189,7 @@ public class OrderHandler {
                 Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        GraficaHandler.orderClose(getGrafId(order), order);
     }
     
     /**

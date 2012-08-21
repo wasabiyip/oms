@@ -31,7 +31,6 @@ public class Expert extends Settings {
     
     private double promedio;
     private int velasCont = 0;
-    private double point = 0.0001;
     private int velas = 0;
     private double open_min=0.0;
     private double bid=0.0;
@@ -39,7 +38,7 @@ public class Expert extends Settings {
     public Order order;
     private Date date = new oms.Grafica.Date();
     private idGenerator idord = new idGenerator();
-    private int cont=0;
+    private int contVelas=0;
     //Esta la usamos para que no entre a revisar la salida de operaciones si no 
     //hay operaciones.
     private boolean lock= true;
@@ -79,13 +78,13 @@ public class Expert extends Settings {
      * @param price precio de apertura del minuto!
      */
     public void onTick(Double bid) {
-        askMinuto = this.open_min + (ask-bid);
         this.bid = bid;
-        bollSell = this.bollDnS() ; //TODO añadir varieble externa spread-ask
+        askMinuto = this.open_min + (ask-bid);
+        bollSell = this.bollDnS() + (this.Point * this.spreadAsk); //Este promedio es usado para sacar las ventas.
         //Si no es sabado
         if (date.getDayWeek() != 6 && open_min > 0) {
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
-            if (ask - bid <= this.spread * this.point) {
+            if (lock && ask - bid <= this.spread * this.Point) {
                 //entrada de operaciones
                 if ((this.open_min + this.boll_special) <= this.bollDn() && limiteCruce()) {
                     //Compra
@@ -93,35 +92,59 @@ public class Expert extends Settings {
                     this.lock = false;
                     currentOrderType = '1';
                     order.Open(this.bid, '1');
+                    contVelas =0;
                 } else if ((this.open_min - this.boll_special) >= this.bollUp() && limiteCruce()) {
                     //Venta
                     System.err.println("Compra desde expert");
                     this.lock = false;
                     currentOrderType = '1';
                     order.Open(this.ask, '2');
+                    contVelas =0;
                 }
                 //Revisamos que halla entrado alguna operación y que los precios se 
                 //encuentren dentro de el rango de salida.    
-            } else if (!lock && (ask - bid <= this.spreadSalida * this.point)) {
+            } 
+            if (!lock && (ask - bid <= this.spreadSalida * this.Point)) {
                 if (this.salidaBollinger) {
                     //Cierre de compras por promedios bollinger.
                     if (this.currentOrderType == '1') {
+                        System.out.println("Esperando cierre de venta");
                         //si el precio de apertura supera a el promedio de salida
                         //entonces debemos cerrar todas las compras
                         if (this.open_min >= this.bollUpS()) {
                             lock = true;
+                            System.err.println("cierre!");
+                            order.Close('1',  bid);
+                            currentOrderType = '0';
                         }
                     } else if (this.currentOrderType == '2') {
+                        System.out.println("Esperando cierre de compra");
                         //si el precio de apertura es inferior a el promedio de salida
                         //entonces debemos cerrar todas las ventas.
-                        if (this.open_min <= this.bollDnS()) {
+                        //esta salida es especifica de la version 1.8 velas entrada y salida cierre minuto spread SV C1.
+                        if ( ((this.open_min + this.askMinuto)/2) <= (this.bollDnS() + this.bollSell)/2) {
                             lock = true;
+                            System.err.println("cierre!");
+                            order.Close('2', this.ask);
+                            currentOrderType = '0';
+                            //Cerramos las ordenes...
                         }
                     } else if (this.currentOrderType == '0') {
-                        //TODO borrar esto eventualmente...
-                        System.err.println("¡El horror! buscamos tipos de operaciones y encontramos 0");
+                        //Vacio para que cuando no tengamos operaciones entre acá
                     }
-                } else if (this.salidaHora) {
+                } 
+                if (this.velasS==contVelas) {
+                    if (this.currentOrderType == '1') {
+                        order.Close('1',  bid);
+                        currentOrderType = '0';
+                        lock=true;
+                    }else if (this.currentOrderType == '2') {
+                        order.Close('2', this.ask);
+                        currentOrderType = '0';
+                        lock=true;
+                    }else if (this.currentOrderType == '0') {
+                        //Vacio para que cuando no tengamos operaciones entre acá
+                    }
                 }
             }
         }
@@ -133,6 +156,7 @@ public class Expert extends Settings {
      */
     public void onCandle(Double price){
         setPriceBoll(price);
+        contVelas ++;
          
     }
     public void onOpen(double price){

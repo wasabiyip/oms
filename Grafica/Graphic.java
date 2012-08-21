@@ -289,6 +289,22 @@ public class Graphic extends Thread {
         }
     }
     /**
+     * Notificamos que una orden fué cerrada exitosamente.
+     * @param id 
+     */
+    public void onOrderClose(String id){
+        StringBuffer temp = new StringBuffer();
+            temp.append("{");        
+                temp.append("\"type\":\"onOrderClose\",");
+                temp.append("\"data\":");
+                temp.append("{"); 
+                    temp.append("\"id\":\""+id+"\"");
+                temp.append("}"); 
+            temp.append("}");
+            this.writeNode(temp.toString());
+            System.out.println("cerrando : "+temp);
+    }
+    /**
      * Enviamos ordenes actuales de la grafica.
      */
     private void ordersInit(){

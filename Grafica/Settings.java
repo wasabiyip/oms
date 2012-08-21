@@ -24,7 +24,7 @@ public abstract class Settings {
     public Double lots;
     public Integer tp;
     public Integer sl;
-    public double Point = 0.0001;
+    public double Point = 0.0001; //Añadir enum/estructura para almacenar el Point de cada moneda.
     public Integer limiteMagic = 0;
     public Integer limiteCruce = 0;
     public Integer spreadSalida = 0;
@@ -32,9 +32,10 @@ public abstract class Settings {
     public Double horaIni = 0.0;
     public Double horaFin = 0.0;
     public String symbol;
-    public boolean salidaHora;
+    public boolean salidaVelas;
     public boolean salidaBollinger;
-
+    public Integer spreadAsk;
+    private Integer temp;
     public Settings(String symbol) {
         this.symbol = symbol;
         try {
@@ -57,9 +58,21 @@ public abstract class Settings {
             horaIni = new Double(config.getProperty("horainicial"));
             horaFin = new Double(config.getProperty("horafinal"));
             limiteCruce = new Integer(config.getProperty("limiteCruce"));
-            salidaHora = new Boolean(config.getProperty("SalidaHora"));
-            salidaBollinger = new Boolean(config.getProperty("Salida"));
+            //Hacemos esto por que las variables booleanas esperan leer desde el archivo
+            // un true o un false y nosotros tenemos un 0 o un 1, y por eso tenemos
+            // leerlo como un entero y despues asiganar el valor true o false.
+            velasS = new Integer (config.getProperty("numvelasE"));
+            if (velasS == 0)
+                this.salidaVelas = false;
+            else
+                this.salidaVelas = true;
+            temp = new Integer(config.getProperty("Salida"));
+            if (temp==0)
+                this.salidaBollinger = false;
+            else
+                this.salidaBollinger = true;
             spreadSalida = new Integer(config.getProperty("spread_salida"));
+            spreadAsk = new Integer(config.getProperty("spread_ask"));
         } catch (IOException ex) {
             Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
         }

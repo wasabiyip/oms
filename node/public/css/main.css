@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'modernpics';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Tangerine'), url('../fonts/modernpics.otf') format('truetype');
+}
+
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -49,6 +56,8 @@ q:before, q:after {
 
 .estado{
     margin: 10px 10px 10px 30px;
+    font-size: 30px;
+    color:green;
 }
 
 #wrap{
@@ -133,11 +142,13 @@ th{
 }
 td{
     background:#fff;
-    padding-left: 5px;
-    
-    color:#000;
+    padding-left: 5px
+    color:#000000;
 }
 
 tr:hover td{
     background: rgba(195,187,176,0.1);
+}
+.icon{
+    font-family: 'modernpics', serif;
 }

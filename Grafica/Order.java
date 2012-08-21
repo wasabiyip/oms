@@ -1,6 +1,5 @@
 package oms.Grafica;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
@@ -23,14 +22,11 @@ public class Order {
     String symbol;
     String currency;
     int magicma;
-    MongoDao dao = new MongoDao();
     String grafid;
     public Order(String symbol, int magicma, String grafid){
         this.symbol = symbol;
         this.currency = symbol.substring(0, 3);
         this.magicma = magicma;
-        dao.setDB("history");
-        dao.setCollection("operaciones");
         this.grafid = grafid;
     }
     /**
@@ -61,16 +57,15 @@ public class Order {
     }
     
     /**
-     * Cerramos una operación, enviando la operacione contraria a la recibida.
+     * Cerramos una operación, enviando la operacion contraria a la recibida.
      * @param order
      * @param price 
      */
-    public void Close(DBObject order, Double price){
-        
-        if (((int)order.get("Type"))==1)
-            this.Send(price,'2', (String)order.get("OrderID"),false);
-        else
-            this.Send(price,'1', (String)order.get("OrderID"),false);        
+    public void Close(char type, Double price){
+        ArrayList <DBObject> temp = Graphic.dao.getTotalGraf(this.grafid);
+        for(int i=0; i<temp.size();i++){
+            Close(this.grafid, temp.get(i));
+        }
     }
     
     /**
@@ -86,7 +81,6 @@ public class Order {
         else{
             this.Send(GraficaHandler.getBid(grafica),'1', (String)order.get("OrderID"),false);
         }
-        System.out.println("Cerrando orden from web: " + grafica);
     }
     
     /**

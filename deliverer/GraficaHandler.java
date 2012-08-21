@@ -45,11 +45,18 @@ public class GraficaHandler {
                 graficas.get(i).newOrder(orden);
             }   
         }
-        /*
-        String json = new fixToJson().parseOrder(orden,id, magic);
-        DBCollection coll = getCollection("log");
-        obj = (DBObject) JSON.parse(json);
-        coll.insert(obj);*/
+    }
+    /**
+     * Notificamos a una grafica que su peticion de cierre fue aceptada.
+     */
+    public static void orderClose(String grafid, String id){
+        
+        for (int i = 0; i < graficas.size(); i++) {
+            if(graficas.get(i).getID().equals(grafid)){
+                System.out.println("notificando acerca de cierre "+ id);
+                graficas.get(i).onOrderClose(id);
+            }   
+        }
     }
     
     /**
@@ -104,7 +111,14 @@ public class GraficaHandler {
     public static int getSl(String idgraf){
         return getGraf(idgraf).getSL();
     }
-    
+    /**
+     * Cuando entra la OCO de una orden noificamos a su grafica correspondiente que 
+     * su orden fue aceptada.
+     * @param id
+     * @param ordid
+     * @param sl
+     * @param tp 
+     */
     public static void setStop(String id, String ordid,double sl, double tp){
          getGraf(id).setStops(ordid, sl, tp);
     }

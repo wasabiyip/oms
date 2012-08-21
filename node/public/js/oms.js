@@ -8,7 +8,7 @@ $(document).ready(function(){
     
     socket.on('connect', function () {
         
-        $(".estado").empty().append('Conectado :}');
+        $(".estado").empty().append('<span class="icon">l</span>');
         socket.emit('ready', {
             ready:'true'
         });
@@ -23,7 +23,7 @@ $(document).ready(function(){
     });
 
     socket.on('disconnect', function () {
-        $(".estado").replaceWith('Desconectado :{');
+        $(".estado").replaceWith('<span class="icon">L</span>');
     });
 
     socket.on('grafica-candle', function(data){
@@ -88,6 +88,10 @@ $(document).ready(function(){
        });
        $("#"+data.ordid).append('<td><button type=\"button\" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">cerrrar</button></td>');
        
+    });
+    
+    socket.on('grafica-orderClose', function(data) {
+        console.log('Close' + closeOrder);
     });
     closeOrder= function(grafica,order){
         
