@@ -176,7 +176,7 @@ public class Graphic extends Thread {
      * grafica con el tiempo actual.
      *
      * @param cant número que representa los minutos transcurridos al momento de
-     * iniciar, si non las 10:23 y la grafica es de 5 minutos, entonces este
+     * iniciar, si son las 10:23 y la grafica es de 5 minutos, entonces este
      * numero va a ser 3.
      * @return Un ArrayList con los precios que se pidieron.
      */
@@ -302,7 +302,18 @@ public class Graphic extends Thread {
                 temp.append("}"); 
             temp.append("}");
             this.writeNode(temp.toString());
-            System.out.println("cerrando : "+temp);
+            //Sí entro el cierre de una operacion entonce borramos esa operación 
+            //entonces borramos esa operacion de nuestro array de operaciones.
+            for(int i=0; i<operaciones.size();i++){
+                try {
+                    ExecutionReport ord = (ExecutionReport)operaciones.get(i).get(0);
+                    if(ord.getClOrdID().getValue().equals(id)){
+                        operaciones.remove(i);
+                    }
+                } catch (FieldNotFound ex) {
+                    Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
     }
     /**
      * Enviamos ordenes actuales de la grafica.

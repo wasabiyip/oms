@@ -91,8 +91,9 @@ $(document).ready(function(){
     });
     
     socket.on('grafica-orderClose', function(data) {
-        console.log('Close' + closeOrder);
+        $("#"+data.id).remove();
     });
+    
     closeOrder= function(grafica,order){
         
         var res;
@@ -103,7 +104,6 @@ $(document).ready(function(){
                     "id":order
                 };
         if (ask==true){
-            $("#"+order).remove();
             socket.emit('order-close',str);
         }else{
           //nada  
