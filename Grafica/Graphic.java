@@ -314,6 +314,7 @@ public class Graphic extends Thread {
                     Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+            expert.unlock();
     }
     /**
      * Enviamos ordenes actuales de la grafica.

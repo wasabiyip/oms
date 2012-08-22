@@ -1,10 +1,6 @@
 package oms.Grafica;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import java.util.Properties;
-import oms.Grafica.DAO.MongoDao;
 import oms.Grafica.indicators.BollingerBands;
 import oms.Grafica.indicators.Indicador;
 import oms.util.idGenerator;
@@ -101,8 +97,8 @@ public class Expert extends Settings {
                     order.Open(this.ask, '2');
                     contVelas =0;
                 }
-                //Revisamos que halla entrado alguna operación y que los precios se 
-                //encuentren dentro de el rango de salida.    
+            //Revisamos que halla entrado alguna operación y que los precios se 
+            //encuentren dentro de el rango de salida.    
             } 
             if (!lock && (ask - bid <= this.spreadSalida * this.Point)) {
                 if (this.salidaBollinger) {
@@ -112,8 +108,6 @@ public class Expert extends Settings {
                         //si el precio de apertura supera a el promedio de salida
                         //entonces debemos cerrar todas las compras
                         if (this.open_min >= this.bollUpS()) {
-                            lock = true;
-                            System.err.println("cierre!");
                             order.Close('1',  bid);
                             currentOrderType = '0';
                         }
@@ -123,8 +117,6 @@ public class Expert extends Settings {
                         //entonces debemos cerrar todas las ventas.
                         //esta salida es especifica de la version 1.8 velas entrada y salida cierre minuto spread SV C1.
                         if ( ((this.open_min + this.askMinuto)/2) <= (this.bollDnS() + this.bollSell)/2) {
-                            lock = true;
-                            System.err.println("cierre!");
                             order.Close('2', this.ask);
                             currentOrderType = '0';
                             //Cerramos las ordenes...
@@ -137,11 +129,9 @@ public class Expert extends Settings {
                     if (this.currentOrderType == '1') {
                         order.Close('1',  bid);
                         currentOrderType = '0';
-                        lock=true;
                     }else if (this.currentOrderType == '2') {
                         order.Close('2', this.ask);
                         currentOrderType = '0';
-                        lock=true;
                     }else if (this.currentOrderType == '0') {
                         //Vacio para que cuando no tengamos operaciones entre acá
                     }
@@ -266,7 +256,13 @@ public class Expert extends Settings {
     public void setAsk(Double ask){
         this.ask = ask;
     }
-    
+    /**
+     * Desbloqueamos al expert para que deje de buscar cierre de operaciones y busque
+     * aperturas.
+     */
+    public void unlock(){
+        this.lock = true;
+    }
     /**
      * regresamos si nos encontramos dentro del limite de operaciones por cruce.
      * (por cruce significa por el symbol).
