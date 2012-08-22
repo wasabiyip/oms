@@ -1,10 +1,7 @@
 package oms.Grafica;
 
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import java.util.ArrayList;
-import oms.Grafica.DAO.MongoDao;
 import oms.deliverer.GraficaHandler;
 import oms.deliverer.OrderHandler;
 import oms.util.idGenerator;

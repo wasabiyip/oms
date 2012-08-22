@@ -77,21 +77,22 @@ public class Expert extends Settings {
         this.bid = bid;
         askMinuto = this.open_min + (ask-bid);
         bollSell = this.bollDnS() + (this.Point * this.spreadAsk); //Este promedio es usado para sacar las ventas.
-        //Si no es sabado
-        if (date.getDayWeek() != 6 && open_min > 0) {
+        System.out.println(range(date.getHour()));
+        System.out.println(rangeSalida(date.getHour()));
+        //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
+        //descansan por lo menos un día de la semana...
+        if (date.getDayWeek() != 6 && open_min > 0 && this.range(date.getHour())) { //TODO Borrar la condicion d open_min se ve bastante chafa!
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
-            if (lock && ask - bid <= this.spread * this.Point) {
+            if (lock && ask - bid <= this.spread * this.Point){
                 //entrada de operaciones
                 if ((this.open_min + this.boll_special) <= this.bollDn() && limiteCruce()) {
                     //Compra
-                    System.err.println("Venta desde expert");
                     this.lock = false;
                     currentOrderType = '1';
                     order.Open(this.bid, '1');
                     contVelas =0;
                 } else if ((this.open_min - this.boll_special) >= this.bollUp() && limiteCruce()) {
                     //Venta
-                    System.err.println("Compra desde expert");
                     this.lock = false;
                     currentOrderType = '1';
                     order.Open(this.ask, '2');
@@ -104,7 +105,6 @@ public class Expert extends Settings {
                 if (this.salidaBollinger) {
                     //Cierre de compras por promedios bollinger.
                     if (this.currentOrderType == '1') {
-                        System.out.println("Esperando cierre de venta");
                         //si el precio de apertura supera a el promedio de salida
                         //entonces debemos cerrar todas las compras
                         if (this.open_min >= this.bollUpS()) {
@@ -112,7 +112,6 @@ public class Expert extends Settings {
                             currentOrderType = '0';
                         }
                     } else if (this.currentOrderType == '2') {
-                        System.out.println("Esperando cierre de compra");
                         //si el precio de apertura es inferior a el promedio de salida
                         //entonces debemos cerrar todas las ventas.
                         //esta salida es especifica de la version 1.8 velas entrada y salida cierre minuto spread SV C1.
@@ -122,18 +121,24 @@ public class Expert extends Settings {
                             //Cerramos las ordenes...
                         }
                     } else if (this.currentOrderType == '0') {
-                        //Vacio para que cuando no tengamos operaciones entre acá
+                        System.err.println("Fuckin fuck - Nunca debimos entrar aqui");
                     }
                 } 
-                if (this.velasS==contVelas) {
+                /**
+                 * si el numero de velas que van desde que entro la operación es igual
+                 * a las velas de salida (velasS) enemos que cerrar las operaciones
+                 */
+               if (contVelas==this.velasS || this.rangeSalida(date.getHour())) {
                     if (this.currentOrderType == '1') {
+                        System.out.println("Cerrando orden por velas");
                         order.Close('1',  bid);
                         currentOrderType = '0';
                     }else if (this.currentOrderType == '2') {
+                        System.out.println("Cerrando orden por velas");
                         order.Close('2', this.ask);
                         currentOrderType = '0';
                     }else if (this.currentOrderType == '0') {
-                        //Vacio para que cuando no tengamos operaciones entre acá
+                        System.err.println("Fuckin fuck - Nunca debimos entrar aqui");
                     }
                 }
             }
@@ -273,6 +278,26 @@ public class Expert extends Settings {
         int count = Graphic.dao.getTotalCruce(this.symbol);
         if(count<this.limiteCruce)
             temp = true;
+        return temp;
+    }
+    /**
+     * verificamos que nos encontremos en horas de operacion.
+     * @param hora
+     * @return 
+     */
+    public boolean range(int hora){
+        boolean temp=false;
+        if(hora < this.horaFin && hora >= this.horaIni)
+            temp=true;
+        return temp;
+    }
+    /*
+     * verificamos que nos encontremos en horas de salida de operaciones.
+     */
+    public boolean rangeSalida(int hora){
+        boolean temp=false;
+        if(hora < this.horaFinS && hora >= this.horaIniS)
+            temp=true;
         return temp;
     }
 }

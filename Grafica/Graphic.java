@@ -85,18 +85,10 @@ public class Graphic extends Thread {
             msjout.append(expert.getExpertState());
             msjout.append("}");
             this.writeNode(msjout.toString());
-            
-            /*
-             * utNode.writeUTF(this.expert.getExpertInfo().toString());
-             * System.out.println("{\"type\": \"login\", " +
-             * "\"name\":\"CLIENT_TCP\", " + "\"symbol\":\""+ this.symbol +"\","
-             * + this.expert.getExpertInfo()
-                    +"}");
-             */
             //Leemos mensajes de node
             BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
             InputStreamReader isr = new InputStreamReader(bis, "US-ASCII");
-            //this.inFromNode = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            
             int c;
             while (isr.read() > 0) {
                 while ((c = isr.read()) != 10) {
@@ -107,12 +99,6 @@ public class Graphic extends Thread {
                 //borramos el contenido pa' que no se acumule...
                 msjin.delete(0, msjin.length());
             }
-
-            /*
-             * while ((inputLine = inFromNode.) != null) { //onTick((new
-             * Double(inputLine))); System.out.println(inputLine);
-            }
-             */
 
         } catch (UnknownHostException ex) {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);

@@ -31,9 +31,12 @@ public abstract class Settings {
     public Integer velasS = 0;
     public Double horaIni = 0.0;
     public Double horaFin = 0.0;
+    public Double horaIniS = 0.0;
+    public Double horaFinS = 0.0;
     public String symbol;
     public boolean salidaVelas;
     public boolean salidaBollinger;
+    public boolean salidaMin;
     public Integer spreadAsk;
     private Integer temp;
     public Settings(String symbol) {
@@ -57,6 +60,8 @@ public abstract class Settings {
             //velasS = new Integer(config.getProperty("numvelasS"));
             horaIni = new Double(config.getProperty("horainicial"));
             horaFin = new Double(config.getProperty("horafinal"));
+            horaIniS = new Double(config.getProperty("timesalidainicial"));
+            horaFinS = new Double(config.getProperty("timesalidafinal"));
             limiteCruce = new Integer(config.getProperty("limiteCruce"));
             //Hacemos esto por que las variables booleanas esperan leer desde el archivo
             // un true o un false y nosotros tenemos un 0 o un 1, y por eso tenemos
@@ -71,6 +76,12 @@ public abstract class Settings {
                 this.salidaBollinger = false;
             else
                 this.salidaBollinger = true;
+            //Lo mismo aca
+            temp = new Integer(config.getProperty("SalidaHora"));
+            if (temp==0)
+                this.salidaMin = false;
+            else
+                this.salidaMin = true;
             spreadSalida = new Integer(config.getProperty("spread_salida"));
             spreadAsk = new Integer(config.getProperty("spread_ask"));
         } catch (IOException ex) {
