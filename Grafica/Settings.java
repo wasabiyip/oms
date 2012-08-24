@@ -24,7 +24,7 @@ public abstract class Settings {
     public Double lots;
     public Integer tp;
     public Integer sl;
-    public double Point = 0.0001; //Añadir enum/estructura para almacenar el Point de cada moneda.
+    public double Point = 0.00001; //Añadir enum/estructura para almacenar el Point de cada moneda.
     public Integer limiteMagic = 0;
     public Integer limiteCruce = 0;
     public Integer spreadSalida = 0;

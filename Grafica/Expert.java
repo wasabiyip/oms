@@ -77,8 +77,6 @@ public class Expert extends Settings {
         this.bid = bid;
         askMinuto = this.open_min + (ask-bid);
         bollSell = this.bollDnS() + (this.Point * this.spreadAsk); //Este promedio es usado para sacar las ventas.
-        System.out.println(range(date.getHour()));
-        System.out.println(rangeSalida(date.getHour()));
         //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
         //descansan por lo menos un día de la semana...
         if (date.getDayWeek() != 6 && open_min > 0 && this.range(date.getHour())) { //TODO Borrar la condicion d open_min se ve bastante chafa!
@@ -94,7 +92,7 @@ public class Expert extends Settings {
                 } else if ((this.open_min - this.boll_special) >= this.bollUp() && limiteCruce()) {
                     //Venta
                     this.lock = false;
-                    currentOrderType = '1';
+                    currentOrderType = '2';
                     order.Open(this.ask, '2');
                     contVelas =0;
                 }
@@ -121,7 +119,7 @@ public class Expert extends Settings {
                             //Cerramos las ordenes...
                         }
                     } else if (this.currentOrderType == '0') {
-                        System.err.println("Fuckin fuck - Nunca debimos entrar aqui");
+                        System.err.println("Fuckin fuck - Nunca debimos entrar aqui Salida Boll");
                     }
                 } 
                 /**
@@ -138,7 +136,7 @@ public class Expert extends Settings {
                         order.Close('2', this.ask);
                         currentOrderType = '0';
                     }else if (this.currentOrderType == '0') {
-                        System.err.println("Fuckin fuck - Nunca debimos entrar aqui");
+                        System.err.println("Fuckin fuck - Nunca debimos entrar aqui Salida Variada");
                     }
                 }
             }

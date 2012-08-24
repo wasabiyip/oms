@@ -1,6 +1,6 @@
 //Manejador de eventos en cliente...
 var ids= [];
-
+var contOp =0;
 $(document).ready(function(){
 	
     var socket = io.connect(document.location.href),
@@ -8,7 +8,6 @@ $(document).ready(function(){
     
     socket.on('connect', function () {
         
-        $(".estado").empty().append('<span class="icon">l</span>');
         socket.emit('ready', {
             ready:'true'
         });
@@ -23,14 +22,16 @@ $(document).ready(function(){
     });
 
     socket.on('disconnect', function () {
-        $(".estado").replaceWith('<span class="icon">L</span>');
+        $(".icons #estado").empty().append('L');
+        $(".icons #estado").css("color","red");
+        $(".icons #estado").replaceWith('<span">L</span>');
     });
 
     socket.on('grafica-candle', function(data){
         var id = unSlash(data.values.id);
         //$("#"+id+' .promedios ul').empty();
         $.each(data.values.vars, function(key, val){
-            $('#'+id+' .promedios ul #' + key + ' span').empty().append(val);
+            $('#'+id+' .content-graf .promedios ul #' + key + ' span').empty().append(val);
         });
     });
 
@@ -42,12 +43,12 @@ $(document).ready(function(){
             if(ids[i].search(symbol)>=0){
                 //primero borramos lo que este y después ponemos el precio.
                 if(data.values.tipo==="ask")
-                    $("#estrategias #"+ids[i]+" h2 .ask").empty().append(data.values.precio);
+                    $("#estrategias #"+ids[i]+" .content-graf h2 .ask").empty().append(data.values.precio);
                 else
-                    $("#estrategias #"+ids[i]+" h2 .bid").empty().append(data.values.precio);
+                    $("#estrategias #"+ids[i]+" .content-graf h2 .bid").empty().append(data.values.precio);
             }
         }
-    })
+    });
 
     socket.on('grafica-ini', function(data){
         //pedimos el esta de la grafica hasta este momento.
@@ -55,14 +56,10 @@ $(document).ready(function(){
             id: data.setts.ID
             });
         buildGrafica(data);
-        
-        
-    //console.log({id: data.setts.ID});
     //$("#estrategias").replaceWith(data.toString());
     });
 
     socket.on('expert-state', function(data){
-        //console.log(data.values.vars);
         id= unSlash(data.values.id);
         $.each(data.values.vars, function(key, val){
             $("#"+id+' .promedios ul').append('<li id='+key + '>' + key +' : <span>'+ val + '</span></li>');
@@ -71,9 +68,7 @@ $(document).ready(function(){
     //cada que hay un precio de apertura de vela.
     socket.on('grafica-open', function(data){
         var id = unSlash(data.values.id);
-
-        $("#"+id+" .promedios h3 span").empty().append(data.values.precio);
-        
+        $("#"+id+" .content-graf .promedios h3 span").empty().append(data.values.precio);
     });
     
     socket.on('grafica-order', function(data){
@@ -87,11 +82,16 @@ $(document).ready(function(){
            $("#"+data.ordid).append('<td><span id='+key+ '>'+val+'</span></td>');
        });
        $("#"+data.ordid).append('<td><button type=\"button\" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">cerrrar</button></td>');
-       
+       document.title = 'Operaciones (' + ++contOp +')';
     });
     
     socket.on('grafica-orderClose', function(data) {
         $("#"+data.id).remove();
+        
+        if (--contOp > 0)
+            document.title = 'Operaciones (' + contOp +')';
+        else
+            document.title = 'Operaciones';
     });
     
     closeOrder= function(grafica,order){
@@ -109,6 +109,12 @@ $(document).ready(function(){
           //nada  
         }        
     }
+    estadoClick = function(grafica){
+        
+    }
+    logClick = function(grafica){
+
+    }
 });
 //Al recibir graficas-ini construimos la grafica recibida. 
 function buildGrafica(data){
@@ -120,23 +126,26 @@ function buildGrafica(data){
     ids.push(id);
     //Creamos html de grafica.
     $("#estrategias").append('<div class=\'grafica\' id=' + id +'></div>');
-    $("#"+id).append('<h2>'+ setts.symbol +' bid: <span class="bid">--------</span> ask: <span class="ask">-------</span></h2>')
-    $("#"+id).append('<div class=\'settings\'></<div>');
-    $("#" +id+ " .settings").append('<ul><h3>Datos del expert</h3></ul>');
-    $("#" +id).append('<div class=\'promedios\'></<div>');
-    $("#" +id).append('<div class=\'operaciones\'></<div>');     
-    $("#" +id+ " .promedios").append('<h3>Apertura Minuto <span class=apertura>-------</span></h3>');
-    $("#" +id+ " .promedios").append('<h3>Promedios</h3><ul></ul>');
-    $("#"+id+" .operaciones").append('<table></table>');
-    $("#"+id+" .operaciones table").append('<tr><th>Orden</th><th>Tipo</th><th>Lotes</th><th>Símbolo</th><th>Precio</th><th>SL</th><th>TP</th></tr>');
-    
+    $("#"+id).append('<div class=\'content-graf\'></div>');
+    $("#"+id).append('<div class=\'menu-graf\'><div class=\'icons\'></div></div>');
+    $("#"+id +" .content-graf").append('<h2>'+ setts.symbol +' bid: <span class="bid">--------</span> ask: <span class="ask">-------</span></h2>')
+    //$("#"+id).append('<div class=\'settings\'></<div>');
+    //$("#" +id+ " .settings").append('<ul><h3>Datos del expert</h3></ul>');
+    $("#"+id +" .content-graf").append('<div class=\'promedios\'></<div>');
+    $("#"+id +" .content-graf").append('<div class=\'operaciones\'></<div>');     
+    $("#"+id +" .content-graf .promedios").append('<h3>Apertura Minuto <span class=apertura>-------</span></h3>');
+    $("#"+id +" .content-graf .promedios").append('<h3>Promedios</h3><ul></ul>');
+    $("#"+id +" .content-graf .operaciones").append('<table></table>');
+    $("#"+id +" .content-graf .operaciones table").append('<tr><th>Orden</th><th>Tipo</th><th>Lotes</th><th>Símbolo</th><th>Precio</th><th>SL</th><th>TP</th></tr>');
+    $("#"+id +" .menu-graf .icons").append('<span id=\'estado\' onClick=estadoClick(\''+id+'\')>l</span><span id=\'crap\' onClick=logClick(\''+ id +'\')>(</span>');
     //Borramos estos elementos por que no queremos escribirlos en la pagina
     delete  setts['symbol'];
     delete  setts['ID'];
-
+    $(".icons #estado").css("color","green");
+    /**
     $.each(setts, function(key, val){
         $('#'+id +' .settings ul').append('<li id='+key + '>' + key +' : '+ val + '</li>');
-    });
+    }):*/
 }
 
 function unSlash(cadena){
@@ -150,6 +159,5 @@ function Slash(cadena){
         if(i==2)
             res += '/';
     }
-    console.log(res);
     return res;
 }
