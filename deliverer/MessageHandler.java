@@ -126,12 +126,12 @@ public class MessageHandler {
                      */
                     OrderHandler.orderNotify(msj);
                     if (msj.getSide().getValue() == '1') {
-                        OrderHandler.SendOCO(msj.getSymbol().getValue(),'2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
+                        OrderHandler.SendOCO(msj.getSymbol().getValue(),'1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
                         System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
                                + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
                     }
                     if (msj.getSide().getValue() == '2') {
-                        OrderHandler.SendOCO(msj.getSymbol().getValue(),'1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
+                        OrderHandler.SendOCO(msj.getSymbol().getValue(),'2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue());
                        System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
                               + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
                     }

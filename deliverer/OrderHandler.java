@@ -86,9 +86,9 @@ public class OrderHandler {
      * @param ID
      * @param qty
      */
-    public synchronized static void SendOCO(String symbol,char type, String ordid, int qty, double precio) {
+    public synchronized static void SendOCO(String symbol,Character type, String ordid, int qty, double precio) {
         quickfix.fix42.NewOrderSingle oco = new quickfix.fix42.NewOrderSingle();
-        char tipo = type =='1'?'2':'1';
+        Character tipo = type =='1'?'2':'1';
         oco.set(new ClOrdID(ordid));
         oco.set(new HandlInst('1'));
         oco.set(new Currency(symbol.substring(0,3)));
@@ -102,17 +102,17 @@ public class OrderHandler {
         oco.setField(new CharField(7553,tipo));
         double sl = GraficaHandler.getGraf(getGrafId(ordid)).getSL() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
         double tp = GraficaHandler.getGraf(getGrafId(ordid)).getTP() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
-        if (type == 1) {
+        if (type.equals('1')) {
             System.out.println("Oco Compra");
-            oco.setField(new DoubleField(7542, redondear(GraficaHandler.getAsk(ordid) - sl)));
-            oco.setField(new DoubleField(7540, redondear(GraficaHandler.getAsk(ordid) + tp)));
-            oco.setField(new CharField(7543,'2'));
+            oco.setField(new DoubleField(7542, redondear(GraficaHandler.getAsk(getGrafId(ordid)) - sl)));
+            oco.setField(new DoubleField(7540, redondear(GraficaHandler.getAsk(getGrafId(ordid)) + tp)));
+            oco.setField(new CharField(7543,type));
             
-        }else{
+        }else if(type.equals('2')){
             System.out.println("Oco Venta");
             oco.setField(new DoubleField(7542, redondear(precio + sl)));
             oco.setField(new DoubleField(7540, redondear(precio - tp)));
-            oco.setField(new CharField(7543,'2'));
+            oco.setField(new CharField(7543,type));
         }
         try{
             Session.sendToTarget(oco,SenderApp.sessionID);

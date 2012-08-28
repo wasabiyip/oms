@@ -112,6 +112,10 @@ q:before, q:after {
 .cerrar{
     top:2px;
     position: relative;
+    
+}
+.cerrar:hover{
+    color:#005DB3;
 }
 .icons span{
     margin-top:0px;
