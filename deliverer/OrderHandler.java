@@ -103,13 +103,15 @@ public class OrderHandler {
         double sl = GraficaHandler.getGraf(getGrafId(ordid)).getSL() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
         double tp = GraficaHandler.getGraf(getGrafId(ordid)).getTP() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
         if (type == 1) {
-            oco.setField(new DoubleField(7540, redondear(GraficaHandler.getAsk(ordid) - sl)));
-            oco.setField(new DoubleField(7542, redondear(GraficaHandler.getAsk(ordid) + tp)));
+            System.out.println("Oco Compra");
+            oco.setField(new DoubleField(7542, redondear(GraficaHandler.getAsk(ordid) - sl)));
+            oco.setField(new DoubleField(7540, redondear(GraficaHandler.getAsk(ordid) + tp)));
             oco.setField(new CharField(7543,'2'));
             
         }else{
-            oco.setField(new DoubleField(7540, redondear(precio + sl)));
-            oco.setField(new DoubleField(7542, redondear(precio - tp)));
+            System.out.println("Oco Venta");
+            oco.setField(new DoubleField(7542, redondear(precio + sl)));
+            oco.setField(new DoubleField(7540, redondear(precio - tp)));
             oco.setField(new CharField(7543,'2'));
         }
         try{

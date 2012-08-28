@@ -1,6 +1,7 @@
 //Manejador de eventos en cliente...
 var ids= [];
 var contOp =0;
+var logs = [];
 $(document).ready(function(){
 	
     var socket = io.connect(document.location.href),
@@ -79,9 +80,15 @@ $(document).ready(function(){
        delete  data['id'];
        
        $.each(data, function(key,val){
-           $("#"+data.ordid).append('<td><span id='+key+ '>'+val+'</span></td>');
+           if(key =='tipo'){
+               if(val ==1)
+                   $("#"+data.ordid).append('<td><span id='+key+ '>Compra</span></td>');
+               else
+                   $("#"+data.ordid).append('<td><span id='+key+ '>Venta</span></td>');
+               
+           }else $("#"+data.ordid).append('<td><span id='+key+ '>'+val+'</span></td>');
        });
-       $("#"+data.ordid).append('<td><button type=\"button\" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">cerrrar</button></td>');
+       $("#"+data.ordid).append('<td><span class=\'cerrar\' title="Cerrar operacion" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">x</span></td>');
        document.title = 'Operaciones (' + ++contOp +')';
     });
     
@@ -96,7 +103,6 @@ $(document).ready(function(){
     
     closeOrder= function(grafica,order){
         
-        var res;
         var ask = confirm("¿Estas seguro que quieres cerrar la orden " + order+"?");
         var str = {
                     "type":"order-close",
@@ -109,19 +115,34 @@ $(document).ready(function(){
           //nada  
         }        
     }
-    estadoClick = function(grafica){
-        
-    }
-    logClick = function(grafica){
-
-    }
 });
+
+estadoClick = function(grafica){
+        
+}
+//Mostramos informacion acerca de esta 
+logClick = function(grafica){
+    console.log(grafica);
+    
+    for(i=0; i<logs.length;i++){
+        if(logs[i][0]==grafica)   
+            $('#'+grafica + ' .menu-graf'+ ' #log-data').empty();
+            $.each(logs[i][1], function(key, val){
+                $('#'+grafica + ' .menu-graf'+ ' #log-data').append('<li id='+key + '>' + key +' : '+ val + '</li>');
+            });
+            $('#'+grafica + ' .menu-graf'+' #log-data').toggle();
+    }
+}
 //Al recibir graficas-ini construimos la grafica recibida. 
 function buildGrafica(data){
     var setts = data.setts;
-    var items = [];
+    temp = [];
     //quitamos diagonal de I
     var id = unSlash(setts.ID);
+    temp.push(id);
+    temp.push(data.setts);
+    logs.push(temp);
+    
     //guardamos los id de cada grafica.
     ids.push(id);
     //Creamos html de grafica.
@@ -137,7 +158,8 @@ function buildGrafica(data){
     $("#"+id +" .content-graf .promedios").append('<h3>Promedios</h3><ul></ul>');
     $("#"+id +" .content-graf .operaciones").append('<table></table>');
     $("#"+id +" .content-graf .operaciones table").append('<tr><th>Orden</th><th>Tipo</th><th>Lotes</th><th>Símbolo</th><th>Precio</th><th>SL</th><th>TP</th></tr>');
-    $("#"+id +" .menu-graf .icons").append('<span id=\'estado\' onClick=estadoClick(\''+id+'\')>l</span><span id=\'crap\' onClick=logClick(\''+ id +'\')>(</span>');
+    $("#"+id +" .menu-graf .icons").append('<span id=\'estado\' title="Conectado" onClick=estadoClick(\''+id+'\')>l</span><span id=\'log\' title="Datos Expert" onClick=logClick(\''+ id +'\')>K</span>');
+    $('#'+id + ' .menu-graf').append('<div id="log-data" style="display:none;"></div>');
     //Borramos estos elementos por que no queremos escribirlos en la pagina
     delete  setts['symbol'];
     delete  setts['ID'];
