@@ -193,6 +193,13 @@ public class OrderHandler {
         }
         GraficaHandler.orderClose(getGrafId(order), order);
     }
+    /**
+     * Método que notifica acerca del cierre mediante Tp o SL.
+     * @param order 
+     */
+    public static void closeFromOco(String order){
+        GraficaHandler.orderClose(getGrafId(order), order);
+    }
     
     /**
      * Sabiendo que una orden ya existe y que la orden recibida es de cierre,

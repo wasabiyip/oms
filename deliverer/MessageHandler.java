@@ -18,16 +18,6 @@ public class MessageHandler {
     quickfix.fix42.TradingSessionStatus status;
     SessionID sessionID;
     public static Date date = null;
-
-    public static void orderStatusRequest() throws SessionNotFound {
-        quickfix.fix42.OrderStatusRequest status = new quickfix.fix42.OrderStatusRequest();
-        status.set(new OrderID("OPEN_ORDER"));
-        status.set(new ClOrdID("OPEN_ORDER"));
-        status.set(new Symbol("EUR/USD"));
-        status.set(new Side('7'));
-        Session.sendToTarget(status, SenderApp.sessionID);
-    }
-
     /**
      * Método que recibe un mensaje, busca en este mensaje y obtiene el bid y
      * offer.
@@ -50,7 +40,6 @@ public class MessageHandler {
             MDEntryType mdentrytype = new MDEntryType();
             MDEntryID mdentryid = new MDEntryID();
             Symbol symbol = new Symbol();
-
             MDEntryPx mdentrypx = new MDEntryPx();
             MDEntrySize entrySize = new MDEntrySize();
             Currency currency = new Currency();
@@ -105,9 +94,13 @@ public class MessageHandler {
             //Entro OCO
             OrderHandler.ocoRecord(msj);
             
-        } else if (OrderHandler.Exists(msj) && msj.getOrdStatus().getValue() == '2') {
+        } else if (OrderHandler.Exists(msj) && msj.getOrdStatus().getValue() == '2' && msj.getOrdType().getValue()=='C') {
             //Cerramos la OCO de la orden que recibimos un cierre.
             OrderHandler.closeOCO(msj.getClOrdID().getValue());
+        }else if(OrderHandler.Exists(msj)&& msj.getExecType().getValue() =='2' && msj.getOrdType().getValue()=='W'){
+            //Cuando una operacion fue cerrada por TP o SL.
+            System.err.println("La orden " +msj.getClOrdID().getValue()+" cerro por SL o TP");
+            OrderHandler.closeFromOco(msj.getClOrdID().getValue());
         } else {
             //Entrada de orden
             switch (msj.getExecType().getValue()) {
