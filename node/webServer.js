@@ -1,6 +1,6 @@
 
 //Este es el servidor web que maneja la comunicación entre la aplicación y el usuario.
-
+//
 //Dependecias->
 var sys = require('util'),
 express = require('../../../../lib/node_modules/express'),
@@ -10,21 +10,20 @@ app.use(express.static(__dirname + '/public'));
 
 var webClients = [];
 var handler =  require('./Handler');
+var waiting;
 
 app.get('/', function (req, res) {
     
     });
 
 app.listen(3000);
-
+cont = 0;
 var server = io.listen(app); 
 
 server.sockets.on('connection', function (client){ 
     
     // new client is here!
     client.send ( 'Conectado con servidor!' );
-    webClients.push(client);
-
     client.on('message', function () {
         console.log('nuevo mensaje del browser');
     });
@@ -33,18 +32,19 @@ server.sockets.on('connection', function (client){
 		
         });
 
-    client.on('ready', function(){
+    client.on('log-in', function(msj){
         //client.send(handler.get)
         var setts = handler.getSetts();
-
+        webClients.push(client);
+        checkClientsActivos();
         for(i=0;i<setts.length;i++){
             client.emit('grafica-ini',{
                 setts : setts[i]
                 });
-        //client.emit('graficas-ini',{hello :'data'});
+            waiting = client;
         }
     });
-
+    
     client.on('grafica-state', function(msj){
         console.log(msj);
         handler.expertState(msj);
@@ -80,7 +80,16 @@ exports.onOpen= function(data){
 }
 
 exports.expertState = function(data){
-    notify('expert-state', data);
+
+    if(waiting !== null){
+        waiting.emit('expert-state',data);
+        if(cont>=handler.graficasLength){
+            waiting = null;
+            cont =0;
+        }
+    }
+    else
+        notify('expert-state', data);
 }
 
 exports.onOrder = function(data){
@@ -100,4 +109,16 @@ function notify(mensaje, data){
         webClients[i].emit(mensaje,data);
     }
 }
-
+//Este metodo evita que se acumulen clientes  que ya no existen cuando se refresa la pagina.
+function checkClientsActivos(){
+    temp = [];
+    for(i=0; i<webClients.length;i++){
+        if(!webClients[i].disconnected){
+           temp.push(webClients[i]);
+        }
+    }
+    if(temp.length>0){
+        webClients = null;
+        webClients = temp;
+    }
+}

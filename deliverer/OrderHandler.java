@@ -104,14 +104,14 @@ public class OrderHandler {
         double tp = GraficaHandler.getGraf(getGrafId(ordid)).getTP() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
         if (type.equals('1')) {
             System.out.println("Oco Compra");
-            oco.setField(new DoubleField(7542, redondear(GraficaHandler.getAsk(getGrafId(ordid)) - sl)));
-            oco.setField(new DoubleField(7540, redondear(GraficaHandler.getAsk(getGrafId(ordid)) + tp)));
+            oco.setField(new DoubleField(7542, redondear(symbol, GraficaHandler.getAsk(getGrafId(ordid)) - sl)));
+            oco.setField(new DoubleField(7540, redondear(symbol,GraficaHandler.getAsk(getGrafId(ordid)) + tp)));
             oco.setField(new CharField(7543,type));
             
         }else if(type.equals('2')){
             System.out.println("Oco Venta");
-            oco.setField(new DoubleField(7542, redondear(precio + sl)));
-            oco.setField(new DoubleField(7540, redondear(precio - tp)));
+            oco.setField(new DoubleField(7542, redondear(symbol,precio + sl)));
+            oco.setField(new DoubleField(7540, redondear(symbol,precio - tp)));
             oco.setField(new CharField(7543,type));
         }
         try{
@@ -295,8 +295,15 @@ public class OrderHandler {
      * @param num
      * @return 
      */
-    private static Double redondear(double num) {
-        return Math.rint(num * 1000) / 1000;
+    private static Double redondear(String symbol,double num) {
+        /*
+        if(symbol.equals("USD/JPY"))
+            return Math.rint(num * 1000) / 1000;
+        else
+            return Math.rint(num * 1000) / 1000;
+
+            */
+        return num;
     }
     /**
      * buscamos en ordPool para obtener el id de una grafica dependiendo de que 

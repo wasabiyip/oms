@@ -61,14 +61,14 @@ q:before, q:after {
 }
 
 #wrap{
-    margin: 0px 15% 25px 0px;
+    margin: 0px 15% 0px 0px;
     padding:5px 15px 0 0;
     background-color: rgba(249, 249, 249, 0.9);
     position: absolute;
     color : #000;
     min-width: 80%;
-    height: 670px;
-     box-shadow: 1px 1px 2px #fff;
+    min-height: 99%;
+    box-shadow: 1px 1px 2px #fff;
    -webkit-box-shadow: 1px 1px 2px #fff;
    -moz-box-shadow: 1px 1px 2px #fff;
 }

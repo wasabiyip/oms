@@ -74,7 +74,8 @@ public class Graphic extends Thread {
             outNode.writeUTF("{\"type\": \"login\", "
                     + "\"name\":\"CLIENT_TCP\", "
                     + "\"symbol\":\"" + this.symbol + "\","
-                    + this.expert.getExpertInfo()
+                    + this.expert.getExpertInfo() +","
+                    + this.expert.getExpertState() 
                     + "}\n");
 
             StringBuffer msjout = new StringBuffer();

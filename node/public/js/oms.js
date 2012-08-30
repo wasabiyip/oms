@@ -2,55 +2,18 @@
 var ids= [];
 var contOp =0;
 var logs = [];
+var id = Math.floor(Math.random()*101);
 $(document).ready(function(){
 	
-    var socket = io.connect(document.location.href),
-    text = $('#text');
-    
+    var socket = io.connect(document.location.href);
+    //Al cargar la página enviamos señal de inicio.
     socket.on('connect', function () {
-        
-        socket.emit('ready', {
-            ready:'true'
-        });
-       
-    });
-
-    socket.on('message', function(msg) {
-        json = JSON.parse(msg);
-        //formateamos el string por que colapsa si usamos /
-        select ="ul ."+ unSlash(json.symbol) + " p"; 
-        $(select).empty().append(json.precio);
-    });
-
-    socket.on('disconnect', function () {
-        $(".icons #estado").empty().append('L');
-        $(".icons #estado").css("color","red");
-        $(".icons #estado").replaceWith('<span">L</span>');
-    });
-
-    socket.on('grafica-candle', function(data){
-        var id = unSlash(data.values.id);
-        //$("#"+id+' .promedios ul').empty();
-        $.each(data.values.vars, function(key, val){
-            $('#'+id+' .content-graf .promedios ul #' + key + ' span').empty().append(val);
+        console.log(id);
+        socket.emit('log-in', {
+           num: id
         });
     });
-
-    socket.on('grafica-tick', function(data){
-        
-        symbol = unSlash(data.values.symbol);
-        for(i=0; i<ids.length;i++){
-            
-            if(ids[i].search(symbol)>=0){
-                //primero borramos lo que este y después ponemos el precio.
-                if(data.values.tipo==="ask")
-                    $("#estrategias #"+ids[i]+" .content-graf h2 .ask").empty().append(data.values.precio);
-                else
-                    $("#estrategias #"+ids[i]+" .content-graf h2 .bid").empty().append(data.values.precio);
-            }
-        }
-    });
-
+    
     socket.on('grafica-ini', function(data){
         //pedimos el esta de la grafica hasta este momento.
         socket.emit('grafica-state',{
@@ -60,6 +23,41 @@ $(document).ready(function(){
     //$("#estrategias").replaceWith(data.toString());
     });
 
+    //Recibimos un mensaje genérico.
+    socket.on('message', function(msg) {
+        json = JSON.parse(msg);
+        //formateamos el string por que colapsa si usamos /
+        select ="ul ."+ unSlash(json.symbol) + " p"; 
+        $(select).empty().append(json.precio);
+    });
+    //Mensaje de que el socket se desconecto.
+    socket.on('disconnect', function () {
+        $(".icons #estado").empty().append('L');
+        $(".icons #estado").css("color","red");
+        $(".icons #estado").replaceWith('<span">L</span>');
+    });
+    //Datos de cambio de vela.
+    socket.on('grafica-candle', function(data){
+        var id = unSlash(data.values.id);
+        $.each(data.values.vars, function(key, val){
+            $('#'+id+' .content-graf .promedios ul #' + key + ' span').empty().append(val);
+        });
+    });
+    //Datos del tick.
+    socket.on('grafica-tick', function(data){
+        
+        symbol = unSlash(data.values.symbol);
+        for(i=0; i<ids.length;i++){
+            if(ids[i].search(symbol)>=0){
+                //primero borramos lo que este y después ponemos el precio.
+                if(data.values.tipo==="ask")
+                    $("#estrategias #"+ids[i]+" .content-graf h2 .ask").empty().append(data.values.precio);
+                else
+                    $("#estrategias #"+ids[i]+" .content-graf h2 .bid").empty().append(data.values.precio);
+            }
+        }
+    });
+    //Estado actual de la grafica/expert
     socket.on('expert-state', function(data){
         id= unSlash(data.values.id);
         $.each(data.values.vars, function(key, val){
@@ -71,7 +69,7 @@ $(document).ready(function(){
         var id = unSlash(data.values.id);
         $("#"+id+" .content-graf .promedios h3 span").empty().append(data.values.precio);
     });
-    
+    //Entro una orden.
     socket.on('grafica-order', function(data){
         
        var graf =  unSlash(data.id);
@@ -91,7 +89,7 @@ $(document).ready(function(){
        $("#"+data.ordid).append('<td><span class=\'cerrar\' title="Cerrar operacion" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">x</span></td>');
        document.title = 'Operaciones (' + ++contOp +')';
     });
-    
+    //SAlio una orden
     socket.on('grafica-orderClose', function(data) {
         $("#"+data.id).remove();
         
@@ -100,7 +98,7 @@ $(document).ready(function(){
         else
             document.title = 'Operaciones';
     });
-    
+    //Cerramos una orden desde el cliente web.
     closeOrder= function(grafica,order){
         
         var ask = confirm("¿Estas seguro que quieres cerrar la orden " + order+"?");
@@ -169,10 +167,11 @@ function buildGrafica(data){
         $('#'+id +' .settings ul').append('<li id='+key + '>' + key +' : '+ val + '</li>');
     }):*/
 }
-
+//Quitamos un / de el symbolo generalmente USD/JPY es igual a USDJPY
 function unSlash(cadena){
     return cadena.replace("/","");
 }
+//Lo inverso a lo anterior...
 function Slash(cadena){
     var text = cadena.split("");
     var res ="";
