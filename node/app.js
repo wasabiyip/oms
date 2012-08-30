@@ -148,8 +148,11 @@ function evaluar(msj, socket){
                 };
             webServer.expertState(msj);
             break;
+        case 'onOrderInit':
+            webServer.onOrderInit(income.data);
+            break;
         case 'onOrder':
-            webServer.onOrder(income.data);
+            webServer.onOrder(income.data,income.length);
             break;
         case 'onOrderClose':
             webServer.onOrderClose(income.data)

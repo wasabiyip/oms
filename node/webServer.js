@@ -10,14 +10,16 @@ app.use(express.static(__dirname + '/public'));
 
 var webClients = [];
 var handler =  require('./Handler');
-var waiting;
+var waitState;
+var waitOps;
 
 app.get('/', function (req, res) {
     
     });
 
 app.listen(3000);
-cont = 0;
+contState = 0;
+contOps = 0;
 var server = io.listen(app); 
 
 server.sockets.on('connection', function (client){ 
@@ -41,7 +43,8 @@ server.sockets.on('connection', function (client){
             client.emit('grafica-ini',{
                 setts : setts[i]
                 });
-            waiting = client;
+            waitState = client;
+            waitOps = client;
         }
     });
     
@@ -74,28 +77,32 @@ exports.onCandle = function(data){
 /*
 recibimos un evento onOpen.
 */
-exports.onOpen= function(data){
-    
+exports.onOpen= function(data){    
     notify('grafica-open', data);
 }
 
 exports.expertState = function(data){
 
-    if(waiting !== null){
-        waiting.emit('expert-state',data);
-        if(cont>=handler.graficasLength){
-            waiting = null;
-            cont =0;
+    if(waitState !== null){
+        waitState.emit('expert-state',data);
+        if(contState>=handler.graficasLength){
+            waitState = null;
+            contState =0;
         }
+        contState++;
     }
     else
         notify('expert-state', data);
 }
-
-exports.onOrder = function(data){
-    notify('grafica-order', data)
+//Estado inicial de las operaciones.
+exports.onOrderInit = function(data){
+        waitOps.emit('grafica-order', data)
 }
-
+//Evento de una orden entrante
+exports.onOrder = function(data){
+        notify('grafica-order', data)
+}
+//Evento de una orden saliente.
 exports.onOrderClose = function(data){
     notify('grafica-orderClose', data)
 }

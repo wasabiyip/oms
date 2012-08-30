@@ -311,7 +311,7 @@ public class Graphic extends Thread {
          StringBuffer nworden = new StringBuffer();
          for(int i=0; i<temp.size();i++){
             nworden.append("{");        
-                nworden.append("\"type\":\"onOrder\",");
+                nworden.append("\"type\":\"onOrderInit\",");
                 nworden.append("\"data\":");
                     nworden.append("{");        
                         nworden.append("\"id\":\""+this.id+"\",");
