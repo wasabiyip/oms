@@ -48,7 +48,7 @@ public abstract class Settings {
          */
         if(symbol.equals("USD/JPY"))
             this.Point = 0.001;
-        else this.Point = 0.00001;
+        else this.Point = 0.0001;
         
         try {
             Properties config = new Properties();

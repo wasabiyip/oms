@@ -89,7 +89,7 @@ $(document).ready(function(){
        $("#"+data.ordid).append('<td><span class=\'cerrar\' title="Cerrar operacion" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">x</span></td>');
        document.title = 'Operaciones (' + ++contOp +')';
     });
-    //SAlio una orden
+    //Salio una orden
     socket.on('grafica-orderClose', function(data) {
         $("#"+data.id).remove();
         
@@ -121,14 +121,15 @@ estadoClick = function(grafica){
 //Mostramos informacion acerca de esta 
 logClick = function(grafica){
     console.log(grafica);
-    
+   
     for(i=0; i<logs.length;i++){
-        if(logs[i][0]==grafica)   
-            $('#'+grafica + ' .menu-graf'+ ' #log-data').empty();
+        if(logs[i][0]==grafica) {  
+            $('#'+grafica + ' .content-graf'+ ' #log-data').empty();
             $.each(logs[i][1], function(key, val){
-                $('#'+grafica + ' .menu-graf'+ ' #log-data').append('<li id='+key + '>' + key +' : '+ val + '</li>');
+                $('#'+grafica + ' .content-graf'+ ' #log-data').append('<li id='+key + '>' + key +' : '+ val + '</li>');
             });
-            $('#'+grafica + ' .menu-graf'+' #log-data').toggle();
+            $('#'+grafica + ' .content-graf'+' #log-data').toggle();
+        }
     }
 }
 //Al recibir graficas-ini construimos la grafica recibida. 
@@ -147,7 +148,8 @@ function buildGrafica(data){
     $("#estrategias").append('<div class=\'grafica\' id=' + id +'></div>');
     $("#"+id).append('<div class=\'content-graf\'></div>');
     $("#"+id).append('<div class=\'menu-graf\'><div class=\'icons\'></div></div>');
-    $("#"+id +" .content-graf").append('<h2>'+ setts.symbol +' bid: <span class="bid">--------</span> ask: <span class="ask">-------</span></h2>')
+    $("#"+id +" .content-graf").append('<h2>'+ setts.symbol +' bid: <span class="bid">--------</span> ask: <span class="ask">-------</span></h2>');
+    $("#"+id +" .content-graf").append('<div id="log-data" style="display:none;"></div>');
     //$("#"+id).append('<div class=\'settings\'></<div>');
     //$("#" +id+ " .settings").append('<ul><h3>Datos del expert</h3></ul>');
     $("#"+id +" .content-graf").append('<div class=\'promedios\'></<div>');
@@ -157,15 +159,21 @@ function buildGrafica(data){
     $("#"+id +" .content-graf .operaciones").append('<table></table>');
     $("#"+id +" .content-graf .operaciones table").append('<tr><th>Orden</th><th>Tipo</th><th>Lotes</th><th>Símbolo</th><th>Precio</th><th>SL</th><th>TP</th></tr>');
     $("#"+id +" .menu-graf .icons").append('<span id=\'estado\' title="Conectado" onClick=estadoClick(\''+id+'\')>l</span><span id=\'log\' title="Datos Expert" onClick=logClick(\''+ id +'\')>K</span>');
-    $('#'+id + ' .menu-graf').append('<div id="log-data" style="display:none;"></div>');
     //Borramos estos elementos por que no queremos escribirlos en la pagina
     delete  setts['symbol'];
     delete  setts['ID'];
     $(".icons #estado").css("color","green");
-    /**
-    $.each(setts, function(key, val){
-        $('#'+id +' .settings ul').append('<li id='+key + '>' + key +' : '+ val + '</li>');
-    }):*/
+    $('.grafica').hover(
+        function() {
+            $(this).css("box-shadow", "1px 2px 4px #71C42B");
+            $(this).css("-webkit-box-shadow", "1px 2px 4px #71C42B");
+            $(this).css("-moz-box-shadow", "1px 2px 4px #71C42B");
+        },function() {
+            $(this).css("box-shadow", "1px 2px 4px #666");
+            $(this).css("-webkit-box-shadow", "1px 2px 4px #666");
+            $(this).css("-moz-box-shadow", "1px 2px 4px #666");
+        }   
+    );
 }
 //Quitamos un / de el symbolo generalmente USD/JPY es igual a USDJPY
 function unSlash(cadena){

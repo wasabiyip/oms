@@ -59,28 +59,35 @@ q:before, q:after {
     font-size: 30px;
     color:green;
 }
-
-#wrap{
-    margin: 0px 15% 0px 0px;
-    padding:5px 15px 0 0;
-    background-color: rgba(249, 249, 249, 0.9);
+#content{
+    height:100%;
+    width: 100%;
     position: absolute;
-    color : #000;
-    min-width: 80%;
-    min-height: 99%;
-    box-shadow: 1px 1px 2px #fff;
-   -webkit-box-shadow: 1px 1px 2px #fff;
-   -moz-box-shadow: 1px 1px 2px #fff;
 }
+#wrap{
+    float:left;
+    width:80%;
+    height: 100%;
+    padding:5px 0 0 0;
+    background-color: rgba(249, 249, 249, 0.9);
+    color : #000;
+}
+#lefty{
+    background-color: rgba(1, 0, 0, 0.7);
+    width:20%;
+    float: left;
+    height: 100%;
+    color:white;
+    }
 
 #estrategias{
-     padding: 10px 10px 10px 10px; 
-     min-width: 90%;
+     padding: 10px 10px 0px 10px; 
+     height: 100%;
 }
 .grafica{
-    margin: 10px 0px 8px 10px;
+    margin: 10px 0px 8px 2%;
     padding:10px 0px 10px 10px;
-    min-width: 45%;
+    width: 470px;
     background-color: #FFF;
     -webkit-border-radius:3px;
     -moz-border-radius:3px;
@@ -197,7 +204,7 @@ tr:hover td{
    -webkit-box-shadow: 0px 2px 5px #666;
    -moz-box-shadow: 1px 2px 4px #666;
    list-style: none;
-   top:55px;
+   
    width: 130px;
 }
             
