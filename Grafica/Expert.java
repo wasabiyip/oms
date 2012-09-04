@@ -43,15 +43,16 @@ public class Expert extends Settings {
     private char currentOrderType= '0';
     private double askMinuto;
     private double bollSell;
+    private int periodo;
     /**
      * Constructor...
      * @param symbol Indica el par de monedas con el se va a trabajar.
      */
-    public Expert(String symbol, String id) {
+    public Expert(String symbol, String id,int periodo) {
         //llamamos a el constructor de el padre (Settings).
         super(symbol);
         order = new Order(symbol,this.MAGICMA, id);
-        indicador = new Indicador(Graphic.unSlash(this.symbol),5);
+        indicador = new Indicador(Graphic.unSlash(this.symbol),periodo);
         
         /**
          * Añadimos los periodos a las bandas.
@@ -64,6 +65,7 @@ public class Expert extends Settings {
         bollBandS2 = indicador.createBollinger(this.bollS2);
         bollBandS3 = indicador.createBollinger(this.bollS3);
         this.id = id;
+        this.periodo = periodo;
     }
     
     /**
@@ -226,11 +228,12 @@ public class Expert extends Settings {
             init.append("\"bollS1\" : " + this.bollS1 + ",");
             init.append("\"bollS2\" : " + this.bollS2 + ",");
             init.append("\"bollS3\" : " + this.bollS3 + ",");
-            init.append("\"tp\" : " + this.tp +",");
-            init.append("\"sl\" : " + this.sl +",");
-            init.append("\"velasS\": " + this.velasS+",");
-            init.append("\"horaIni\":" + this.horaIni+",");
-            init.append("\"horaFin\" :" + this.horaFin);
+            init.append("\"tp\" : " + this.tp + ",");
+            init.append("\"sl\" : " + this.sl + ",");
+            init.append("\"velasS\": " + this.velasS + ",");
+            init.append("\"horaIni\":" + this.horaIni + ",");
+            init.append("\"horaFin\" :" + this.horaFin +",");
+            init.append(" \"periodo\" :" + this.periodo);
             init.append("}");
         return init;
     }

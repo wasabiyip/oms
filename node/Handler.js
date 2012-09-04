@@ -17,7 +17,6 @@ exports.notify = function (type,moneda, precio){
         }
     });
     for(var i=0; i<Graficas.length; i++) {
-
         if(Graficas[i].getSymbol() === moneda){  
             //Es muy importante enviar '\n' ya que java espera un fin de 
             //linea: readLine();
@@ -41,7 +40,6 @@ exports.expertState = function(txt){
             console.log('obteniendo estado ' + id);   
             //Es muy importante enviar '\n' ya que java espera un fin de 
             //linea: readLine();
-            //console.log(bytes);
             Graficas[i].getSocket().write(msj +'\n');
         }
     }

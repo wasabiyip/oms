@@ -47,14 +47,13 @@ public class Graphic extends Thread {
      */
     public Graphic(String symbol, int periodo, String id) {
         System.out.println("Grafica de " + symbol + " " + periodo +  " " + id);
-        expert = new Expert(symbol, id);
+        expert = new Expert(symbol, id, periodo);
         dif = GMTDate.getDate().getMinute() % periodo;
         this.symbol = symbol;
         this.periodo = periodo;
         this.candle = new Candle(periodo, this.getHistorial(dif));
         cont = dif;
         this.id = id;
-        
     }
 
     /**
@@ -149,10 +148,7 @@ public class Graphic extends Thread {
         StringBuffer msj = new StringBuffer();
         msj.append("{");
         msj.append("\"type\": \"onCandle\",");
-
         msj.append(expert.getExpertState());
-
-
         msj.append("}");
         System.out.println(msj);
         this.writeNode(msj.toString());
@@ -198,10 +194,13 @@ public class Graphic extends Thread {
         try {
             JSONObject root = (JSONObject) new JSONParser().parse("{" + msj);
             JSONObject json = (JSONObject) root.get("msj");
-
+            
             switch ((String) json.get("type")) {
                 case "open":
                     this.onOpen((double) json.get("precio"));
+                    break;
+                case "close":
+                    //TODO hacer algo con este precio de cierre
                     break;
                 case "get-state":
                     StringBuffer txt = new StringBuffer();
@@ -415,37 +414,4 @@ public class Graphic extends Thread {
     public int getMagic(){
         return this.expert.MAGICMA;
     }
-    
-    /**
-     * ESTE METODO NO ES USADO EN NINGUN LADO - PUEDE QUE LO BORRE
-     * @param ordid
-     * @return 
-     *//*
-    public boolean orderExists(String ordid){
-        boolean check=false;
-        if(!this.operaciones.isEmpty()){
-            for(int i=0;i<this.operaciones.size();i++){
-                try {
-                    if(operaciones.get(i).get(0).getClOrdID().getValue().equals(ordid)){
-                        check= true;
-                    }
-                } catch (FieldNotFound ex) {
-                    Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }else
-            check= false;
-        
-        return check;
-    }*/
-    /*
-    public static void main(String[] args) throws IOException {
-
-        //Graphic grafica = new Graphic("EUR/GBP", 5);
-        //Graphic grafica = new Graphic("EUR/USD", 5);
-        Graphic grafica = new Graphic("GBP/USD", 5);
-        //Graphic grafica = new Graphic("USD/CHF", 5);
-        //Graphic grafica = new Graphic("USD/JPY", 5);      
-        grafica.start();
-    }*/
 }

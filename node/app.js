@@ -82,10 +82,10 @@ function evaluar(msj, socket){
 
             //un tick es un precio de apertura de minuto.
             case 'open':
-                //msj = {"msj" :{"type":"tick" ,"precio":income.precio};
-                handler.notify('open',income.symbol, income.precio);
+                handler.notify('open',income.data.Moneda, income.data.Open);
+                handler.notify('close',income.data.Moneda, income.data.Close);
                 break;
-
+                
             //Cada que se recibe un precio.	
             case 'tick':
                 if(handler.symbolExists(income.symbol)){
