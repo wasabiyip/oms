@@ -4,6 +4,18 @@
   font-weight: normal;
   src: local('Tangerine'), url('../fonts/modernpics.otf') format('truetype');
 }
+@font-face {
+  font-family: 'bentham';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Tangerine'), url('../fonts/Bentham.otf') format('truetype');
+}
+@font-face {
+  font-family: 'enriqueta';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Tangerine'), url('../fonts/Enriqueta-Regular.otf') format('truetype');
+}
 
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
@@ -78,8 +90,21 @@ q:before, q:after {
     float: left;
     height: 100%;
     color:white;
-    }
-
+    font-family: 'enriqueta';
+}
+#data{
+    margin: 15px;
+}
+#lefty {
+    font-family: monospace;
+    font-size: 17px;
+}
+#lefty h2{
+    font-size: 20px;
+}
+#inputs{
+    font-size: 15px;
+}
 #estrategias{
      padding: 10px 10px 0px 10px; 
      height: 100%;

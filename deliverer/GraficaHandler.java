@@ -21,7 +21,7 @@ public class GraficaHandler {
      */
     public void addGrafica(String symbol, int periodo) {
         //Podriamos poner aquí algunas opciones mas como pasar el archivo log.
-        graficas.add(new Graphic(symbol, periodo, this.genId(symbol)));
+        graficas.add(new Graphic(symbol, periodo));
         runGrafica(graficas.size() - 1);
     }
     /**
@@ -58,31 +58,7 @@ public class GraficaHandler {
             }   
         }
     }
-    
-    /**
-     * Este método genera un id único para construir cada gráfica.
-     *
-     * @return id único.
-     */
-    private String genId(String id) {
-        //TODO buscar donde poner esta cosa, o talvez no...
-        StringBuffer str = new StringBuffer(id + "-");
-        Random r = new Random();
-        Random r2 = new Random();
-        int n = 25; // 65-90 codigo ASCII.
-
-
-        for (int j = 0; j < 4; j++) {
-            int i = r.nextInt() % n;
-            if ((65 + i <= 90) && (65 + i >= 65)) {
-                str.append((char) (65 + i));
-            } else {
-                j--;//<---------|| ¡CUIDADO ESTO ES UNA CHARRADA!
-            }
-        }
-        return str.toString();
-    }
-    
+        
     /*
      * Obtenemos el ask de una determinada grafica.
      */

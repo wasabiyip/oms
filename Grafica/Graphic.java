@@ -45,15 +45,15 @@ public class Graphic extends Thread {
      * @param periodo tiempo con el que trabajaremos.
      * @throws IOException
      */
-    public Graphic(String symbol, int periodo, String id) {
-        System.out.println("Grafica de " + symbol + " " + periodo +  " " + id);
-        expert = new Expert(symbol, id, periodo);
+    public Graphic(String symbol, int periodo) {
+        expert = new Expert(symbol, periodo);
+        this.id = expert.getID();
         dif = GMTDate.getDate().getMinute() % periodo;
         this.symbol = symbol;
         this.periodo = periodo;
         this.candle = new Candle(periodo, this.getHistorial(dif));
         cont = dif;
-        this.id = id;
+        System.out.println("Grafica de " + symbol + " " + periodo +  " " + id);
     }
 
     /**
@@ -99,7 +99,6 @@ public class Graphic extends Thread {
                 //borramos el contenido pa' que no se acumule...
                 msjin.delete(0, msjin.length());
             }
-
         } catch (UnknownHostException ex) {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {

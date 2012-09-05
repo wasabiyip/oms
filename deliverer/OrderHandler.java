@@ -296,14 +296,11 @@ public class OrderHandler {
      * @return 
      */
     private static Double redondear(String symbol,double num) {
-        /*
+
         if(symbol.equals("USD/JPY"))
             return Math.rint(num * 1000) / 1000;
         else
-            return Math.rint(num * 1000) / 1000;
-
-            */
-        return num;
+            return num;        
     }
     /**
      * buscamos en ordPool para obtener el id de una grafica dependiendo de que 

@@ -1,8 +1,10 @@
 package oms.Grafica;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,7 +41,7 @@ public abstract class Settings {
     public boolean salidaMin;
     public Integer spreadAsk;
     private Integer temp;
-    
+    public String id;
     
     public Settings(String symbol) {
         this.symbol = symbol;
@@ -53,7 +55,7 @@ public abstract class Settings {
         try {
             Properties config = new Properties();
             config.load(new FileInputStream("config/Estrategias/" + Graphic.unSlash(this.symbol) + ".set"));
-
+            
             MAGICMA = new Integer(config.getProperty("MAGICMA"));
             boll1 = new Integer(config.getProperty("periodoBoll"));
             boll2 = new Integer(config.getProperty("periodoBoll2"));
@@ -75,7 +77,7 @@ public abstract class Settings {
             //Hacemos esto por que las variables booleanas esperan leer desde el archivo
             // un true o un false y nosotros tenemos un 0 o un 1, y por eso tenemos
             // leerlo como un entero y despues asiganar el valor true o false.
-            velasS = new Integer (config.getProperty("numvelasE"));
+            velasS = new Integer (config.getProperty("num_velas_salida"));
             if (velasS == 0)
                 this.salidaVelas = false;
             else
@@ -93,8 +95,39 @@ public abstract class Settings {
                 this.salidaMin = true;
             spreadSalida = new Integer(config.getProperty("spread_salida"));
             spreadAsk = new Integer(config.getProperty("spread_ask"));
+            this.id = config.getProperty("grafid");
+            //Si el archivo log no cuenta con un orden id generamos uno para el.
+            if(this.id ==null){
+                this.id = genId(symbol);
+                config.setProperty("grafid", id);
+                config.store(new FileOutputStream("config/Estrategias/" + Graphic.unSlash(this.symbol) + ".set"), "");
+            }
         } catch (IOException ex) {
             Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    /**
+     * Este método genera un id único para construir cada gráfica.
+     *
+     * @return id único.
+     */
+    private String genId(String id) {
+        //TODO buscar donde poner esta cosa, o talvez no...
+        StringBuffer str = new StringBuffer(id + "-");
+        Random r = new Random();
+        Random r2 = new Random();
+        int n = 25; // 65-90 codigo ASCII.
+
+
+        for (int j = 0; j < 4; j++) {
+            int i = r.nextInt() % n;
+            if ((65 + i <= 90) && (65 + i >= 65)) {
+                str.append((char) (65 + i));
+            } else {
+                j--;//<---------|| ¡CUIDADO ESTO ES UNA CHARRADA!
+            }
+        }
+        return str.toString();
     }
 }

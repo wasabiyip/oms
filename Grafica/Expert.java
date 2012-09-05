@@ -17,7 +17,6 @@ public class Expert extends Settings {
     Properties config = new Properties();
     
     private Indicador indicador;
-    public String id;
     BollingerBands bollBand1;
     private BollingerBands bollBand2;
     private BollingerBands bollBand3;
@@ -48,7 +47,7 @@ public class Expert extends Settings {
      * Constructor...
      * @param symbol Indica el par de monedas con el se va a trabajar.
      */
-    public Expert(String symbol, String id,int periodo) {
+    public Expert(String symbol,int periodo) {
         //llamamos a el constructor de el padre (Settings).
         super(symbol);
         order = new Order(symbol,this.MAGICMA, id);
@@ -64,7 +63,6 @@ public class Expert extends Settings {
         bollBandS1 = indicador.createBollinger(this.bollS1);
         bollBandS2 = indicador.createBollinger(this.bollS2);
         bollBandS3 = indicador.createBollinger(this.bollS3);
-        this.id = id;
         this.periodo = periodo;
     }
     
@@ -220,20 +218,20 @@ public class Expert extends Settings {
         init.append("\"settings\" : {");
             init.append("\"symbol\" : \"" + this.symbol+"\",");
             init.append("\"ID\" : \"" + this.id + "\",");
-            init.append("\"magicma\" : " + this.MAGICMA + ",");
-            init.append("\"lots\" : " + this.lots + ",");
-            init.append("\"boll1\" : " + this.boll1 + ",");
-            init.append("\"boll2\" : " + this.boll2 + ",");
-            init.append("\"boll3\" : " + this.boll3 + ",");
-            init.append("\"bollS1\" : " + this.bollS1 + ",");
-            init.append("\"bollS2\" : " + this.bollS2 + ",");
-            init.append("\"bollS3\" : " + this.bollS3 + ",");
-            init.append("\"tp\" : " + this.tp + ",");
-            init.append("\"sl\" : " + this.sl + ",");
-            init.append("\"velasS\": " + this.velasS + ",");
-            init.append("\"horaIni\":" + this.horaIni + ",");
-            init.append("\"horaFin\" :" + this.horaFin +",");
-            init.append(" \"periodo\" :" + this.periodo);
+            init.append("\"Magicma\" : " + this.MAGICMA + ",");
+            init.append("\"Lotes\" : " + this.lots + ",");
+            init.append("\"Boll1\" : " + this.boll1 + ",");
+            init.append("\"Boll2\" : " + this.boll2 + ",");
+            init.append("\"Boll3\" : " + this.boll3 + ",");
+            init.append("\"BollS1\" : " + this.bollS1 + ",");
+            init.append("\"BollS2\" : " + this.bollS2 + ",");
+            init.append("\"BollS3\" : " + this.bollS3 + ",");
+            init.append("\"TP\" : " + this.tp + ",");
+            init.append("\"SL\" : " + this.sl + ",");
+            init.append("\"Velas Salida\": " + this.velasS + ",");
+            init.append("\"Hora Inicial\":" + this.horaIni + ",");
+            init.append("\"Hora Final\" :" + this.horaFin +",");
+            init.append(" \"Periodo\" :" + this.periodo);
             init.append("}");
         return init;
     }
@@ -300,5 +298,9 @@ public class Expert extends Settings {
         if(hora < this.horaFinS && hora >= this.horaIniS)
             temp=true;
         return temp;
+    }
+
+    public String getID() {
+        return this.id;
     }
 }

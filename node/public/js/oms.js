@@ -120,15 +120,19 @@ estadoClick = function(grafica){
 }
 //Mostramos informacion acerca de esta 
 logClick = function(grafica){
-    console.log(grafica);
-   
+    $('.grafica').css("box-shadow", "1px 2px 4px #666");
+    $('.grafica').css("-webkit-box-shadow", "1px 2px 4px #666");
+    $('.grafica').css("-moz-box-shadow", "1px 2px 4px #666");
     for(i=0; i<logs.length;i++){
         if(logs[i][0]==grafica) {  
-            $('#'+grafica + ' .content-graf'+ ' #log-data').empty();
+            $('#inputs ul').empty();
+            console.log(logs[i][1]);
             $.each(logs[i][1], function(key, val){
-                $('#'+grafica + ' .content-graf'+ ' #log-data').append('<li id='+key + '>' + key +' : '+ val + '</li>');
+                $('#inputs ul').append('<li id='+key + '>' + key +' : '+ val + '</li>');
             });
-            $('#'+grafica + ' .content-graf'+' #log-data').toggle();
+            $('#'+grafica).css("box-shadow", "2px 3px 4px #FFF");
+            $('#'+grafica).css("-webkit-box-shadow", "2px 3px 4px #FFF");
+            $('#'+grafica).css("-moz-box-shadow", "1px 2px 4px #FFF");
         }
     }
 }
@@ -163,17 +167,7 @@ function buildGrafica(data){
     delete  setts['symbol'];
     delete  setts['ID'];
     $(".icons #estado").css("color","green");
-    $('.grafica').hover(
-        function() {
-            $(this).css("box-shadow", "1px 2px 4px #71C42B");
-            $(this).css("-webkit-box-shadow", "1px 2px 4px #71C42B");
-            $(this).css("-moz-box-shadow", "1px 2px 4px #71C42B");
-        },function() {
-            $(this).css("box-shadow", "1px 2px 4px #666");
-            $(this).css("-webkit-box-shadow", "1px 2px 4px #666");
-            $(this).css("-moz-box-shadow", "1px 2px 4px #666");
-        }   
-    );
+    
 }
 //Quitamos un / de el symbolo generalmente USD/JPY es igual a USDJPY
 function unSlash(cadena){
