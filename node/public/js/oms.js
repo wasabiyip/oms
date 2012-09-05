@@ -123,16 +123,17 @@ logClick = function(grafica){
     $('.grafica').css("box-shadow", "1px 2px 4px #666");
     $('.grafica').css("-webkit-box-shadow", "1px 2px 4px #666");
     $('.grafica').css("-moz-box-shadow", "1px 2px 4px #666");
+    $('#lefty-head').empty().append("<h2>Grafica <span></span></h2>");
+    $('#lefty-head span').empty().append(unID(grafica));
     for(i=0; i<logs.length;i++){
-        if(logs[i][0]==grafica) {  
+        if(logs[i][0]==grafica) {
             $('#inputs ul').empty();
-            console.log(logs[i][1]);
             $.each(logs[i][1], function(key, val){
                 $('#inputs ul').append('<li id='+key + '>' + key +' : '+ val + '</li>');
             });
-            $('#'+grafica).css("box-shadow", "2px 3px 4px #FFF");
-            $('#'+grafica).css("-webkit-box-shadow", "2px 3px 4px #FFF");
-            $('#'+grafica).css("-moz-box-shadow", "1px 2px 4px #FFF");
+            $('#'+grafica).css("box-shadow", "2px 3px 4px #298F00");
+            $('#'+grafica).css("-webkit-box-shadow", "2px 3px 4px #298F00");
+            $('#'+grafica).css("-moz-box-shadow", "1px 2px 4px #298F00");
         }
     }
 }
@@ -149,7 +150,7 @@ function buildGrafica(data){
     //guardamos los id de cada grafica.
     ids.push(id);
     //Creamos html de grafica.
-    $("#estrategias").append('<div class=\'grafica\' id=' + id +'></div>');
+    $("#estrategias").append('<div class=\'grafica\' id=' + id + '></div>');
     $("#"+id).append('<div class=\'content-graf\'></div>');
     $("#"+id).append('<div class=\'menu-graf\'><div class=\'icons\'></div></div>');
     $("#"+id +" .content-graf").append('<h2>'+ setts.symbol +' bid: <span class="bid">--------</span> ask: <span class="ask">-------</span></h2>');
@@ -183,4 +184,16 @@ function Slash(cadena){
             res += '/';
     }
     return res;
+}
+
+function unID(cadena){
+    var text = cadena.split("");
+    var res ="";
+    for(i=0; i<text.length; i++){
+        res +=text[i];
+        if(i==2)
+            res += '/';
+    }
+    
+    return res.slice(0, res.lastIndexOf("-"));
 }

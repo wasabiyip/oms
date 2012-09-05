@@ -27,7 +27,7 @@ public class SenderApp extends MessageCracker implements Application{
     public static MongoConnection mongo;
     public static SessionID sessionID;
     private GraficaHandler graficaHandler = new GraficaHandler();
-    
+    boolean lock = false;
     /**
      * Método que se ejecuta al crear aplicación.
      * @param id 
@@ -57,11 +57,14 @@ public class SenderApp extends MessageCracker implements Application{
     @Override
     public void onLogon(SessionID id) {
         SenderApp.sessionID = id;
-        this.graficaHandler.addGrafica("EUR/USD", 5);
-        ///this.graficaHandler.addGrafica("EUR/USD", 15);
-        this.graficaHandler.addGrafica("GBP/USD", 5);
-        this.graficaHandler.addGrafica("USD/JPY", 5);
-        this.graficaHandler.addGrafica("USD/CHF", 5);
+        if (!lock){
+            this.graficaHandler.addGrafica("EUR/USD", 5);
+            ///this.graficaHandler.addGrafica("EUR/USD", 15);
+            this.graficaHandler.addGrafica("GBP/USD", 5);
+            this.graficaHandler.addGrafica("USD/JPY", 5);
+            this.graficaHandler.addGrafica("USD/CHF", 5);
+            lock=true;
+        }
     }
     
     /**

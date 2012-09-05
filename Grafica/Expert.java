@@ -79,7 +79,7 @@ public class Expert extends Settings {
         bollSell = this.bollDnS() + (this.Point * this.spreadAsk); //Este promedio es usado para sacar las ventas.
         //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
         //descansan por lo menos un día de la semana...
-        if (date.getDayWeek() != 6 && open_min > 0 && this.range(date.getHour())) { //TODO Borrar la condicion d open_min se ve bastante chafa!
+        if (open_min > 0 && this.range(date.getHour())) { //TODO Borrar la condicion d open_min se ve bastante chafa!
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
             if (lock && ask - bid <= this.spread * this.Point){
                 //entrada de operaciones

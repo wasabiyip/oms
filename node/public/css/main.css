@@ -97,17 +97,33 @@ q:before, q:after {
 }
 #lefty {
     font-family: monospace;
-    font-size: 17px;
 }
 #lefty h2{
-    font-size: 20px;
+    font-size: 17px;
+    text-decoration: underline;
+    bottom: 3px;
 }
 #inputs{
     font-size: 15px;
 }
 #estrategias{
-     padding: 10px 10px 0px 10px; 
-     height: 100%;
+    padding: 10px 10px 0px 10px; 
+    height: 100%;
+    margin-top: 15px;
+}
+#main-state{
+    position: fixed;
+    float: left;
+    top: 0px;
+    left: 22%;
+    height: 25px;
+    width: 28px;
+    background-color: black;
+    color: white;
+    padding:2px 0px 3px 4px;
+    box-shadow: 1px 1px 1px #666;
+   -webkit-box-shadow: 1px 1px 1px #666;
+   -moz-box-shadow: 1px 1px 1px #666;
 }
 .grafica{
     margin: 10px 0px 8px 2%;
