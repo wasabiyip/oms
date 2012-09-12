@@ -39,7 +39,7 @@ public class Expert extends Settings {
     private boolean lock= true;
     //La usamos para guardar el tipo de orden que esta entrando. 1 es compra y 2 
     //es venta
-    private char currentOrderType= '0';
+    private char currentOrderType = '0';
     private double askMinuto;
     private double bollSell;
     private int periodo;
@@ -231,7 +231,8 @@ public class Expert extends Settings {
             init.append("\"Velas Salida\": " + this.velasS + ",");
             init.append("\"Hora Inicial\":" + this.horaIni + ",");
             init.append("\"Hora Final\" :" + this.horaFin +",");
-            init.append(" \"Periodo\" :" + this.periodo);
+            init.append(" \"Periodo\" :" + this.periodo + ",");
+            init.append(" \"Boll Special\" :" + this.boll_special);
             init.append("}");
         return init;
     }
@@ -245,8 +246,8 @@ public class Expert extends Settings {
     public String getExpertState(){
         StringBuffer temp = new StringBuffer();
         temp.append("\"variables\":{");
-            temp.append("\"bollUp\":"+this.bollUp() + ",");
-            temp.append("\"bollDn\":"+this.bollDn() + ",");
+            temp.append("\"bollUp\":"+ this.bollUp()+ ",");
+            temp.append("\"bollDn\":"+ this.bollDn()+ ",");
             temp.append("\"bollUpS\":"+this.bollUpS() + ",");
             temp.append("\"bollDnS\":"+this.bollDnS());
         
@@ -300,7 +301,7 @@ public class Expert extends Settings {
         return temp;
     }
 
-    public String getID() {
+    public String getID(){
         return this.id;
     }
 }

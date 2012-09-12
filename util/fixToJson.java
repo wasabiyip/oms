@@ -21,8 +21,8 @@ public class fixToJson  {
     public String parseOrder(quickfix.fix42.ExecutionReport msj, String id, int magic) {
         StringBuffer buffer = new StringBuffer("");
         try {
-            
             buffer.append("{");
+                buffer.append("\"hora\" :\""+msj.getTransactTime().getValue()+"\",");
                 buffer.append("\"grafica\" :\""+id+"\",");
                 buffer.append("\"Account\" :\"" + msj.getAccount().getValue()+"\",");
                 buffer.append("\"ExecID\" : \"" + msj.getExecID().getValue() + "\",");
@@ -33,8 +33,6 @@ public class fixToJson  {
                 buffer.append("\"Type\" :"+ msj.getSide().getValue() + ",");
                 buffer.append("\"Symbol\" :\""+ msj.getSymbol().getValue() + "\" ,");
                 buffer.append("\"Price\" :" + msj.getLastPx().getValue() + ",");
-                //buffer.append("\"StopL\" :" + this.sl  + ",");
-                //buffer.append("\"TakeP\" :" + this.tp + ",");
                 buffer.append("\"Commision\":" + "10,  " );
                 buffer.append("\"Status\":" + "1");
             buffer.append("}");

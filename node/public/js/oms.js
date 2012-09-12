@@ -8,7 +8,6 @@ $(document).ready(function(){
     var socket = io.connect(document.location.href);
     //Al cargar la página enviamos señal de inicio.
     socket.on('connect', function () {
-        console.log(id);
         socket.emit('log-in', {
            num: id
         });
@@ -40,7 +39,7 @@ $(document).ready(function(){
     socket.on('grafica-candle', function(data){
         var id = unSlash(data.values.id);
         $.each(data.values.vars, function(key, val){
-            $('#'+id+' .content-graf .promedios ul #' + key + ' span').empty().append(val);
+            $('#'+id+' .content-graf .promedios ul #' + key + ' #val').empty().append(val);
         });
     });
     //Datos del tick.
@@ -61,13 +60,21 @@ $(document).ready(function(){
     socket.on('expert-state', function(data){
         id= unSlash(data.values.id);
         $.each(data.values.vars, function(key, val){
-            $("#"+id+' .promedios ul').append('<li id='+key + '>' + key +' : <span>'+ val + '</span></li>');
+            $("#"+id+' .promedios ul').append('<li id='+key + '>' + key +' : <span id="val"> '+ val + '</span> > <span id="resta"></span></li>');
         });
     });
     //cada que hay un precio de apertura de vela.
     socket.on('grafica-open', function(data){
-        var id = unSlash(data.values.id);
+        var id = unSlash(data.values.id);    
+                
         $("#"+id+" .content-graf .promedios h3 span").empty().append(data.values.precio);
+        var bollDn = parseFloat($('#'+id+' .content-graf .promedios ul #bollDn #val').text()) - parseFloat(getPropertie(id,'Boll Special'));
+        var bollUp = parseFloat($('#'+id+' .content-graf .promedios ul #bollUp #val').text()) + parseFloat(getPropertie(id,'Boll Special'));
+        
+        var up= redondear(id,bollUp - data.values.precio );
+        var dn= redondear(id, data.values.precio -bollDn );
+        $("#"+id+" .content-graf .promedios ul #bollUp #resta").empty().append(up);
+        $("#"+id+" .content-graf .promedios ul #bollDn #resta").empty().append(dn);
     });
     //Entro una orden.
     socket.on('grafica-order', function(data){
@@ -168,7 +175,6 @@ function buildGrafica(data){
     delete  setts['symbol'];
     delete  setts['ID'];
     $(".icons #estado").css("color","green");
-    
 }
 //Quitamos un / de el symbolo generalmente USD/JPY es igual a USDJPY
 function unSlash(cadena){
@@ -196,4 +202,23 @@ function unID(cadena){
     }
     
     return res.slice(0, res.lastIndexOf("-"));
+}
+//Obetenemos una propiedad determinada de una grafica.
+function getPropertie(graf, prop){
+    var temp = null;
+    for(i=0; i<logs.length;i++){
+        if(logs[i][0]==graf) {
+            $.each(logs[i][1], function(key, val){
+                if(key==prop){
+                    temp = val;
+                }
+            });
+        }
+    }
+    return temp;
+}
+
+function redondear(graf, precio){
+        
+    return Math.round(precio*10000)/10000;
 }
