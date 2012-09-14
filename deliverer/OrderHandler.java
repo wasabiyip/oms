@@ -5,6 +5,7 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Graphic;
@@ -213,8 +214,10 @@ public class OrderHandler {
 
         BasicDBObject set = new BasicDBObject().append("$set", new BasicDBObject().append("Status", 0));
         BasicDBObject push = new BasicDBObject().append("$set", new BasicDBObject().append("Close", price));
+        BasicDBObject hora = new BasicDBObject().append("$set", new BasicDBObject().append("horaClose", new Date().toString()));
         coll.update(new BasicDBObject().append("OrderID", id), set);
         coll.update(new BasicDBObject().append("OrderID", id), push);
+        coll.update(new BasicDBObject().append("OrderID", id), hora);
     }
     /**
      * Revisamos si existe una orden.

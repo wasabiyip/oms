@@ -30,16 +30,11 @@ public class Expert extends Jedi{
     private double open_min=0.0;
     private double bid=0.0;
     private double ask=0.0;
-    public Order order;
     private Date date = new oms.Grafica.Date();
     private idGenerator idord = new idGenerator();
     private int contVelas=0;
     //Esta la usamos para que no entre a revisar la salida de operaciones si no 
     //hay operaciones.
-    private boolean lock= true;
-    //La usamos para guardar el tipo de orden que esta entrando. 1 es compra y 2 
-    //es venta
-    private char currentOrderType = '0';
     private double askMinuto;
     private double bollSell;
     private int periodo;
@@ -81,22 +76,17 @@ public class Expert extends Jedi{
         bollSell = this.bollDnS() + (setts.Point * setts.spreadAsk); //Este promedio es usado para sacar las ventas.
         //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
         //descansan por lo menos un día de la semana...
-        System.out.println(currentOrderType);
         if (open_min > 0 && this.range(date.getHour())) { //TODO Borrar la condicion de open_min.
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
             if (lock && ask - bid <= setts.spread * setts.Point){
                 //entrada de operaciones
                 if ((this.open_min + setts.boll_special) <= this.bollDn() && limiteCruce()) {
                     //Compra
-                    this.lock = false;
-                    currentOrderType = '1';
-                    order.Open(this.bid, '1');
+                    orderSend(this.bid, '1');
                     contVelas =0;
                 } else if ((this.open_min - setts.boll_special) >= this.bollUp() && limiteCruce()) {
                     //Venta
-                    this.lock = false;
-                    currentOrderType = '2';
-                    order.Open(this.ask, '2');
+                    orderSend(this.ask, '2');
                     contVelas =0;
                 }
             //Revisamos que haya entrado alguna operación y que los precios se 
@@ -105,25 +95,23 @@ public class Expert extends Jedi{
             if (!lock && (ask - bid <= setts.spreadSalida * setts.Point)) {
                 if (setts.salidaBollinger) {
                     //Cierre de compras por promedios bollinger.
-                    if (this.currentOrderType == '1') {
+                    if (this.currentOrder == '1') {
                         //si el precio de apertura supera a el promedio de salida
                         //entonces debemos cerrar todas las compras
                         if (this.open_min >= this.bollUpS()) {
                             System.out.println("Cerrado orden por bollinger");
-                            order.Close('1',  bid);
-                            currentOrderType = '0';
+                            orderClose(bid,'1');
                         }
-                    } else if (this.currentOrderType == '2') {
+                    } else if (this.currentOrder == '2') {
                         //si el precio de apertura es inferior a el promedio de salida
                         //entonces debemos cerrar todas las ventas.
                         //esta salida es especifica de la version 1.8 velas entrada y salida cierre minuto spread SV C1.
                         if ( ((this.open_min + this.askMinuto)/2) <= (this.bollDnS() + this.bollSell)/2) {
                             System.out.println("Cerrado orden por bollinger");
-                            order.Close('2', this.ask);
-                            currentOrderType = '0';
+                            orderClose(this.ask,'2');
                             //Cerramos las ordenes...
                         }
-                    } else if (this.currentOrderType == '0') {
+                    } else if (this.currentOrder == '0') {
                         System.err.println("Fuckin fuck - Nunca debimos entrar aqui Salida Boll");
                     }
                 } 
@@ -132,15 +120,14 @@ public class Expert extends Jedi{
                  * a las velas de salida (velasS) tenemos que cerrar las operaciones
                  */
                if (contVelas==setts.velasS || this.rangeSalida(date.getHour())) {
-                    if (this.currentOrderType == '1') {
+                    if (this.currentOrder == '1') {
                         System.out.println("Cerrando orden por velas");
-                        order.Close('1',  bid);
-                        currentOrderType = '0';
-                    }else if (this.currentOrderType == '2') {
+                        order.Close(bid,'1');
+                    }else if (this.currentOrder == '2') {
                         System.out.println("Cerrando orden por velas");
-                        order.Close('2', this.ask);
-                        currentOrderType = '0';
-                    }else if (this.currentOrderType == '0') {
+                        order.Close(this.ask,'2');
+                        
+                    }else if (this.currentOrder == '0') {
                         System.err.println("Fuckin fuck - Nunca debimos entrar aqui Salida Variada");
                     }
                 }
@@ -241,21 +228,10 @@ public class Expert extends Jedi{
      * Desbloqueamos al expert para que deje de buscar cierre de operaciones y busque
      * aperturas.
      */
-    public void unlock(){
+    /*public void unlock(){
         this.lock = true;
     }
-    /**
-     * regresamos si nos encontramos dentro del limite de operaciones por cruce.
-     * (por cruce significa por el symbol).
-     * @return 
-     */
-    public boolean limiteCruce(){
-        boolean temp = false;
-        int count = Graphic.dao.getTotalCruce(setts.symbol);
-        if(count<setts.limiteCruce)
-            temp = true;
-        return temp;
-    }
+    */
     /**
      * verificamos que nos encontremos en horas de operacion.
      * @param hora
@@ -275,9 +251,5 @@ public class Expert extends Jedi{
         if(hora < setts.horaFinS && hora >= setts.horaIniS)
             temp=true;
         return temp;
-    }
-
-    public String getID(){
-        return setts.id;
     }
 }

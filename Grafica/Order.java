@@ -58,7 +58,7 @@ public class Order {
      * @param order
      * @param price 
      */
-    public void Close(char type, Double price){
+    public void Close(Double price, char type){
         ArrayList <DBObject> temp = Graphic.dao.getTotalGraf(this.grafid);
         for(int i=0; i<temp.size();i++){
             Close(this.grafid, temp.get(i));

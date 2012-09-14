@@ -22,7 +22,7 @@ public class fixToJson  {
         StringBuffer buffer = new StringBuffer("");
         try {
             buffer.append("{");
-                buffer.append("\"hora\" :\""+msj.getTransactTime().getValue()+"\",");
+                buffer.append("\"horaOpen\" :\""+msj.getTransactTime().getValue()+"\",");
                 buffer.append("\"grafica\" :\""+id+"\",");
                 buffer.append("\"Account\" :\"" + msj.getAccount().getValue()+"\",");
                 buffer.append("\"ExecID\" : \"" + msj.getExecID().getValue() + "\",");

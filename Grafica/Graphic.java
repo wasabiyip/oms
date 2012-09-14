@@ -251,7 +251,9 @@ public class Graphic extends Thread {
      */
     private void onOrder(ArrayList orden){
         try {
+            
             ExecutionReport report = (ExecutionReport)orden.get(0);
+            expert.openNotify(report.getSide().getValue());
             double sl = (double)orden.get(1);
             double tp = (double)orden.get(2); 
             StringBuffer nworden = new StringBuffer();
@@ -271,6 +273,7 @@ public class Graphic extends Thread {
             nworden.append("}");
             this.writeNode(nworden.toString());
             nworden = null;
+            
         } catch (FieldNotFound ex) {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -280,6 +283,7 @@ public class Graphic extends Thread {
      * @param id 
      */
     public void onOrderClose(String id){
+        expert.closeNotify();
         StringBuffer temp = new StringBuffer();
             temp.append("{");        
                 temp.append("\"type\":\"onOrderClose\",");
@@ -301,7 +305,6 @@ public class Graphic extends Thread {
                     Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            expert.unlock();
     }
     /**
      * Enviamos ordenes actuales de la grafica.

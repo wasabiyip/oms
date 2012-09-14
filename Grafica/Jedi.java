@@ -1,13 +1,18 @@
 package oms.Grafica;
 
 /**
- *
+ * Esta clase maneja funciones del expert de mas alto nivel. como saber en tiempo de
+ * ejecucion si tenemos una orden para bloquear o desbloquer entradas/salidas.
  * @author omar
  */
 public abstract class Jedi {
     Settings setts;
     private int periodo;
-    
+    public Order order;
+    //La usamos para guardar el tipo de orden que esta entrando. 1 es compra y 2 
+    //es venta
+    public char currentOrder = '0';
+    public boolean lock= true;
     Jedi(Settings setts, int periodo){
         this.setts = setts;
     }
@@ -44,5 +49,58 @@ public abstract class Jedi {
             init.append(" \"Boll Special\" :" + setts.boll_special);
             init.append("}");
         return init;
+    }
+    /**
+     * regresamos si nos encontramos dentro del limite de operaciones por cruce.
+     * (por cruce significa por el symbol).
+     * @return 
+     */
+    public boolean limiteCruce(){
+        boolean temp = false;
+        int count = Graphic.dao.getTotalCruce(setts.symbol);
+        if(count<setts.limiteCruce)
+            temp = true;
+        return temp;
+    }
+    /**
+     * 
+     * @return el id de la grafica.
+     */
+    public String getID(){
+        return setts.id;
+    }
+    /**
+     * 
+     * @param price
+     * @param type 
+     */
+    public void orderClose(Double price, char type){
+        order.Close(price, '1');
+
+    }
+    /**
+     * 
+     * @param price
+     * @param type 
+     */
+    public void orderSend(Double price, char type){
+        order.Open(price, type);
+    }
+    /**
+     * Nos dicen si una orden cerro.
+     */
+    public void closeNotify(){
+        currentOrder = '0';
+        System.err.println("Orden cerro");
+        this.lock = true;
+    }
+    /**
+     * Nos avisan si una orden entro
+     * @param type 
+     */
+    public void openNotify(char type){
+        currentOrder = type;
+        System.err.println("Orden abrio");
+        this.lock = false;
     }
 }
