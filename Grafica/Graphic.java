@@ -38,6 +38,7 @@ public class Graphic extends Thread {
     //Guardamos las ordenes de que entran en cada gráfica.
     private ArrayList<ArrayList> operaciones = new ArrayList();
     public static MongoDao dao = new MongoDao();
+    private Settings setts;
     /**
      * Constructor!
      *
@@ -46,7 +47,8 @@ public class Graphic extends Thread {
      * @throws IOException
      */
     public Graphic(String symbol, int periodo) {
-        expert = new Expert(symbol, periodo);
+        setts = new Settings(symbol);
+        expert = new Expert(symbol, periodo, setts);
         this.id = expert.getID();
         dif = GMTDate.getDate().getMinute() % periodo;
         this.symbol = symbol;
@@ -205,7 +207,7 @@ public class Graphic extends Thread {
                     StringBuffer txt = new StringBuffer();
                     txt.append("{");
                     txt.append("\"type\": \"expert-state\",");
-                    txt.append("\"id\":\"" + expert.id + "\",");
+                    txt.append("\"id\":\"" + setts.id + "\",");
                     txt.append(expert.getExpertState());
                     txt.append("}");
                     this.writeNode(txt.toString());
@@ -340,7 +342,7 @@ public class Graphic extends Thread {
         
         ArrayList temp = new ArrayList();
         temp.add(orden);
-        this.dao.recordOrden(this.id,orden,this.expert.MAGICMA);
+        this.dao.recordOrden(this.id,orden,setts.MAGICMA);
         this.operaciones.add(temp);
     }
     /**
@@ -395,22 +397,22 @@ public class Graphic extends Thread {
      * @return Tp de la grafica obtenido de archivo .set
      */
     public int getTP(){
-        return this.expert.tp;
+        return setts.tp;
     }
     /**
      * @return Sl de la grafica obtenido de archivo .set
      */
     public int getSL(){
-        return this.expert.sl;
+        return setts.sl;
     }
     /**
      * @return Point de la grafica obtenido de archivo .set
      */
     public double getPoint(){
-        return this.expert.Point;
+        return setts.Point;
     }
     
     public int getMagic(){
-        return this.expert.MAGICMA;
+        return setts.MAGICMA;
     }
 }

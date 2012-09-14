@@ -3,6 +3,11 @@ var ids= [];
 var contOp =0;
 var logs = [];
 var id = Math.floor(Math.random()*101);
+var graficas=[];
+var grafica = function(id){
+    
+    this.grafid = id;
+}
 $(document).ready(function(){
 	
     var socket = io.connect(document.location.href);
@@ -63,7 +68,7 @@ $(document).ready(function(){
             $("#"+id+' .promedios ul').append('<li id='+key + '>' + key +' : <span id="val"> '+ val + '</span> > <span id="resta"></span></li>');
         });
     });
-    //cada que hay un precio de apertura de vela.
+    //cada que hay un precio de apertura de minuto.
     socket.on('grafica-open', function(data){
         var id = unSlash(data.values.id);    
                 
@@ -75,6 +80,7 @@ $(document).ready(function(){
         var dn= redondear(id, data.values.precio -bollDn );
         $("#"+id+" .content-graf .promedios ul #bollUp #resta").empty().append(up);
         $("#"+id+" .content-graf .promedios ul #bollDn #resta").empty().append(dn);
+        hardSorting();
     });
     //Entro una orden.
     socket.on('grafica-order', function(data){
@@ -146,6 +152,7 @@ logClick = function(grafica){
 }
 //Al recibir graficas-ini construimos la grafica recibida. 
 function buildGrafica(data){
+    
     var setts = data.setts;
     temp = [];
     //quitamos diagonal de I
@@ -156,6 +163,7 @@ function buildGrafica(data){
     
     //guardamos los id de cada grafica.
     ids.push(id);
+    graficas.push(new grafica(id));
     //Creamos html de grafica.
     $("#estrategias").append('<div class=\'grafica\' id=' + id + '></div>');
     $("#"+id).append('<div class=\'content-graf\'></div>');
@@ -221,4 +229,8 @@ function getPropertie(graf, prop){
 function redondear(graf, precio){
         
     return Math.round(precio*10000)/10000;
+}
+
+function hardSorting(){
+    console.log(graficas[0].grafid);
 }

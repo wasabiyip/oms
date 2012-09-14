@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  *
  * @author omar
  */
-public abstract class Settings {
+public class Settings {
 
     public Integer MAGICMA = 0;
     public Integer boll1;
@@ -45,6 +45,7 @@ public abstract class Settings {
     
     public Settings(String symbol) {
         this.symbol = symbol;
+        
         /**
          * Todas las monedas tienen el mismo Point excepto el Yen.
          */
@@ -68,7 +69,6 @@ public abstract class Settings {
             lots = new Double(config.getProperty("Lots"));
             tp = new Integer(config.getProperty("tp"));
             sl = new Integer(config.getProperty("sl"));
-            //velasS = new Integer(config.getProperty("numvelasS"));
             horaIni = new Double(config.getProperty("horainicial"));
             horaFin = new Double(config.getProperty("horafinal"));
             horaIniS = new Double(config.getProperty("timesalidainicial"));

@@ -12,7 +12,7 @@ import oms.util.idGenerator;
  * sin FIFO 1_8 velas entrada y salida minuto Spread SV".
  * @author omar
  */
-public class Expert extends Settings {
+public class Expert extends Jedi{
 
     Properties config = new Properties();
     
@@ -43,26 +43,27 @@ public class Expert extends Settings {
     private double askMinuto;
     private double bollSell;
     private int periodo;
+   
     /**
      * Constructor...
      * @param symbol Indica el par de monedas con el se va a trabajar.
      */
-    public Expert(String symbol,int periodo) {
+    public Expert(String symbol,int periodo, Settings setts) {
         //llamamos a el constructor de el padre (Settings).
-        super(symbol);
-        order = new Order(symbol,this.MAGICMA, id);
-        indicador = new Indicador(Graphic.unSlash(this.symbol),periodo);
+        super(setts, periodo);
+        order = new Order(symbol,setts.MAGICMA, setts.id);
+        indicador = new Indicador(Graphic.unSlash(setts.symbol),periodo);
         
         /**
          * Añadimos los periodos a las bandas.
          */
-        bollBand1 = indicador.createBollinger(this.boll1);
-        bollBand2 = indicador.createBollinger(this.boll2);
-        bollBand3 = indicador.createBollinger(this.boll3);
+        bollBand1 = indicador.createBollinger(setts.boll1);
+        bollBand2 = indicador.createBollinger(setts.boll2);
+        bollBand3 = indicador.createBollinger(setts.boll3);
         
-        bollBandS1 = indicador.createBollinger(this.bollS1);
-        bollBandS2 = indicador.createBollinger(this.bollS2);
-        bollBandS3 = indicador.createBollinger(this.bollS3);
+        bollBandS1 = indicador.createBollinger(setts.bollS1);
+        bollBandS2 = indicador.createBollinger(setts.bollS2);
+        bollBandS3 = indicador.createBollinger(setts.bollS3);
         this.periodo = periodo;
     }
     
@@ -73,39 +74,42 @@ public class Expert extends Settings {
      * de operaciones, así que: ¡tratalo con RESPETO!
      * @param price precio de apertura del minuto!
      */
+    @Override
     public void onTick(Double bid) {
         this.bid = bid;
         askMinuto = this.open_min + (ask-bid);
-        bollSell = this.bollDnS() + (this.Point * this.spreadAsk); //Este promedio es usado para sacar las ventas.
+        bollSell = this.bollDnS() + (setts.Point * setts.spreadAsk); //Este promedio es usado para sacar las ventas.
         //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
         //descansan por lo menos un día de la semana...
-        if (open_min > 0 && this.range(date.getHour())) { //TODO Borrar la condicion d open_min se ve bastante chafa!
+        System.out.println(currentOrderType);
+        if (open_min > 0 && this.range(date.getHour())) { //TODO Borrar la condicion de open_min.
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
-            if (lock && ask - bid <= this.spread * this.Point){
+            if (lock && ask - bid <= setts.spread * setts.Point){
                 //entrada de operaciones
-                if ((this.open_min + this.boll_special) <= this.bollDn() && limiteCruce()) {
+                if ((this.open_min + setts.boll_special) <= this.bollDn() && limiteCruce()) {
                     //Compra
                     this.lock = false;
                     currentOrderType = '1';
                     order.Open(this.bid, '1');
                     contVelas =0;
-                } else if ((this.open_min - this.boll_special) >= this.bollUp() && limiteCruce()) {
+                } else if ((this.open_min - setts.boll_special) >= this.bollUp() && limiteCruce()) {
                     //Venta
                     this.lock = false;
                     currentOrderType = '2';
                     order.Open(this.ask, '2');
                     contVelas =0;
                 }
-            //Revisamos que halla entrado alguna operación y que los precios se 
+            //Revisamos que haya entrado alguna operación y que los precios se 
             //encuentren dentro de el rango de salida.    
             } 
-            if (!lock && (ask - bid <= this.spreadSalida * this.Point)) {
-                if (this.salidaBollinger) {
+            if (!lock && (ask - bid <= setts.spreadSalida * setts.Point)) {
+                if (setts.salidaBollinger) {
                     //Cierre de compras por promedios bollinger.
                     if (this.currentOrderType == '1') {
                         //si el precio de apertura supera a el promedio de salida
                         //entonces debemos cerrar todas las compras
                         if (this.open_min >= this.bollUpS()) {
+                            System.out.println("Cerrado orden por bollinger");
                             order.Close('1',  bid);
                             currentOrderType = '0';
                         }
@@ -114,6 +118,7 @@ public class Expert extends Settings {
                         //entonces debemos cerrar todas las ventas.
                         //esta salida es especifica de la version 1.8 velas entrada y salida cierre minuto spread SV C1.
                         if ( ((this.open_min + this.askMinuto)/2) <= (this.bollDnS() + this.bollSell)/2) {
+                            System.out.println("Cerrado orden por bollinger");
                             order.Close('2', this.ask);
                             currentOrderType = '0';
                             //Cerramos las ordenes...
@@ -124,9 +129,9 @@ public class Expert extends Settings {
                 } 
                 /**
                  * si el numero de velas que van desde que entro la operación es igual
-                 * a las velas de salida (velasS) enemos que cerrar las operaciones
+                 * a las velas de salida (velasS) tenemos que cerrar las operaciones
                  */
-               if (contVelas==this.velasS || this.rangeSalida(date.getHour())) {
+               if (contVelas==setts.velasS || this.rangeSalida(date.getHour())) {
                     if (this.currentOrderType == '1') {
                         System.out.println("Cerrando orden por velas");
                         order.Close('1',  bid);
@@ -147,12 +152,14 @@ public class Expert extends Settings {
      * Se llama cuando se recibe un cambio de vela.
      * @param price precio de apenew idGenerator().getID()rtura de la nueva vela.
      */
+    @Override
     public void onCandle(Double price){
         setPriceBoll(price);
         contVelas ++;
          
     }
-    public void onOpen(double price){
+    @Override
+    public void onOpen(Double price){
         open_min = price;
     }
     /**
@@ -207,37 +214,6 @@ public class Expert extends Settings {
     }
     
     /**
-     * Método que regresa los valores que la clase Settings lee del archivo de
-     * configuración .set
-     * @return settings del expert.
-     */
-    public StringBuffer getExpertInfo() {
-
-        StringBuffer init = new StringBuffer();
-
-        init.append("\"settings\" : {");
-            init.append("\"symbol\" : \"" + this.symbol+"\",");
-            init.append("\"ID\" : \"" + this.id + "\",");
-            init.append("\"Magicma\" : " + this.MAGICMA + ",");
-            init.append("\"Lotes\" : " + this.lots + ",");
-            init.append("\"Boll1\" : " + this.boll1 + ",");
-            init.append("\"Boll2\" : " + this.boll2 + ",");
-            init.append("\"Boll3\" : " + this.boll3 + ",");
-            init.append("\"BollS1\" : " + this.bollS1 + ",");
-            init.append("\"BollS2\" : " + this.bollS2 + ",");
-            init.append("\"BollS3\" : " + this.bollS3 + ",");
-            init.append("\"TP\" : " + this.tp + ",");
-            init.append("\"SL\" : " + this.sl + ",");
-            init.append("\"Velas Salida\": " + this.velasS + ",");
-            init.append("\"Hora Inicial\":" + this.horaIni + ",");
-            init.append("\"Hora Final\" :" + this.horaFin +",");
-            init.append(" \"Periodo\" :" + this.periodo + ",");
-            init.append(" \"Boll Special\" :" + this.boll_special);
-            init.append("}");
-        return init;
-    }
-    
-    /**
      * Método usaddo para informar sobre el estado actual del expert, regresa los
      * valores de promedios, de velas, etc. Todos los valores que influyen en el
      * comportamiento actual o futuro del expert.
@@ -275,8 +251,8 @@ public class Expert extends Settings {
      */
     public boolean limiteCruce(){
         boolean temp = false;
-        int count = Graphic.dao.getTotalCruce(this.symbol);
-        if(count<this.limiteCruce)
+        int count = Graphic.dao.getTotalCruce(setts.symbol);
+        if(count<setts.limiteCruce)
             temp = true;
         return temp;
     }
@@ -287,7 +263,7 @@ public class Expert extends Settings {
      */
     public boolean range(int hora){
         boolean temp=false;
-        if(hora < this.horaFin && hora >= this.horaIni)
+        if(hora < setts.horaFin && hora >= setts.horaIni)
             temp=true;
         return temp;
     }
@@ -296,12 +272,12 @@ public class Expert extends Settings {
      */
     public boolean rangeSalida(int hora){
         boolean temp=false;
-        if(hora < this.horaFinS && hora >= this.horaIniS)
+        if(hora < setts.horaFinS && hora >= setts.horaIniS)
             temp=true;
         return temp;
     }
 
     public String getID(){
-        return this.id;
+        return setts.id;
     }
 }
