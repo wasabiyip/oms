@@ -6,7 +6,12 @@ var sys = require('util'),
 express = require('../../../../lib/node_modules/express'),
 app= express.createServer('localhost'),
 io = require('../../../../lib/node_modules/socket.io');
+app.set('view options', {layout:false});
 app.use(express.static(__dirname + '/public'));
+//Iniciamos conexion con Mongo
+var databaseUrl = 'history';
+var collection = ['operaciones'];
+var db = require('../../../../lib/node_modules/mongojs').connect(databaseUrl, collection);
 
 var webClients = [];
 var handler =  require('./Handler');
@@ -24,39 +29,48 @@ var server = io.listen(app);
 
 server.sockets.on('connection', function (client){ 
     
-    // new client is here!
-    client.send ( 'Conectado con servidor!' );
-    client.on('message', function () {
-        console.log('nuevo mensaje del browser');
-    });
-
     client.on('disconnect', function () {
 		
-        });
+     });
 
     client.on('log-in', function(msj){
         //client.send(handler.get)
-        var setts = handler.getSetts();
-        webClients.push(client);
-        checkClientsActivos();
-        for(i=0;i<setts.length;i++){
-            client.emit('grafica-ini',{
-                setts : setts[i]
-                });
-            waitState = client;
-            waitOps = client;
+        if(msj.id == 'oms'){
+            var setts = handler.getSetts();
+            webClients.push(client);
+            checkClientsActivos();
+            for(i=0;i<setts.length;i++){
+                client.emit('grafica-ini',{
+                    setts : setts[i]
+                    });
+                waitState = client;
+                waitOps = client;
+            }
         }
     });
     
     client.on('grafica-state', function(msj){
-        console.log(msj);
         handler.expertState(msj);
     });
     
     client.on('order-close', function(msj){
         console.log(msj);
         handler.closeOrder(msj);
-    })
+    });
+    
+    client.on('ops-history', function(){
+        db.operaciones.find({Status:0}, function(err,operaciones){
+           if(err || !operaciones)
+               console.log('Da Fuck!');
+           else
+               operaciones.forEach(function (op){
+                   client.emit('orders',op);
+               });
+        });
+    });
+    client.on('ops-grafic', function(){
+        
+    });
 });
 
 exports.clientsLength = function(){

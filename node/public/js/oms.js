@@ -4,17 +4,16 @@ var contOp =0;
 var logs = [];
 var id = Math.floor(Math.random()*101);
 var graficas=[];
-var grafica = function(id){
-    
+var grafica = function(id){  
     this.grafid = id;
-}
+};
 $(document).ready(function(){
 	
     var socket = io.connect(document.location.href);
     //Al cargar la página enviamos señal de inicio.
     socket.on('connect', function () {
         socket.emit('log-in', {
-           num: id
+           id: 'oms'
         });
     });
     
@@ -24,7 +23,6 @@ $(document).ready(function(){
             id: data.setts.ID
             });
         buildGrafica(data);
-    //$("#estrategias").replaceWith(data.toString());
     });
 
     //Recibimos un mensaje genérico.
@@ -126,11 +124,11 @@ $(document).ready(function(){
           //nada  
         }        
     }
+    getOperaciones = function(){
+        window.open('historico.html', 'historico de operaciones','');
+        return false;
+    }
 });
-
-estadoClick = function(grafica){
-        
-}
 //Mostramos informacion acerca de esta 
 logClick = function(grafica){
     $('.grafica').css("box-shadow", "1px 2px 4px #666");
