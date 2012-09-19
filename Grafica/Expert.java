@@ -82,11 +82,11 @@ public class Expert extends Jedi{
                 //entrada de operaciones
                 if ((this.open_min + setts.boll_special) <= this.bollDn() && limiteCruce()) {
                     //Compra
-                    //orderSend(this.bid, '1');
+                    orderSend(this.bid, '1');
                     contVelas =0;
                 } else if ((this.open_min - setts.boll_special) >= this.bollUp() && limiteCruce()) {
                     //Venta
-                    //orderSend(this.ask, '2');
+                    orderSend(this.ask, '2');
                     contVelas =0;
                 }
             //Revisamos que haya entrado alguna operación y que los precios se 
@@ -100,7 +100,7 @@ public class Expert extends Jedi{
                         //entonces debemos cerrar todas las compras
                         if (this.open_min >= this.bollUpS()) {
                             System.out.println("Cerrado orden por bollinger");
-                           // orderClose(bid,'1');
+                            orderClose(bid,'1');
                         }
                     } else if (this.currentOrder == '2') {
                         //si el precio de apertura es inferior a el promedio de salida
@@ -108,7 +108,7 @@ public class Expert extends Jedi{
                         //esta salida es especifica de la version 1.8 velas entrada y salida cierre minuto spread SV C1.
                         if ( ((this.open_min + this.askMinuto)/2) <= (this.bollDnS() + this.bollSell)/2) {
                             System.out.println("Cerrado orden por bollinger");
-                            //orderClose(this.ask,'2');
+                            orderClose(this.ask,'2');
                             //Cerramos las ordenes...
                         }
                     } else if (this.currentOrder == '0') {
@@ -122,10 +122,10 @@ public class Expert extends Jedi{
                if (contVelas==setts.velasS || this.rangeSalida(date.getHour())) {
                     if (this.currentOrder == '1') {
                         System.out.println("Cerrando orden por velas");
-                        //order.Close(bid,'1');
+                        order.Close(bid,'1');
                     }else if (this.currentOrder == '2') {
                         System.out.println("Cerrando orden por velas");
-                        //order.Close(this.ask,'2');
+                        order.Close(this.ask,'2');
                         
                     }else if (this.currentOrder == '0') {
                         System.err.println("Fuckin fuck - Nunca debimos entrar aqui Salida Variada");

@@ -8,7 +8,7 @@ var grafica = function(id){
     this.grafid = id;
 };
 $(document).ready(function(){
-	
+    playOrder();
     var socket = io.connect(document.location.href);
     //Al cargar la página enviamos señal de inicio.
     socket.on('connect', function () {
@@ -232,3 +232,8 @@ function redondear(graf, precio){
 function hardSorting(){
     console.log(graficas[0].grafid);
 }
+
+function playOrder() {
+    $('#sound_element').html(
+        "<embed src=sounds/alert.wav hidden=true autostart=true loop=false>");
+ }
