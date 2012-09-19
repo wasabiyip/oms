@@ -5,13 +5,12 @@ exports.grafica = function(moneda, periodo){
     var collection = [moneda];
     var db = require('../../../../lib/node_modules/mongojs').connect(databaseUrl, collection);
     
-    db.operaciones.find({Status:0}, function(err,operaciones){
-        if(err || !operaciones)
-            console.log('Da Fuck!');
+    db.operaciones.find({Status:0}, function(err,data){
+        if(err || !data)
+            console.log('Da Fuck with the chart!');
         else
-            operaciones.forEach(function (op){
-                client.emit('orders',op);
+            data.forEach(function (historico){
+                client.emit('orders',historico);
             });
     });
-    
 }

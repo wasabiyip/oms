@@ -80,10 +80,10 @@ function evaluar(msj, socket){
                 }
                 break;
 
-            //un tick es un precio de apertura de minuto.
+            //un open es un precio de apertura de minuto.
             case 'open':
                 handler.notify('open',income.data.Moneda, income.data.Open);
-                handler.notify('close',income.data.Moneda, income.data.Close);
+                //handler.notify('close',income.data.Moneda, income.data.Close);
                 break;
                 
             //Cada que se recibe un precio.	

@@ -107,7 +107,6 @@ public class SenderApp extends MessageCracker implements Application{
     public void fromAdmin(quickfix.Message msg, SessionID id) throws FieldNotFound, 
                             IncorrectDataFormat, IncorrectTagValue, RejectLogon{
         System.out.println("fromAdmin->>");
-        
     }
     
     /**
