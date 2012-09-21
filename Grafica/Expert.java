@@ -142,7 +142,8 @@ public class Expert extends Jedi{
     @Override
     public void onCandle(Double price){
         setPriceBoll(price);
-        contVelas ++;
+        if(currentOrder!='0')
+            contVelas ++;
          
     }
     @Override

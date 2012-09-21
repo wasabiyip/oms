@@ -41,10 +41,18 @@ $(document).ready(function(){
     });
     //Datos de cambio de vela.
     socket.on('grafica-candle', function(data){
+        
         var id = unSlash(data.values.id);
         $.each(data.values.vars, function(key, val){
             $('#'+id+' .content-graf .promedios ul #' + key + ' #val').empty().append(val);
         });
+        console.log(data.values.vars.Velas>0);
+        if(data.values.vars.Velas>0){
+            $('#'+id+' .content-graf .promedios ul #Velas #resta').empty()
+                .append(data.values.vars.Velas - parseInt(getPropertie(id,'Velas Salida')));
+        }else if(data.values.vars.Velas==0){
+            $('#'+id+' .content-graf .promedios ul #Velas #resta').empty().append('--No Order--');
+        }
     });
     //Datos del tick.
     socket.on('grafica-tick', function(data){
