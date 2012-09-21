@@ -212,7 +212,8 @@ public class Expert extends Jedi{
             temp.append("\"bollUp\":"+ this.bollUp()+ ",");
             temp.append("\"bollDn\":"+ this.bollDn()+ ",");
             temp.append("\"bollUpS\":"+this.bollUpS() + ",");
-            temp.append("\"bollDnS\":"+this.bollDnS());
+            temp.append("\"bollDnS\":"+this.bollDnS()+ ",");
+            temp.append("\"Velas\":"+this.contVelas);
         
         temp.append("}");
         return temp.toString();

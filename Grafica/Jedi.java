@@ -46,7 +46,8 @@ public abstract class Jedi {
             init.append("\"Hora Final\" :" + setts.horaFin +",");
             init.append("\"Hora Salida\" :" + setts.horaIniS+",");
             init.append(" \"Periodo\" :" + periodo + ",");
-            init.append(" \"Boll Special\" :" + setts.boll_special);
+            init.append(" \"Boll Special\" :" + setts.boll_special+",");
+            init.append(" \"Spread Ask\" :" + setts.spreadAsk);
             init.append("}");
         return init;
     }

@@ -4,11 +4,12 @@ var contOp =0;
 var logs = [];
 var id = Math.floor(Math.random()*101);
 var graficas=[];
+var ordLock = false;
 var grafica = function(id){  
     this.grafid = id;
 };
 $(document).ready(function(){
-    playOrder();
+    
     var socket = io.connect(document.location.href);
     //Al cargar la página enviamos señal de inicio.
     socket.on('connect', function () {
@@ -47,7 +48,6 @@ $(document).ready(function(){
     });
     //Datos del tick.
     socket.on('grafica-tick', function(data){
-        
         symbol = unSlash(data.values.symbol);
         for(i=0; i<ids.length;i++){
             if(ids[i].search(symbol)>=0){
@@ -69,20 +69,30 @@ $(document).ready(function(){
     //cada que hay un precio de apertura de minuto.
     socket.on('grafica-open', function(data){
         var id = unSlash(data.values.id);    
-                
+        var ask = parseFloat(getAsk(id));
+        var bid = parseFloat(getBid(id));
+        var openMin = parseFloat(data.values.precio);
+        var askMin = openMin + (ask-bid);
+        
         $("#"+id+" .content-graf .promedios h3 span").empty().append(data.values.precio);
         var bollDn = parseFloat($('#'+id+' .content-graf .promedios ul #bollDn #val').text()) - parseFloat(getPropertie(id,'Boll Special'));
         var bollUp = parseFloat($('#'+id+' .content-graf .promedios ul #bollUp #val').text()) + parseFloat(getPropertie(id,'Boll Special'));
-        
+        var upS = parseFloat($('#'+id+' .content-graf .promedios ul #bollUpS #val').text()) - openMin;
+        var bollDnS = parseFloat($('#'+id+' .content-graf .promedios ul #bollDnS #val').text());
+        var bollSell = bollDnS + parseFloat(getPoint(unID(id)) * parseFloat(getPropertie(id, 'Spread Ask')));
+        var dnS = ((openMin + askMin)/2) -((bollDnS + bollSell)/2);
         var up= redondear(id,bollUp - data.values.precio );
         var dn= redondear(id, data.values.precio -bollDn );
         $("#"+id+" .content-graf .promedios ul #bollUp #resta").empty().append(up);
         $("#"+id+" .content-graf .promedios ul #bollDn #resta").empty().append(dn);
+        $("#"+id+" .content-graf .promedios ul #bollUpS #resta").empty().append(redondear(id, upS));
+        $("#"+id+" .content-graf .promedios ul #bollDnS #resta").empty().append(redondear(id,dnS));
         hardSorting();
     });
     //Entro una orden.
     socket.on('grafica-order', function(data){
-        
+       playOrder(); 
+       orderLock = true;
        var graf =  unSlash(data.id);
        var ord = data.ordid;
        $("#"+ graf + " .operaciones table").append("<tr id="+ data.ordid +"></tr>");
@@ -230,10 +240,23 @@ function redondear(graf, precio){
 }
 
 function hardSorting(){
-    console.log(graficas[0].grafid);
+    //console.log(graficas[0].grafid);
 }
 
 function playOrder() {
     $('#sound_element').html(
         "<embed src=sounds/alert.wav hidden=true autostart=true loop=false>");
+ }
+ function getBid(graf){
+     return $('#'+ graf +' .content-graf h2 .bid').text();
+ }
+ function getAsk(graf){
+     return $('#'+ graf +' .content-graf h2 .ask').text();
+ }
+ function getPoint(id){
+     if(id == 'USD//JPY'){
+         return 0.001;
+     }else{
+         return 0.0001;
+     }         
  }
