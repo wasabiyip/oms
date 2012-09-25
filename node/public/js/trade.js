@@ -14,6 +14,7 @@ $(document).ready(function(){
 
 addOperacion = function(order){
    var profit;
+   var pip;
    $('#trade table').append('<tr id=\''+order.ExecID+'\'></tr>');
    $('#trade table #'+order.ExecID).append('<td>'+order.ExecID+'</td>');
    $('#trade table #'+order.ExecID).append('<td>'+order.horaOpen+'</td>');
@@ -33,6 +34,16 @@ addOperacion = function(order){
    
    if(order.Symbol == 'EUR/USD' || order.Symbol == 'GBP/USD'){
        profit = (order.Price - order.Close) * order.Size * 0.0001;
+   }else if(order.Symbol =='USD/CHF'){
+       pip = (order.Size * 0.0001)/order.Price;
+       console.log(pip);
+    }
+    else if(order.Symbol == 'USD/JPY'){
+       pip = (order.Size * 0.01)/order.Price;
+       profit = (order.Price
+       
+   }else if(order.Symbol == 'EUR/GBP'){
+       
    }
    
    $('#trade table #'+order.ExecID).append('<td>'+ redondear(profit)+'</td>');

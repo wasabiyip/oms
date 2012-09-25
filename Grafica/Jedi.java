@@ -13,6 +13,7 @@ public abstract class Jedi {
     //es venta
     public char currentOrder = '0';
     public boolean lock= true;
+    public int velasCont = 0;
     Jedi(Settings setts, int periodo){
         this.setts = setts;
     }
@@ -94,6 +95,7 @@ public abstract class Jedi {
         currentOrder = '0';
         System.err.println("Orden cerro");
         this.lock = true;
+        this.velasCont = 0;
     }
     /**
      * Nos avisan si una orden entro

@@ -41,12 +41,10 @@ $(document).ready(function(){
     });
     //Datos de cambio de vela.
     socket.on('grafica-candle', function(data){
-        
         var id = unSlash(data.values.id);
         $.each(data.values.vars, function(key, val){
             $('#'+id+' .content-graf .promedios ul #' + key + ' #val').empty().append(val);
         });
-        console.log(data.values.vars.Velas>0);
         if(data.values.vars.Velas>0){
             $('#'+id+' .content-graf .promedios ul #Velas #resta').empty()
                 .append(data.values.vars.Velas - parseInt(getPropertie(id,'Velas Salida')));
@@ -87,6 +85,7 @@ $(document).ready(function(){
         var bollUp = parseFloat($('#'+id+' .content-graf .promedios ul #bollUp #val').text()) + parseFloat(getPropertie(id,'Boll Special'));
         var upS = parseFloat($('#'+id+' .content-graf .promedios ul #bollUpS #val').text()) - openMin;
         var bollDnS = parseFloat($('#'+id+' .content-graf .promedios ul #bollDnS #val').text());
+        //((bid_minuto + ask_minuto)/ 2) - ( boll_sell + bollDownOut)/2
         var bollSell = bollDnS + parseFloat(getPoint(unID(id)) * parseFloat(getPropertie(id, 'Spread Ask')));
         var dnS = ((openMin + askMin)/2) -((bollDnS + bollSell)/2);
         var up= redondear(id,bollUp - data.values.precio );
@@ -95,7 +94,7 @@ $(document).ready(function(){
         $("#"+id+" .content-graf .promedios ul #bollDn #resta").empty().append(dn);
         $("#"+id+" .content-graf .promedios ul #bollUpS #resta").empty().append(redondear(id, upS));
         $("#"+id+" .content-graf .promedios ul #bollDnS #resta").empty().append(redondear(id,dnS));
-        hardSorting();
+        hardSorting(id, up, dn, upS, dnS);
     });
     //Entro una orden.
     socket.on('grafica-order', function(data){
@@ -116,7 +115,9 @@ $(document).ready(function(){
            }else $("#"+data.ordid).append('<td><span id='+key+ '>'+val+'</span></td>');
        });
        $("#"+data.ordid).append('<td><span class=\'cerrar\' title="Cerrar operacion" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">x</span></td>');
+       //para que el title del navegador se muestre las operaciones que tenemos.
        document.title = 'Operaciones (' + ++contOp +')';
+       
     });
     //Salio una orden
     socket.on('grafica-orderClose', function(data) {
@@ -181,13 +182,12 @@ function buildGrafica(data){
     ids.push(id);
     graficas.push(new grafica(id));
     //Creamos html de grafica.
-    $("#estrategias").append('<div class=\'grafica\' id=' + id + '></div>');
+    $("#estrategias").append('<div id='+graficas.length+'></div>');
+    $("#estrategias #"+graficas.length).append('<div class=\'grafica\' id=' + id + '></div>');
     $("#"+id).append('<div class=\'content-graf\'></div>');
     $("#"+id).append('<div class=\'menu-graf\'><div class=\'icons\'></div></div>');
     $("#"+id +" .content-graf").append('<h2>'+ setts.symbol +' bid: <span class="bid">--------</span> ask: <span class="ask">-------</span></h2>');
     $("#"+id +" .content-graf").append('<div id="log-data" style="display:none;"></div>');
-    //$("#"+id).append('<div class=\'settings\'></<div>');
-    //$("#" +id+ " .settings").append('<ul><h3>Datos del expert</h3></ul>');
     $("#"+id +" .content-graf").append('<div class=\'promedios\'></<div>');
     $("#"+id +" .content-graf").append('<div class=\'operaciones\'></<div>');     
     $("#"+id +" .content-graf .promedios").append('<h3>Apertura Minuto <span class=apertura>-------</span></h3>');
@@ -247,8 +247,19 @@ function redondear(graf, precio){
     return Math.round(precio*10000)/10000;
 }
 
-function hardSorting(){
-    //console.log(graficas[0].grafid);
+function hardSorting(id, up, dn, upS, dnS){
+    var ini = parseInt(getPropertie(id,'Hora Inicial'));
+    var fin = parseInt(getPropertie(id,'Hora Final'));
+    var hora = parseInt(new Date().getHours()+5); //5 es dependiendo de la hora del broker.
+    
+    if(hora >= ini && hora <= fin){//Si nos encontramos en horario de operacion
+    
+        if(contOp>0){
+            //si tenemos operaciones
+        }else{
+            
+        }     
+    }
 }
 
 function playOrder() {
@@ -262,9 +273,10 @@ function playOrder() {
      return $('#'+ graf +' .content-graf h2 .ask').text();
  }
  function getPoint(id){
-     if(id == 'USD//JPY'){
-         return 0.001;
-     }else{
+     console.log(id.search("USDJPY"));
+     if(id.search("USDJPY")>=0){
          return 0.0001;
+     }else{
+         return 0.00001;
      }         
  }

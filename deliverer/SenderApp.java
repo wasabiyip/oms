@@ -57,6 +57,7 @@ public class SenderApp extends MessageCracker implements Application{
     @Override
     public void onLogon(SessionID id) {
         SenderApp.sessionID = id;
+        //Para que los threads no se dupliquen cuando el servidor nos desconecta.
         if (!lock){
             this.graficaHandler.addGrafica("EUR/USD", 5);
             ///this.graficaHandler.addGrafica("EUR/USD", 15);

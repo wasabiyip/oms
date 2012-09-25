@@ -50,8 +50,8 @@ public class Settings {
          * Todas las monedas tienen el mismo Point excepto el Yen.
          */
         if(symbol.equals("USD/JPY"))
-            this.Point = 0.001;
-        else this.Point = 0.0001;
+            this.Point = 0.0001;
+        else this.Point = 0.00001;
         
         try {
             Properties config = new Properties();

@@ -25,7 +25,7 @@ public class Expert extends Jedi{
     private BollingerBands bollBandS3 ;
     
     private double promedio;
-    private int velasCont = 0;
+    
     private int velas = 0;
     private double open_min=0.0;
     private double bid=0.0;
@@ -72,8 +72,10 @@ public class Expert extends Jedi{
     @Override
     public void onTick(Double bid) {
         this.bid = bid;
+        //((bid_minuto + ask_minuto)/ 2) - ( boll_sell + bollDownOut)/2
+        
         askMinuto = this.open_min + (ask-bid);
-        bollSell = this.bollDnS() + (setts.Point * setts.spreadAsk); //Este promedio es usado para sacar las ventas.
+        bollSell = this .bollDnS() + (setts.Point * setts.spreadAsk); //Este promedio es usado para sacar las ventas.
         //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
         //descansan por lo menos un día de la semana...
         if (open_min > 0 && this.range(date.getHour())) { //TODO Borrar la condicion de open_min.
