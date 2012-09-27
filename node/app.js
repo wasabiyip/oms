@@ -72,7 +72,6 @@ function evaluar(msj, socket){
                     //Añadimos una grafica al array de graficas, con el Symbol, un ID de graafica 
                     //el socket desde el cual recibimos conexion y los settings del expert que controla
                     //esa grafica.
-                    console.log(income.variables);
                     handler.createGrafica(income.symbol, socket, income.settings);
                     if (!server_precios){
                         console.log('Servidor de precios desconectado');
@@ -99,9 +98,6 @@ function evaluar(msj, socket){
                 webServer.onTick(msj);
                 handler.notify(income.entry,income.symbol, income.precio)
                 
-            }
-            if(income.symbol === 'EUR/USD'){
-                //excel.writePrecio(income.entry, income.precio);
             }
             break;
             //cuando un cliente se desconecta.

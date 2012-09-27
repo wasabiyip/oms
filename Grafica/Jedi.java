@@ -14,6 +14,9 @@ public abstract class Jedi {
     public char currentOrder = '0';
     public boolean lock= true;
     public int velasCont = 0;
+    public double bid=0.0;
+    public double ask=0.0;
+    public double open_min=0.0;
     Jedi(Settings setts, int periodo){
         this.setts = setts;
     }
@@ -105,5 +108,24 @@ public abstract class Jedi {
         currentOrder = type;
         System.err.println("Orden abrio");
         this.lock = false;
+    }
+    /*
+     * Método que promedia un Promedio de bollingers con la variable spreadAask.
+     */
+    public double getAvgBoll(double boll){
+        double temp = (boll  + (boll +(this.setts.spreadAsk * setts.Point)))/2;
+        return redondear(temp);
+    }
+    
+    public double getAvgOpen(){
+        double temp = 0.0;
+        temp = ((this.open_min) + (this.open_min +redondear(this.ask - this.bid)))/2;
+        return redondear(temp);
+    }
+    
+    public double redondear(double val){
+        double temp;
+        temp = Math.rint(val * 10000) / 10000;
+        return temp;
     }
 }

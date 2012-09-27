@@ -9,7 +9,8 @@ import oms.util.idGenerator;
  * Un Expert es el la parte del código que controla la apertura y cierre de las
  * operaciones, esto se hace mediante el uso de indicadores en nuestro caso 
  * particular usamos las "Bollinger Bands". Está basada en el expert "Bollinger
- * sin FIFO 1_8 velas entrada y salida minuto Spread SV".
+ * sin FIFO 1_8 velas entrada y salida minuto Spread SV" con severos ajustes en la
+ * entrada y salida de operaciones.
  * @author omar
  */
 public class Expert extends Jedi{
@@ -26,17 +27,12 @@ public class Expert extends Jedi{
     
     private double promedio;
     
-    private int velas = 0;
-    private double open_min=0.0;
-    private double bid=0.0;
-    private double ask=0.0;
+    private int velas = 0;    
     private Date date = new oms.Grafica.Date();
     private idGenerator idord = new idGenerator();
     private int contVelas=0;
     //Esta la usamos para que no entre a revisar la salida de operaciones si no 
     //hay operaciones.
-    private double askMinuto;
-    private double bollSell;
     private int periodo;
    
     /**
@@ -72,43 +68,39 @@ public class Expert extends Jedi{
     @Override
     public void onTick(Double bid) {
         this.bid = bid;
-        //((bid_minuto + ask_minuto)/ 2) - ( boll_sell + bollDownOut)/2
-        
-        askMinuto = this.open_min + (ask-bid);
-        bollSell = this .bollDnS() + (setts.Point * setts.spreadAsk); //Este promedio es usado para sacar las ventas.
         //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
         //descansan por lo menos un día de la semana...
         if (open_min > 0 && this.range(date.getHour())) { //TODO Borrar la condicion de open_min.
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
             if (lock && ask - bid <= setts.spread * setts.Point){
-                //entrada de operaciones
-                if ((this.open_min + setts.boll_special) <= this.bollDn() && limiteCruce()) {
+                //entrada de operaciones.
+                if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn()) && limiteCruce()) {
                     //Compra
                     orderSend(this.bid, '1');
                     contVelas =0;
-                } else if ((this.open_min - setts.boll_special) >= this.bollUp() && limiteCruce()) {
+                } else if (this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp()) && limiteCruce()) {
                     //Venta
                     orderSend(this.ask, '2');
                     contVelas =0;
                 }
             //Revisamos que haya entrado alguna operación y que los precios se 
             //encuentren dentro de el rango de salida.    
-            } 
+            }
             if (!lock && (ask - bid <= setts.spreadSalida * setts.Point)) {
                 if (setts.salidaBollinger) {
                     //Cierre de compras por promedios bollinger.
                     if (this.currentOrder == '1') {
-                        //si el precio de apertura supera a el promedio de salida
+                        //si el promedio de el precio de apertura supera a el promedio de salida
                         //entonces debemos cerrar todas las compras
-                        if (this.open_min >= this.bollUpS()) {
+                        if (this.getAvgOpen() >= this.getAvgBoll(this.bollUpS())) {
                             System.out.println("Cerrado orden por bollinger");
-                            orderClose(bid,'1');
+                            orderClose(this.bid,'1');
                         }
                     } else if (this.currentOrder == '2') {
                         //si el precio de apertura es inferior a el promedio de salida
                         //entonces debemos cerrar todas las ventas.
-                        //esta salida es especifica de la version 1.8 velas entrada y salida cierre minuto spread SV C1.
-                        if ( ((this.open_min + this.askMinuto)/2) <= (this.bollDnS() + this.bollSell)/2) {
+                        //esta salida es especifica de la version 1.8 velas entrada y salida cierre minuto spread SV.
+                        if ( ((this.getAvgOpen())) <= (this.getAvgBoll(this.bollDnS()))) {
                             System.out.println("Cerrado orden por bollinger");
                             orderClose(this.ask,'2');
                             //Cerramos las ordenes...
@@ -216,8 +208,20 @@ public class Expert extends Jedi{
             temp.append("\"bollDn\":"+ this.bollDn()+ ",");
             temp.append("\"bollUpS\":"+this.bollUpS() + ",");
             temp.append("\"bollDnS\":"+this.bollDnS()+ ",");
-            temp.append("\"Velas\":"+this.contVelas);
-        
+            temp.append("\"Velas\":"+this.contVelas + ",");
+            temp.append("\"Hora\" :"+this.setts.horaIniS);
+        temp.append("}");
+        return temp.toString();
+    }
+    public String getRemain(){
+        StringBuffer temp = new StringBuffer();
+        temp.append("\"variables\":{");
+            temp.append("\"bollUp\":"+ redondear((this.getAvgOpen() + this.setts.boll_special) - this.getAvgBoll(this.bollDn())) + ",");
+            temp.append("\"bollDn\":"+ redondear(redondear(this.getAvgBoll(this.bollUp()))-redondear(this.getAvgOpen() - this.setts.boll_special)) + ",");
+            temp.append("\"bollUpS\":"+ redondear(((this.getAvgOpen())) - (this.getAvgBoll(this.bollUpS()))) + ",");
+            temp.append("\"bollDnS\":"+ redondear(redondear(this.getAvgBoll(this.bollDnS())) - redondear((this.getAvgOpen()))) + ",");
+            temp.append("\"Velas\":"+this.contVelas+",");
+            temp.append("\"Hora\":"+ this.rangeSalida(date.getHour()));        
         temp.append("}");
         return temp.toString();
     }
@@ -228,14 +232,6 @@ public class Expert extends Jedi{
     public void setAsk(Double ask){
         this.ask = ask;
     }
-    /**
-     * Desbloqueamos al expert para que deje de buscar cierre de operaciones y busque
-     * aperturas.
-     */
-    /*public void unlock(){
-        this.lock = true;
-    }
-    */
     /**
      * verificamos que nos encontremos en horas de operacion.
      * @param hora

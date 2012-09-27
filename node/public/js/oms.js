@@ -273,7 +273,6 @@ function playOrder() {
      return $('#'+ graf +' .content-graf h2 .ask').text();
  }
  function getPoint(id){
-     console.log(id.search("USDJPY"));
      if(id.search("USDJPY")>=0){
          return 0.0001;
      }else{

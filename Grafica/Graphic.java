@@ -115,13 +115,6 @@ public class Graphic extends Thread {
      * @param price
      */
     public void onOpen(Double price) {
-        StringBuffer msj = new StringBuffer();
-        msj.append("{");
-        msj.append("\"type\": \"onOpen\",");
-        msj.append("\"precio\": " + price);
-        msj.append("}");
-
-        this.writeNode(msj.toString());
         /**
          * PRECAUCION**------------------------------------------------------
          */
@@ -138,6 +131,14 @@ public class Graphic extends Thread {
             this.onCandle();
             cont = 0;
         }
+        StringBuffer msj = new StringBuffer();
+        msj.append("{");
+        msj.append("\"type\": \"onOpen\",");
+        msj.append("\"precio\": " + price);
+//        msj.append(expert.getRemain());
+        msj.append("}");
+        System.out.println(msj);
+        this.writeNode(msj.toString());
     }
 
     /**
@@ -151,7 +152,6 @@ public class Graphic extends Thread {
         msj.append("\"type\": \"onCandle\",");
         msj.append(expert.getExpertState());
         msj.append("}");
-        System.out.println(msj);
         this.writeNode(msj.toString());
     }
 
