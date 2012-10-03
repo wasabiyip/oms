@@ -65,11 +65,11 @@ public class BollingerBands {
         simpleMovingAverage = new SimpleMovingAverage(getN(), this.values);
         standardDeviation = new StandardDeviation(getN(), this.values);
         // Calculates simple moving average (SMA)
-        middleBand = Math.rint(simpleMovingAverage.getSMA() * 100000) / 100000;
+        middleBand = simpleMovingAverage.getSMA();
         // Calculates the upper band by getting the previously calculated SMA
-        upperBand = Math.rint((simpleMovingAverage.getMean() + (standardDeviation.calculateStdDev() * 2)) * 100000) / 100000;
+        upperBand = simpleMovingAverage.getMean() + (standardDeviation.calculateStdDev() * 2);
         // Calculates the lower band by getting the previously calculated SMA
-        lowerBand = Math.rint((simpleMovingAverage.getMean() - (standardDeviation.calculateStdDev() * 2)) * 100000) / 100000;
+        lowerBand = simpleMovingAverage.getMean() - (standardDeviation.calculateStdDev() * 2);
     }
     
     /**

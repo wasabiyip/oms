@@ -71,6 +71,5 @@ public class Sender  {
         sender.logon();
                 
         shutdownLatch.await();
-        
     }
 }

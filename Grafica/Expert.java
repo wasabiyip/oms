@@ -76,16 +76,19 @@ public class Expert extends Jedi{
                 //entrada de operaciones.
                 if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn()) && limiteCruce()) {
                     //Compra
+                    System.out.println("Enviando compra");
                     orderSend(this.bid, '1');
                     contVelas =0;
                 } else if (this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp()) && limiteCruce()) {
                     //Venta
+                    System.out.println("Enviando venta");
                     orderSend(this.ask, '2');
                     contVelas =0;
                 }
             //Revisamos que haya entrado alguna operación y que los precios se 
             //encuentren dentro de el rango de salida.    
             }
+            //System.out.println(this.getAvgOpen() + " " + this.getAvgBoll(this.bollDnS()));
             if (!lock && (ask - bid <= setts.spreadSalida * setts.Point)) {
                 if (setts.salidaBollinger) {
                     //Cierre de compras por promedios bollinger.
@@ -162,8 +165,9 @@ public class Expert extends Jedi{
      * @return 
      */
     private double bollUp() {
-        return Math.rint(((bollBand1.getUpperBand() + bollBand2.getUpperBand() + 
-                            bollBand3.getUpperBand()) / 3)*100000)/100000;
+        return (bollBand1.getUpperBand() + bollBand2.getUpperBand() + 
+                            bollBand3.getUpperBand())/3;
+        
     }
     
     /**
@@ -171,8 +175,8 @@ public class Expert extends Jedi{
      * @return 
      */
     private double bollUpS() {
-        return Math.rint(((bollBandS1.getUpperBand() + bollBandS2.getUpperBand() + 
-                            bollBandS3.getUpperBand()) / 3)*100000)/100000;
+        return (bollBandS1.getUpperBand() + bollBandS2.getUpperBand() + 
+                            bollBandS3.getUpperBand()) / 3;
     }
 
     /**
@@ -181,8 +185,8 @@ public class Expert extends Jedi{
      */
     private double bollDn() {
 
-        return Math.rint(((bollBand1.getLowerBand() + bollBand2.getLowerBand() + 
-                            bollBand3.getLowerBand()) / 3)*100000)/100000;
+        return (bollBand1.getLowerBand() + bollBand2.getLowerBand() + 
+                            bollBand3.getLowerBand()) / 3;
     }
     
     /**
@@ -191,8 +195,8 @@ public class Expert extends Jedi{
      */
     private double bollDnS() {
 
-        return Math.rint(((bollBandS1.getLowerBand() + bollBandS2.getLowerBand() + 
-                            bollBandS3.getLowerBand()) / 3)*100000)/100000;
+        return (bollBandS1.getLowerBand() + bollBandS2.getLowerBand() + 
+                            bollBandS3.getLowerBand()) / 3;
     }
     
     /**
@@ -204,10 +208,10 @@ public class Expert extends Jedi{
     public String getExpertState(){
         StringBuffer temp = new StringBuffer();
         temp.append("\"variables\":{");
-            temp.append("\"bollUp\":"+ this.bollUp()+ ",");
-            temp.append("\"bollDn\":"+ this.bollDn()+ ",");
-            temp.append("\"bollUpS\":"+this.bollUpS() + ",");
-            temp.append("\"bollDnS\":"+this.bollDnS()+ ",");
+            temp.append("\"bollUp\":"+ redondear(this.bollUp())+ ",");
+            temp.append("\"bollDn\":"+ redondear(this.bollDn())+ ",");
+            temp.append("\"bollUpS\":"+redondear(this.bollUpS()) + ",");
+            temp.append("\"bollDnS\":"+redondear(this.bollDnS())+ ",");
             temp.append("\"Velas\":"+this.contVelas + ",");
             temp.append("\"Hora\" :"+this.setts.horaIniS);
         temp.append("}");

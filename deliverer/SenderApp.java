@@ -60,8 +60,8 @@ public class SenderApp extends MessageCracker implements Application{
         //Para que los threads no se dupliquen cuando el servidor nos desconecta.
         if (!lock){
             this.graficaHandler.addGrafica("EUR/USD", 5);
-            ///this.graficaHandler.addGrafica("EUR/USD", 15);
-           this.graficaHandler.addGrafica("GBP/USD", 5);
+            //this.graficaHandler.addGrafica("EUR/USD", 15);
+            this.graficaHandler.addGrafica("GBP/USD", 5);
             this.graficaHandler.addGrafica("USD/CHF", 5);
             this.graficaHandler.addGrafica("USD/JPY", 5);
             lock=true;
@@ -107,7 +107,7 @@ public class SenderApp extends MessageCracker implements Application{
     @Override
     public void fromAdmin(quickfix.Message msg, SessionID id) throws FieldNotFound, 
                             IncorrectDataFormat, IncorrectTagValue, RejectLogon{
-        System.out.println("fromAdmin->>");
+        //Pues nada...
     }
     
     /**
@@ -118,7 +118,7 @@ public class SenderApp extends MessageCracker implements Application{
      */
     @Override
     public void toApp(quickfix.Message msg, SessionID id) throws DoNotSend{
-        
+        //Pues nada...
     }
     
     /**
@@ -178,19 +178,15 @@ public class SenderApp extends MessageCracker implements Application{
      */
     public void onMessage(quickfix.fix42.MarketDataIncrementalRefresh msj,
             SessionID sessionID) throws FieldNotFound {
-        
         MessageHandler.marketDataPx(msj);
         pricebeat.notifyObservers();        
     }
     
     public void onMessage(quickfix.fix42.ExecutionReport msj, SessionID sessionID) throws FieldNotFound, Exception{
-        
         MessageHandler.executionReport(msj);
-        
     }
     
     public void onMessage(quickfix.fix42.Reject msj) throws FieldNotFound{
-        
         MessageHandler.errorHandler(msj);
     }
 }

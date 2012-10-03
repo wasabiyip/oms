@@ -22,7 +22,7 @@ $(document).ready(function(){
         //pedimos el esta de la grafica hasta este momento.
         socket.emit('grafica-state',{
             id: data.setts.ID
-            });
+        });
         buildGrafica(data);
     });
 
@@ -34,11 +34,12 @@ $(document).ready(function(){
         $(select).empty().append(json.precio);
     });
     //Mensaje de que el socket se desconecto.
-    socket.on('disconnect', function () {
+    socket.on('disconnect', function(){
         $(".icons #estado").empty().append('L');
         $(".icons #estado").css("color","red");
         $(".icons #estado").replaceWith('<span">L</span>');
     });
+                                                                  
     //Datos de cambio de vela.
     socket.on('grafica-candle', function(data){
         var id = unSlash(data.values.id);
@@ -79,8 +80,8 @@ $(document).ready(function(){
         var bid = parseFloat(getBid(id));
         var openMin = parseFloat(data.values.precio);
         var askMin = openMin + (ask-bid);
-        
-        $("#"+id+" .content-graf .promedios h3 span").empty().append(data.values.precio);
+        $("#"+id+" .content-graf .promedios h3 span").empty().append(redondear(data.values.precio));
+        console.log(data.values.precio);
         var bollDn = parseFloat($('#'+id+' .content-graf .promedios ul #bollDn #val').text()) - parseFloat(getPropertie(id,'Boll Special'));
         var bollUp = parseFloat($('#'+id+' .content-graf .promedios ul #bollUp #val').text()) + parseFloat(getPropertie(id,'Boll Special'));
         var upS = parseFloat($('#'+id+' .content-graf .promedios ul #bollUpS #val').text()) - openMin;
@@ -90,10 +91,13 @@ $(document).ready(function(){
         var dnS = ((openMin + askMin)/2) -((bollDnS + bollSell)/2);
         var up= redondear(id,bollUp - data.values.precio );
         var dn= redondear(id, data.values.precio -bollDn );
+        if(up <= 0 && dn <= 0){
+            playWarn();
+        }/*
         $("#"+id+" .content-graf .promedios ul #bollUp #resta").empty().append(up);
         $("#"+id+" .content-graf .promedios ul #bollDn #resta").empty().append(dn);
         $("#"+id+" .content-graf .promedios ul #bollUpS #resta").empty().append(redondear(id, upS));
-        $("#"+id+" .content-graf .promedios ul #bollDnS #resta").empty().append(redondear(id,dnS));
+        $("#"+id+" .content-graf .promedios ul #bollDnS #resta").empty().append(redondear(id,dnS));*/
         hardSorting(id, up, dn, upS, dnS);
     });
     //Entro una orden.
@@ -169,18 +173,18 @@ logClick = function(grafica){
 }
 //Al recibir graficas-ini construimos la grafica recibida. 
 function buildGrafica(data){
-    
+    graficas.push(new Grafica(data.setts));
     var setts = data.setts;
     temp = [];
+    
     //quitamos diagonal de I
     var id = unSlash(setts.ID);
     temp.push(id);
     temp.push(data.setts);
     logs.push(temp);
-    
     //guardamos los id de cada grafica.
     ids.push(id);
-    graficas.push(new grafica(id));
+    //graficas.push(new grafica(id));
     //Creamos html de grafica.
     $("#estrategias").append('<div id='+graficas.length+'></div>');
     $("#estrategias #"+graficas.length).append('<div class=\'grafica\' id=' + id + '></div>');
@@ -242,7 +246,7 @@ function getPropertie(graf, prop){
     return temp;
 }
 
-function redondear(graf, precio){
+function redondear( precio){
         
     return Math.round(precio*10000)/10000;
 }
@@ -266,14 +270,21 @@ function playOrder() {
     $('#sound_element').html(
         "<embed src=sounds/alert.wav hidden=true autostart=true loop=false>");
  }
+function playWarn() {
+    $('#sound_element').html(
+        "<embed src=sounds/alert2.wav hidden=true autostart=true loop=false>");
+ }
+ //Regresamos el Bid actual de determinada grafica.
  function getBid(graf){
      return $('#'+ graf +' .content-graf h2 .bid').text();
  }
+ //Regresamos el Ask actual de determinada grafica
  function getAsk(graf){
      return $('#'+ graf +' .content-graf h2 .ask').text();
  }
+ //Regresamos los pips de deteminada grafica.
  function getPoint(id){
-     if(id.search("USDJPY")>=0){
+     if(id.search("USDJPY") >= 0){
          return 0.0001;
      }else{
          return 0.00001;

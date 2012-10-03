@@ -81,7 +81,6 @@ public abstract class Jedi {
      */
     public void orderClose(Double price, char type){
         order.Close(price, '1');
-
     }
     /**
      * 
@@ -119,13 +118,13 @@ public abstract class Jedi {
     
     public double getAvgOpen(){
         double temp = 0.0;
-        temp = ((this.open_min) + (this.open_min +redondear(this.ask - this.bid)))/2;
-        return redondear(temp);
+        temp = ((this.open_min) + (this.open_min +(this.ask - this.bid)))/2;
+        return temp;
     }
     
     public double redondear(double val){
         double temp;
-        temp = Math.rint(val * 10000) / 10000;
+        temp = Math.rint(val * 1000000) / 1000000;
         return temp;
     }
 }

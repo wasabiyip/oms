@@ -134,10 +134,9 @@ public class Graphic extends Thread {
         StringBuffer msj = new StringBuffer();
         msj.append("{");
         msj.append("\"type\": \"onOpen\",");
-        msj.append("\"precio\": " + price);
+        msj.append("\"precio\": " + expert.getAvgOpen());
 //        msj.append(expert.getRemain());
         msj.append("}");
-        System.out.println(msj);
         this.writeNode(msj.toString());
     }
 

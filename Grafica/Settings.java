@@ -52,7 +52,6 @@ public class Settings {
         if(symbol.equals("USD/JPY"))
             this.Point = 0.0001;
         else this.Point = 0.00001;
-        
         try {
             Properties config = new Properties();
             config.load(new FileInputStream("config/Estrategias/" + Graphic.unSlash(this.symbol) + ".set"));
