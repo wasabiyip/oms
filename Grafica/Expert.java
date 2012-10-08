@@ -82,12 +82,14 @@ public class Expert extends Jedi{
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
             if (lock && ask - bid <= setts.spread * setts.Point){
                 //entrada de operaciones.
-                if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn()) && limiteCruce()) {
+                if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())
+                        && this.bollingerDif() < this.setts.bollxUp && this.bollingerDif()> setts.bollxDn && limiteCruce()) {
                     //Compra
                     System.out.println("Enviando compra");
                     orderSend(this.bid, '1');
                     contVelas =0;
-                } else if (this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp()) && limiteCruce()) {
+                } else if (this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp()) 
+                        && this.bollingerDif() < this.setts.bollxUp && this.bollingerDif()> setts.bollxDn && limiteCruce()) {
                     //Venta
                     System.out.println("Enviando venta");
                     orderSend(this.ask, '2');
