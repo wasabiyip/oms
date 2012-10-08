@@ -208,10 +208,10 @@ public class Expert extends Jedi{
     public String getExpertState(){
         StringBuffer temp = new StringBuffer();
         temp.append("\"variables\":{");
-            temp.append("\"bollUp\":"+ redondear(this.bollUp())+ ",");
-            temp.append("\"bollDn\":"+ redondear(this.bollDn())+ ",");
-            temp.append("\"bollUpS\":"+redondear(this.bollUpS()) + ",");
-            temp.append("\"bollDnS\":"+redondear(this.bollDnS())+ ",");
+            temp.append("\"bollUp\":"+ redondear(this.getAvgBoll(this.bollUp()))+ ",");
+            temp.append("\"bollDn\":"+ redondear(this.getAvgBoll(this.bollDn()))+ ",");
+            temp.append("\"bollUpS\":"+redondear(this.getAvgBoll(this.bollUpS())) + ",");
+            temp.append("\"bollDnS\":"+redondear(this.getAvgBoll(this.bollDnS()))+ ",");
             temp.append("\"Velas\":"+this.contVelas + ",");
             temp.append("\"Hora\" :"+this.setts.horaIniS);
         temp.append("}");
@@ -224,7 +224,6 @@ public class Expert extends Jedi{
             temp.append("\"bollDn\":"+ redondear(redondear(this.getAvgBoll(this.bollUp()))-redondear(this.getAvgOpen() - this.setts.boll_special)) + ",");
             temp.append("\"bollUpS\":"+ redondear(((this.getAvgOpen())) - (this.getAvgBoll(this.bollUpS()))) + ",");
             temp.append("\"bollDnS\":"+ redondear(redondear(this.getAvgBoll(this.bollDnS())) - redondear((this.getAvgOpen()))) + ",");
-            temp.append("\"Velas\":"+this.contVelas+",");
             temp.append("\"Hora\":"+ this.rangeSalida(date.getHour()));        
         temp.append("}");
         return temp.toString();

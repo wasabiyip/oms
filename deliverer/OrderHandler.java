@@ -103,6 +103,8 @@ public class OrderHandler {
         oco.setField(new CharField(7553,tipo));
         double sl = GraficaHandler.getGraf(getGrafId(ordid)).getSL() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
         double tp = GraficaHandler.getGraf(getGrafId(ordid)).getTP() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
+        System.out.println("sl - " + sl);
+        System.out.println("tp - " + tp);
         if (type.equals('1')) {
             oco.setField(new DoubleField(7542, redondear(symbol, GraficaHandler.getAsk(getGrafId(ordid)) - sl)));
             oco.setField(new DoubleField(7540, redondear(symbol,GraficaHandler.getAsk(getGrafId(ordid)) + tp)));

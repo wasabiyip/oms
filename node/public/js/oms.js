@@ -43,32 +43,37 @@ $(document).ready(function(){
     //Datos de cambio de vela.
     socket.on('grafica-candle', function(data){
         var id = unSlash(data.values.id);
+        getGrafica(id).onCandle(data.values.vars);
         $.each(data.values.vars, function(key, val){
+           
             $('#'+id+' .content-graf .promedios ul #' + key + ' #val').empty().append(val);
         });
         if(data.values.vars.Velas>0){
             $('#'+id+' .content-graf .promedios ul #Velas #resta').empty()
-                .append(data.values.vars.Velas - parseInt(getPropertie(id,'Velas Salida')));
+                .append(data.values.vars.Velas - parseInt(getGrafProp(id,'Velas Salida')));
         }else if(data.values.vars.Velas==0){
             $('#'+id+' .content-graf .promedios ul #Velas #resta').empty().append('--No Order--');
         }
     });
     //Datos del tick.
     socket.on('grafica-tick', function(data){
-        symbol = unSlash(data.values.symbol);
-        for(i=0; i<ids.length;i++){
-            if(ids[i].search(symbol)>=0){
+        for(var i in graficas){
+            if(graficas[i].symbol == data.values.symbol){
                 //primero borramos lo que este y después ponemos el precio.
-                if(data.values.tipo==="ask")
-                    $("#estrategias #"+ids[i]+" .content-graf h2 .ask").empty().append(data.values.precio);
-                else
-                    $("#estrategias #"+ids[i]+" .content-graf h2 .bid").empty().append(data.values.precio);
+                if(data.values.tipo == "ask"){
+                    $("#estrategias #"+ graficas[i].id +" .content-graf h2 .ask").empty().append(data.values.precio);
+                    graficas[i].onTick("ask", parseFloat(data.values.precio));
+                }else if(data.values.tipo == "bid"){
+                    $("#estrategias #"+ graficas[i].id +" .content-graf h2 .bid").empty().append(data.values.precio);
+                    graficas[i].onTick("bid", parseFloat(data.values.precio));
+                }
             }
         }
     });
     //Estado actual de la grafica/expert
     socket.on('expert-state', function(data){
         id= unSlash(data.values.id);
+        getGrafica(id).onCandle(data.values.vars);
         $.each(data.values.vars, function(key, val){
             $("#"+id+' .promedios ul').append('<li id='+key + '>' + key +' : <span id="val"> '+ val + '</span> > <span id="resta"></span></li>');
         });
@@ -76,28 +81,28 @@ $(document).ready(function(){
     //cada que hay un precio de apertura de minuto.
     socket.on('grafica-open', function(data){
         var id = unSlash(data.values.id);    
-        var ask = parseFloat(getAsk(id));
+        var temp = getGrafica(id);
+        $("#"+id+" .content-graf .promedios h3 span").empty().append(redondear(data.values.precio));
+        /*var ask = parseFloat(getAsk(id));
         var bid = parseFloat(getBid(id));
         var openMin = parseFloat(data.values.precio);
         var askMin = openMin + (ask-bid);
-        $("#"+id+" .content-graf .promedios h3 span").empty().append(redondear(data.values.precio));
-        console.log(data.values.precio);
-        var bollDn = parseFloat($('#'+id+' .content-graf .promedios ul #bollDn #val').text()) - parseFloat(getPropertie(id,'Boll Special'));
-        var bollUp = parseFloat($('#'+id+' .content-graf .promedios ul #bollUp #val').text()) + parseFloat(getPropertie(id,'Boll Special'));
-        var upS = parseFloat($('#'+id+' .content-graf .promedios ul #bollUpS #val').text()) - openMin;
-        var bollDnS = parseFloat($('#'+id+' .content-graf .promedios ul #bollDnS #val').text());
+        /*var bollDn = parseFloat($('#'+id+' .content-graf .promedios ul #bollDn #val').text()) - parseFloat(getGrafProp(id,'Boll Special'));
+        var bollUp = parseFloat($('#'+id+' .content-graf .promedios ul #bollUp #val').text()) + parseFloat(getGrafProp(id,'Boll Special'));
         //((bid_minuto + ask_minuto)/ 2) - ( boll_sell + bollDownOut)/2
-        var bollSell = bollDnS + parseFloat(getPoint(unID(id)) * parseFloat(getPropertie(id, 'Spread Ask')));
-        var dnS = ((openMin + askMin)/2) -((bollDnS + bollSell)/2);
-        var up= redondear(id,bollUp - data.values.precio );
-        var dn= redondear(id, data.values.precio -bollDn );
+        var bollSell = bollDnS + parseFloat(getPoint(unID(id)) * parseFloat(getGrafProp(id, 'Spread Ask')));
+        var dnS = ((openMin + askMin)/2) -((bollDnS + bollSell)/2);*/
+        var up = redondear(temp.bollUp - (data.values.precio + temp.getPropiedad("Boll Special")));
+        var dn = redondear((data.values.precio - temp.getPropiedad("Boll Special")) -bollDn );
+        var upS = redondear(data.values.precio - temp.bollUpS);
+        var dnS = redondear(temp.bollDnS - data.values.precio);
         if(up <= 0 && dn <= 0){
             playWarn();
-        }/*
+        }
         $("#"+id+" .content-graf .promedios ul #bollUp #resta").empty().append(up);
         $("#"+id+" .content-graf .promedios ul #bollDn #resta").empty().append(dn);
-        $("#"+id+" .content-graf .promedios ul #bollUpS #resta").empty().append(redondear(id, upS));
-        $("#"+id+" .content-graf .promedios ul #bollDnS #resta").empty().append(redondear(id,dnS));*/
+        $("#"+id+" .content-graf .promedios ul #bollUpS #resta").empty().append(redondear(upS));
+        $("#"+id+" .content-graf .promedios ul #bollDnS #resta").empty().append(redondear(dnS));
         hardSorting(id, up, dn, upS, dnS);
     });
     //Entro una orden.
@@ -175,16 +180,9 @@ logClick = function(grafica){
 function buildGrafica(data){
     graficas.push(new Grafica(data.setts));
     var setts = data.setts;
-    temp = [];
-    
     //quitamos diagonal de I
     var id = unSlash(setts.ID);
-    temp.push(id);
-    temp.push(data.setts);
-    logs.push(temp);
     //guardamos los id de cada grafica.
-    ids.push(id);
-    //graficas.push(new grafica(id));
     //Creamos html de grafica.
     $("#estrategias").append('<div id='+graficas.length+'></div>');
     $("#estrategias #"+graficas.length).append('<div class=\'grafica\' id=' + id + '></div>');
@@ -231,19 +229,19 @@ function unID(cadena){
     
     return res.slice(0, res.lastIndexOf("-"));
 }
-//Obetenemos una propiedad determinada de una grafica.
-function getPropertie(graf, prop){
+function getGrafica(graf){
     var temp = null;
-    for(i=0; i<logs.length;i++){
-        if(logs[i][0]==graf) {
-            $.each(logs[i][1], function(key, val){
-                if(key==prop){
-                    temp = val;
-                }
-            });
+    for(var i in graficas){
+        if(graficas[i].id == graf){
+            temp = graficas[i];
         }
     }
     return temp;
+}
+//Obetenemos una propiedad determinada de una grafica.
+function getGrafProp(graf, prop){
+    var temp = getGrafica(graf);      
+    return temp.getPropiedad(prop);
 }
 
 function redondear( precio){
@@ -252,8 +250,8 @@ function redondear( precio){
 }
 
 function hardSorting(id, up, dn, upS, dnS){
-    var ini = parseInt(getPropertie(id,'Hora Inicial'));
-    var fin = parseInt(getPropertie(id,'Hora Final'));
+    var ini = parseInt(getGrafProp(id,'Hora Inicial'));
+    var fin = parseInt(getGrafProp(id,'Hora Final'));
     var hora = parseInt(new Date().getHours()+5); //5 es dependiendo de la hora del broker.
     
     if(hora >= ini && hora <= fin){//Si nos encontramos en horario de operacion
@@ -267,11 +265,11 @@ function hardSorting(id, up, dn, upS, dnS){
 }
 
 function playOrder() {
-    $('#sound_element').html(
+   $('#sound_order').html(
         "<embed src=sounds/alert.wav hidden=true autostart=true loop=false>");
  }
 function playWarn() {
-    $('#sound_element').html(
+    $('#sound_warn').html(
         "<embed src=sounds/alert2.wav hidden=true autostart=true loop=false>");
  }
  //Regresamos el Bid actual de determinada grafica.
