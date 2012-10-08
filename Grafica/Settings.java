@@ -42,6 +42,9 @@ public class Settings {
     public Integer spreadAsk;
     private Integer temp;
     public String id;
+    public Integer bollx1;
+    public Integer bollx2;
+    public Integer bollx3;
     
     public Settings(String symbol) {
         this.symbol = symbol;
@@ -73,6 +76,9 @@ public class Settings {
             horaIniS = new Double(config.getProperty("timesalidainicial"));
             horaFinS = new Double(config.getProperty("timesalidafinal"));
             limiteCruce = new Integer(config.getProperty("limiteCruce"));
+            bollx1 = new Integer(config.getProperty("XBoll"));
+            bollx2 = new Integer(config.getProperty("XBoll2"));
+            bollx3 = new Integer(config.getProperty("XBoll3"));
             //Hacemos esto por que las variables booleanas esperan leer desde el archivo
             // un true o un false y nosotros tenemos un 0 o un 1, y por eso tenemos
             // leerlo como un entero y despues asiganar el valor true o false.

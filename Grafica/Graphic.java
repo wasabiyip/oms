@@ -378,14 +378,14 @@ public class Graphic extends Thread {
     /**
      * @return ultimo precio de compra.
      */
-    public Double getBid(){
+    public Double getBid()throws NullPointerException{
         return this.bid;
     }
     
     /**
      * @return Ultimo precio de venta.
      */
-    public Double getAsk(){
+    public Double getAsk() throws NullPointerException{
         return this.ask;
     }
     

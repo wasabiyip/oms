@@ -103,12 +103,22 @@ public class OrderHandler {
         oco.setField(new CharField(7553,tipo));
         double sl = GraficaHandler.getGraf(getGrafId(ordid)).getSL() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
         double tp = GraficaHandler.getGraf(getGrafId(ordid)).getTP() * GraficaHandler.getGraf(getGrafId(ordid)).getPoint();
-        System.out.println("sl - " + sl);
-        System.out.println("tp - " + tp);
         if (type.equals('1')) {
-            oco.setField(new DoubleField(7542, redondear(symbol, GraficaHandler.getAsk(getGrafId(ordid)) - sl)));
-            oco.setField(new DoubleField(7540, redondear(symbol,GraficaHandler.getAsk(getGrafId(ordid)) + tp)));
-            oco.setField(new CharField(7543,type));
+            try{
+                oco.setField(new DoubleField(7542, redondear(symbol, GraficaHandler.getAsk(getGrafId(ordid)) - sl)));
+                oco.setField(new DoubleField(7540, redondear(symbol,GraficaHandler.getAsk(getGrafId(ordid)) + tp)));
+                oco.setField(new CharField(7543,type));
+            }catch (NullPointerException ex){
+                //En caso de que recibamos un NullPointer al obtener el ask, 
+                //Esperamos 10 millis y hacemos una llamada recursiva a el método con los
+                //mismos valores que recibimos en primera instancia.
+                try {
+                    Thread.sleep(10);
+                    SendOCO(symbol,type, ordid, qty, precio);
+                } catch (InterruptedException ex1) {
+                    Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex1);
+                }
+            }
             
         }else if(type.equals('2')){
             oco.setField(new DoubleField(7542, redondear(symbol,precio + sl)));

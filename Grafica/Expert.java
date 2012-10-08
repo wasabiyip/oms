@@ -24,6 +24,9 @@ public class Expert extends Jedi{
     private BollingerBands bollBandS1;
     private BollingerBands bollBandS2;
     private BollingerBands bollBandS3 ;
+    private BollingerBands bollBandx1;
+    private BollingerBands bollBandx2;
+    private BollingerBands bollBandx3 ;
     
     private double promedio;
     
@@ -55,6 +58,11 @@ public class Expert extends Jedi{
         bollBandS1 = indicador.createBollinger(setts.bollS1);
         bollBandS2 = indicador.createBollinger(setts.bollS2);
         bollBandS3 = indicador.createBollinger(setts.bollS3);
+        
+        bollBandx1 = indicador.createBollinger(setts.bollx1);
+        bollBandx2 = indicador.createBollinger(setts.bollx2);
+        bollBandx3 = indicador.createBollinger(setts.bollx3);
+        
         this.periodo = periodo;
     }
     
@@ -199,6 +207,12 @@ public class Expert extends Jedi{
                             bollBandS3.getLowerBand()) / 3;
     }
     
+    private double bollingerDif(){
+        double tempUp = (bollBandx1.getUpperBand() + bollBandx2.getUpperBand() + bollBand3.getUpperBand())/3 ;
+        double tempDn = (bollBandx1.getLowerBand() + bollBandx2.getLowerBand() + bollBand3.getLowerBand())/3;
+        double temp = tempUp - tempDn;
+        return temp;
+    }
     /**
      * Método usaddo para informar sobre el estado actual del expert, regresa los
      * valores de promedios, de velas, etc. Todos los valores que influyen en el
