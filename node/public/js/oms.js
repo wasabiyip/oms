@@ -83,19 +83,10 @@ $(document).ready(function(){
         var id = unSlash(data.values.id);    
         var temp = getGrafica(id);
         $("#"+id+" .content-graf .promedios h3 span").empty().append(redondear(data.values.precio));
-        /*var ask = parseFloat(getAsk(id));
-        var bid = parseFloat(getBid(id));
-        var openMin = parseFloat(data.values.precio);
-        var askMin = openMin + (ask-bid);
-        /*var bollDn = parseFloat($('#'+id+' .content-graf .promedios ul #bollDn #val').text()) - parseFloat(getGrafProp(id,'Boll Special'));
-        var bollUp = parseFloat($('#'+id+' .content-graf .promedios ul #bollUp #val').text()) + parseFloat(getGrafProp(id,'Boll Special'));
-        //((bid_minuto + ask_minuto)/ 2) - ( boll_sell + bollDownOut)/2
-        var bollSell = bollDnS + parseFloat(getPoint(unID(id)) * parseFloat(getGrafProp(id, 'Spread Ask')));
-        var dnS = ((openMin + askMin)/2) -((bollDnS + bollSell)/2);*/
         var up = redondear(temp.bollUp - (data.values.precio + temp.getPropiedad("Boll Special")));
-        var dn = redondear((data.values.precio - temp.getPropiedad("Boll Special")) -bollDn );
-        var upS = redondear(data.values.precio - temp.bollUpS);
-        var dnS = redondear(temp.bollDnS - data.values.precio);
+        var dn = redondear((data.values.precio - temp.getPropiedad("Boll Special")) - temp.bollDn );
+        var upS = redondear(temp.bollUpS - data.values.precio );
+        var dnS = redondear(data.values.precio - temp.bollDnS);
         if(up <= 0 && dn <= 0){
             playWarn();
         }
@@ -108,12 +99,11 @@ $(document).ready(function(){
     //Entro una orden.
     socket.on('grafica-order', function(data){
        playOrder(); 
-       orderLock = true;
        var graf =  unSlash(data.id);
        var ord = data.ordid;
+       //getGrafica(data).onOrder(data);
        $("#"+ graf + " .operaciones table").append("<tr id="+ data.ordid +"></tr>");
        delete  data['id'];
-       
        $.each(data, function(key,val){
            if(key =='tipo'){
                if(val ==1)
@@ -159,22 +149,21 @@ $(document).ready(function(){
 });
 //Mostramos informacion acerca de esta 
 logClick = function(grafica){
+    var temp = getGrafica(grafica);
     $('.grafica').css("box-shadow", "1px 2px 4px #666");
     $('.grafica').css("-webkit-box-shadow", "1px 2px 4px #666");
     $('.grafica').css("-moz-box-shadow", "1px 2px 4px #666");
     $('#lefty-head').empty().append("<h2>Grafica <span></span></h2>");
-    $('#lefty-head span').empty().append(unID(grafica));
-    for(i=0; i<logs.length;i++){
-        if(logs[i][0]==grafica) {
-            $('#inputs ul').empty();
-            $.each(logs[i][1], function(key, val){
-                $('#inputs ul').append('<li id='+key + '>' + key +' : '+ val + '</li>');
-            });
-            $('#'+grafica).css("box-shadow", "2px 3px 4px #298F00");
-            $('#'+grafica).css("-webkit-box-shadow", "2px 3px 4px #298F00");
-            $('#'+grafica).css("-moz-box-shadow", "1px 2px 4px #298F00");
-        }
-    }
+    $('#lefty-head span').empty().append(temp.symbol);
+    $('#inputs ul').empty();
+    $.each(temp.data, function(key, val){
+        $('#inputs ul').append('<li id='+key + '>' + key +' : '+ val + '</li>');
+    });
+    $('#'+grafica).css("box-shadow", "2px 3px 4px #298F00");
+    $('#'+grafica).css("-webkit-box-shadow", "2px 3px 4px #298F00");
+    $('#'+grafica).css("-moz-box-shadow", "1px 2px 4px #298F00");
+
+    
 }
 //Al recibir graficas-ini construimos la grafica recibida. 
 function buildGrafica(data){

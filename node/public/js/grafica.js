@@ -14,6 +14,7 @@
      this.lastBid;
      this.lastAsk;
      this.point = (this.symbol == "USD/JPY") ? 0.001 : 0.0001;
+     this.orders = []
      /*
       * Regresamos el valor de determinada propiedad para esta grafica.
       */
@@ -52,8 +53,8 @@
      /*
       * Evento de apertura de operación.
       */
-     this.onOrderOpen = function(){
-         
+     this.onOrderOpen = function(orden){
+         this.orders.push(order);
      }
      /*
       *Evento de cierre de operación
