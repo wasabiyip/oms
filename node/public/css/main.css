@@ -256,3 +256,9 @@ menu-icons{
     left: 2px;
     font-size: 10px;
 }
+#terminal{
+    position: relative;
+    width: 200px;
+    height: 150px;
+    background-color: black;
+}

@@ -126,7 +126,7 @@ public class Expert extends Jedi{
                  * si el numero de velas que van desde que entro la operación es igual
                  * a las velas de salida (velasS) tenemos que cerrar las operaciones
                  */
-               if (contVelas==setts.velasS || this.rangeSalida(date.getHour())) {
+               if (contVelas == setts.velasS || this.rangeSalida(date.getHour())) {
                     if (this.currentOrder == '1') {
                         System.out.println("Cerrando orden por velas");
                         order.Close(bid,'1');

@@ -18,6 +18,7 @@ public class Candle {
     private Integer velas = 1;
     private ArrayList precios = new ArrayList();
     private Double openPrice;
+    private int lastOpen;
 
     /**
      * @param periodo perido de la vela,
@@ -38,24 +39,7 @@ public class Candle {
      *
      * @param price este precio de minuto es usado para conformar la vela
      */
-    public void onTick(Double price) {
-
-        precios.add(price);
-        //System.out.println(precios.size());
-        //Cada vez que se cambia vela de 1 min entramos acá.
-        if (precios.size() >= periodo) {
-            //Cada vez que se cambia de vela del periodo entramos acá.
-            temp.add(GMTDate.getDate().toString());
-            temp.add(precios.get(0));
-            temp.add(Collections.max(precios));
-            temp.add(Collections.min(precios));
-            temp.add(precios.get(precios.size() - 1));
-            Candles.add(new ArrayList(temp));
-            this.openPrice = (double) precios.get(0);
-            precios.clear();
-            temp.clear();
-        }
-    }
+   
 
     /**
      * Cambiamos el periodo de la vela.

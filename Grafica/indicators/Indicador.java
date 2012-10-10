@@ -1,5 +1,7 @@
 package oms.Grafica.indicators;
 
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import oms.Grafica.DAO.MongoDao;
 import oms.Grafica.GMTDate;
 import oms.Grafica.indicators.BollingerBands;
@@ -40,17 +42,21 @@ public class Indicador {
 
         ArrayList data = new ArrayList();
         MongoDao dao = new MongoDao();
+        int cont =0;
         ArrayList temp = dao.getCandleData(this.symbol, (periodo * periodoGrafica) + this.dif);
-
-        for (int i = 0; i < dif; i++) {
+        DBObject non = null;
+        for (int i = 1; i < dif; i++) {
             temp.remove(0);
         }
-
         for (int i = 0; i < temp.size(); i++) {
             if (i == 0 || i % periodoGrafica == 0) {
-                data.add(temp.get(i));
+                if(cont < periodo){
+                    data.add(temp.get(i));
+                    cont++;
+                }
             }
         }
+        
         BollingerBands tempBoll = new BollingerBands(periodo, data);
         return tempBoll;
     }

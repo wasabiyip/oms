@@ -100,18 +100,16 @@ public class MongoDao {
         }
         return doble;
     }
-
+    
     public ArrayList getCandleData(String symbol, int periodo) {
         ArrayList precios = new ArrayList();
         this.setDB("history");
         this.setCollection(symbol);
         DBCursor cursor;
-
+        //System.out.println(periodo);
         if (periodo > 0) {
             cursor = this.coll.find().sort(new BasicDBObject("$natural", -1)).limit(periodo);
-
             while (cursor.hasNext()) {
-
                 precios.add(cursor.next().get("Open"));
             }
         } else {

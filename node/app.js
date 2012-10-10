@@ -82,6 +82,7 @@ function evaluar(msj, socket){
             //un open es un precio de apertura de minuto.
             case 'open':
                 handler.notify('open',income.data.Moneda, income.data.Open);
+                console.log(income.data.Open);
                 //handler.notify('close',income.data.Moneda, income.data.Close);
                 break;
                 

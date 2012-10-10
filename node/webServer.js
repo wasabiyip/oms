@@ -91,7 +91,8 @@ exports.onCandle = function(data){
 /*
 recibimos un evento onOpen.
 */
-exports.onOpen= function(data){    
+exports.onOpen= function(data){  
+    console.log(data);
     notify('grafica-open', data);
 }
 
