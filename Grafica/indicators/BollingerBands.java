@@ -147,8 +147,8 @@ public class BollingerBands {
      */
     private ArrayList<Double> refreshArray(double val) {
         
-        this.values.remove(0);
-        this.values.add(n - 1, val);
+        this.values.remove(values.size()-1);
+        this.values.add(0, val);
         return values;
     }
     /*

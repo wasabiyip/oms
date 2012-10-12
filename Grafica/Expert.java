@@ -18,7 +18,8 @@ public class Expert extends Jedi{
     Properties config = new Properties();
     
     private Indicador indicador;
-    BollingerBands bollBand1;
+    private BollingerBands prueba;
+    private BollingerBands bollBand1;
     private BollingerBands bollBand2;
     private BollingerBands bollBand3;
     private BollingerBands bollBandS1;
@@ -64,6 +65,7 @@ public class Expert extends Jedi{
         bollBandx3 = indicador.createBollinger(setts.bollx3);
         
         this.periodo = periodo;
+        prueba = indicador.createBollinger(5);
     }
     
     /**
@@ -76,8 +78,9 @@ public class Expert extends Jedi{
     @Override
     public void onTick(Double bid) {
         this.bid = bid;
+        //System.out.println( prueba.values + " Up: " + prueba.getUpperBand() + " Dn: " + prueba.getLowerBand());
         //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
-        //descansan por lo menos un día de la semana...
+        //descansan por lo menfos un día de la semana...
         if (open_min > 0 && this.range(date.getHour())) { //TODO Borrar la condicion de open_min.
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
             if (lock && ask - bid <= setts.spread * setts.Point){
@@ -149,12 +152,14 @@ public class Expert extends Jedi{
     @Override
     public void onCandle(Double price){
         setPriceBoll(price);
+        //System.out.println("Apertura de vela: " + price);
         if(currentOrder!='0')
             contVelas ++;
          
     }
     @Override
     public void onOpen(Double price){
+        System.out.println("open min : " + price);
         open_min = price;
     }
     /**
@@ -162,12 +167,14 @@ public class Expert extends Jedi{
      * @param price 
      */
     private void setPriceBoll(double price){
+        System.out.println("Precio de apertura vela " + price);
         bollBand1.setPrice(price);
         bollBand2.setPrice(price);
         bollBand3.setPrice(price);
         bollBandS1.setPrice(price);
         bollBandS2.setPrice(price);
         bollBandS3.setPrice(price);
+        prueba.setPrice(price);
     }
     
     /**

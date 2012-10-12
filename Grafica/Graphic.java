@@ -39,6 +39,7 @@ public class Graphic extends Thread {
     private ArrayList<ArrayList> operaciones = new ArrayList();
     public static MongoDao dao = new MongoDao();
     private Settings setts;
+    private int lastOpen = GMTDate.getDate().getMinute();
     /**
      * Constructor!
      *
@@ -115,20 +116,24 @@ public class Graphic extends Thread {
      * @param price
      */
     public void onOpen(Double price) {
-        /**
-         * PRECAUCION**------------------------------------------------------
-         */
-        /**
-         * Esto es inseguro por que si en un minuto no se recibe un precio el /
-         * conteo de velas se va a desfasar. /  
-         /*------------------------------------------------------------------
-         */
+        
         this.cont++;
-
+        //Restamos el minuto actual 
+        int dif = GMTDate.getDate().getMinute() - lastOpen;
+        //System.out.println(GMTDate.getDate() +" - "+ lastOpen + " " +dif);
+        if(dif > 1){
+            System.err.println("Desfase: "+ this.symbol + " " +dao.getCloseAnterior(this.symbol));
+            for(int i=1; i<=dif;i++){
+                System.out.println("Descolapsando...");
+                expert.onTick(dao.getCloseAnterior(this.symbol));
+                candle.onTick(dao.getCloseAnterior(this.symbol));
+                this.cont++;
+            }
+        }
         candle.onTick(price);
         expert.onOpen(price);
         if (this.cont >= this.periodo) {
-            this.onCandle();
+            this.onCandle(price);
             cont = 0;
         }
         StringBuffer msj = new StringBuffer();
@@ -138,13 +143,14 @@ public class Graphic extends Thread {
 //        msj.append(expert.getRemain());
         msj.append("}");
         this.writeNode(msj.toString());
+        this.lastOpen = GMTDate.getDate().getMinute();
     }
 
     /**
      * Cada vez que que tenemos una vela nueva detonamos este método.
      */
-    public void onCandle() {
-        this.expert.onCandle(this.candle.getOpenPrice());
+    public void onCandle(double openCandle) {
+        this.expert.onCandle(openCandle);
 
         StringBuffer msj = new StringBuffer();
         msj.append("{");

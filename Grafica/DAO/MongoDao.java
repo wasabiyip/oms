@@ -203,4 +203,9 @@ public class MongoDao {
         res = coll.find(query);
         return res.count();
     }
+    public double getCloseAnterior(String symbol){
+        DBCursor cursor = this.coll.find().sort(new BasicDBObject("$natural", -1)).limit(2);
+        cursor.next();
+        return (double)cursor.next().get("Close");
+    }
 }
