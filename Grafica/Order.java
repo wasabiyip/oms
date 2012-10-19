@@ -35,10 +35,8 @@ public class Order {
      * @throws Exception
      */
     private void Send(double price, char type, String id , boolean tipo) {
-        if(tipo)
-            ordid = new idGenerator().getID();
-        else
-            ordid = id;
+        
+        ordid= tipo ? new idGenerator().getID(): id;
         quickfix.fix42.NewOrderSingle nworder = new quickfix.fix42.NewOrderSingle();
         nworder.set(new ClOrdID((ordid)));
         nworder.set(new HandlInst('1'));
@@ -89,6 +87,7 @@ public class Order {
     public void Open(double price, char type){
         this.Send(price, type, this.grafid, true);
     }
+    
     /*
     public ArrayList<DBObject> getTotal(){
         ArrayList temp = new ArrayList();

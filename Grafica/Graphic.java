@@ -126,7 +126,7 @@ public class Graphic extends Thread {
             for(int i=1; i<=dif;i++){
                 System.out.println("Descolapsando...");
                 expert.onTick(dao.getCloseAnterior(this.symbol));
-                candle.onTick(dao.getCloseAnterior(this.symbol));
+                //candle.onTick(dao.getCloseAnterior(this.symbol));
                 this.cont++;
             }
         }
@@ -258,7 +258,7 @@ public class Graphic extends Thread {
         try {
             
             ExecutionReport report = (ExecutionReport)orden.get(0);
-            expert.openNotify(report.getSide().getValue());
+            expert.openNotify(report);
             double sl = (double)orden.get(1);
             double tp = (double)orden.get(2); 
             StringBuffer nworden = new StringBuffer();
@@ -404,14 +404,18 @@ public class Graphic extends Thread {
     /**
      * @return Tp de la grafica obtenido de archivo .set
      */
-    public int getTP(){
+    public double getTP(){
         return setts.tp;
     }
     /**
      * @return Sl de la grafica obtenido de archivo .set
      */
-    public int getSL(){
+    public double getSL(){
         return setts.sl;
+    }
+    
+    public double getNwTp(){
+        return setts.nwTp;
     }
     /**
      * @return Point de la grafica obtenido de archivo .set

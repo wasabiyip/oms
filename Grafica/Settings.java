@@ -24,8 +24,8 @@ public class Settings {
     public Double boll_special;
     public Double spread;
     public Double lots;
-    public Integer tp;
-    public Integer sl;
+    public Double tp;
+    public double sl;
     public double Point;
     public Integer limiteMagic = 0;
     public Integer limiteCruce = 0;
@@ -40,13 +40,15 @@ public class Settings {
     public boolean salidaBollinger;
     public boolean salidaMin;
     public Integer spreadAsk;
-    private Integer temp;
     public String id;
     public Integer bollx1;
     public Integer bollx2;
     public Integer bollx3;
     public double bollxUp;
     public double bollxDn;
+    public boolean volatilidad;
+    public double volVal;
+    public double nwTp;
     public Settings(String symbol) {
         this.symbol = symbol;
         
@@ -70,8 +72,8 @@ public class Settings {
             boll_special = new Double(config.getProperty("bollspecial"));
             spread = new Double(config.getProperty("spread"));
             lots = new Double(config.getProperty("Lots"));
-            tp = new Integer(config.getProperty("tp"));
-            sl = new Integer(config.getProperty("sl"));
+            tp = new Integer(config.getProperty("tp")) * this.Point;
+            sl = new Integer(config.getProperty("sl")) * this.Point;
             horaIni = new Double(config.getProperty("horainicial"));
             horaFin = new Double(config.getProperty("horafinal"));
             horaIniS = new Double(config.getProperty("timesalidainicial"));
@@ -82,25 +84,18 @@ public class Settings {
             bollx3 = new Integer(config.getProperty("XBoll3"));
             bollxUp = new Double(config.getProperty("BollxUp"));
             bollxDn = new Double(config.getProperty("BollxDn"));
-            //Hacemos esto por que las variables booleanas esperan leer desde el archivo
-            // un true o un false y nosotros tenemos un 0 o un 1, y por eso tenemos
-            // leerlo como un entero y despues asiganar el valor true o false.
+            volVal = new Double(config.getProperty("volatibidad"))* this.Point;
             velasS = new Integer (config.getProperty("num_velas_salida"));
-            if (velasS == 0)
-                this.salidaVelas = false;
-            else
-                this.salidaVelas = true;
-            temp = new Integer(config.getProperty("Salida"));
-            if (temp==0)
-                this.salidaBollinger = false;
-            else
-                this.salidaBollinger = true;
-            //Lo mismo aca
-            temp = new Integer(config.getProperty("SalidaHora"));
-            if (temp==0)
-                this.salidaMin = false;
-            else
-                this.salidaMin = true;
+            nwTp = new Double(config.getProperty("nwTP"));
+            //Hacemos esto por que las variables booleanas esperan leer desde el archivo
+            // un true o un false y nosotros tenemos un 0 o un 1, y por eso debemos
+            // leerlo como un entero y despues asiganar el valor true o false.
+            //I <3 Ternario
+            this.salidaVelas = (velasS == 0) ? false : true;
+            this.salidaBollinger = (new Integer(config.getProperty("Salida")) == 0) ? false : true;
+            this.salidaMin = (new Integer(config.getProperty("SalidaHora")) == 0) ? false : true;
+            this.volatilidad = (new Integer(config.getProperty("Volatibidad")) == 0) ? false : true;
+            ///-----------------------------------------------------------------///
             spreadSalida = new Integer(config.getProperty("spread_salida"));
             spreadAsk = new Integer(config.getProperty("spread_ask"));
             this.id = config.getProperty("grafid");

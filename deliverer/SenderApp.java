@@ -61,9 +61,9 @@ public class SenderApp extends MessageCracker implements Application{
         if (!lock){
             this.graficaHandler.addGrafica("EUR/USD", 5);
             //this.graficaHandler.addGrafica("EUR/USD", 15);
-            this.graficaHandler.addGrafica("GBP/USD", 5);
+            /*this.graficaHandler.addGrafica("GBP/USD", 5);
             this.graficaHandler.addGrafica("USD/CHF", 5);
-            this.graficaHandler.addGrafica("USD/JPY", 5);
+            this.graficaHandler.addGrafica("USD/JPY", 5);*/
             lock=true;
         }
     }
@@ -186,7 +186,10 @@ public class SenderApp extends MessageCracker implements Application{
         MessageHandler.executionReport(msj);
     }
     
-    public void onMessage(quickfix.fix42.Reject msj) throws FieldNotFound{
+    public void onMessage(quickfix.fix42.OrderCancelReject ordCancelRej,SessionID sessionID){
+        System.err.println("El Horror!... no se pudo modificar la orden: " + ordCancelRej);
+    }
+    public void onMessage(quickfix.fix42.Reject msj, SessionID sessionID) throws FieldNotFound{
         MessageHandler.errorHandler(msj);
     }
 }

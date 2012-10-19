@@ -18,7 +18,6 @@ public class Expert extends Jedi{
     Properties config = new Properties();
     
     private Indicador indicador;
-    private BollingerBands prueba;
     private BollingerBands bollBand1;
     private BollingerBands bollBand2;
     private BollingerBands bollBand3;
@@ -35,10 +34,12 @@ public class Expert extends Jedi{
     private Date date = new oms.Grafica.Date();
     private idGenerator idord = new idGenerator();
     private int contVelas=0;
+    private double volB;
+    private double volS;
     //Esta la usamos para que no entre a revisar la salida de operaciones si no 
     //hay operaciones.
     private int periodo;
-   
+    boolean temp= true;
     /**
      * Constructor...
      * @param symbol Indica el par de monedas con el se va a trabajar.
@@ -63,9 +64,7 @@ public class Expert extends Jedi{
         bollBandx1 = indicador.createBollinger(setts.bollx1);
         bollBandx2 = indicador.createBollinger(setts.bollx2);
         bollBandx3 = indicador.createBollinger(setts.bollx3);
-        
         this.periodo = periodo;
-        prueba = indicador.createBollinger(5);
     }
     
     /**
@@ -81,9 +80,9 @@ public class Expert extends Jedi{
         //System.out.println( prueba.values + " Up: " + prueba.getUpperBand() + " Dn: " + prueba.getLowerBand());
         //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
         //descansan por lo menfos un día de la semana...
-        if (open_min > 0 && this.range(date.getHour())) { //TODO Borrar la condicion de open_min.
+        if (this.range(date.getHour())) { //TODO Borrar la condicion de open_min.
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
-            if (lock && ask - bid <= setts.spread * setts.Point){
+            if (open_min > 10 && lock && ask - bid <= setts.spread * setts.Point){
                 //entrada de operaciones.
                 if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())
                         && this.bollingerDif() < this.setts.bollxUp && this.bollingerDif()> setts.bollxDn && limiteCruce()) {
@@ -142,6 +141,25 @@ public class Expert extends Jedi{
                     }
                 }
             }
+            /**
+             * Volatilidad: Si al haber entrado una orden 
+             */
+            if(!this.lock && !modify && this.setts.volatilidad){
+                
+                this.volB = this.lastOrderPrice - setts.volVal;
+                this.volS = this.lastOrderPrice + setts.volVal;
+                System.out.println((this.lastOrderPrice+setts.volVal));
+                if(this.currentOrder == '1' && this.bid <= volB){
+                    System.err.println("Modificando Compra");
+                    System.out.println(this.lastOrderPrice-setts.sl + " " +this.lastOrderPrice+setts.tp);
+                    orderModify(this.lastOrderPrice-setts.sl, this.lastOrderPrice+setts.tp);
+
+                }else if(this.currentOrder == '2' && this.ask >= volS){
+                    System.err.println("Modificando Venta");
+                    System.out.println((this.lastOrderPrice+setts.sl) + " " +(this.lastOrderPrice-setts.tp));
+                    orderModify(this.lastOrderPrice+setts.sl, this.lastOrderPrice-setts.tp);
+                }
+            }
         }
     }
     
@@ -159,8 +177,12 @@ public class Expert extends Jedi{
     }
     @Override
     public void onOpen(Double price){
-        System.out.println("open min : " + price);
         open_min = price;
+        
+        if(temp){
+            orderSend(this.bid, '1');
+            temp = false;
+        }
     }
     /**
      * Refrescamos las bandas con el precio de apertura de la vela.
@@ -174,7 +196,6 @@ public class Expert extends Jedi{
         bollBandS1.setPrice(price);
         bollBandS2.setPrice(price);
         bollBandS3.setPrice(price);
-        prueba.setPrice(price);
     }
     
     /**

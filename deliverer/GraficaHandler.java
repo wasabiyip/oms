@@ -76,7 +76,7 @@ public class GraficaHandler {
      * @param idgraf
      * @return 
      */
-    public static int getTp(String idgraf){
+    public static Double getTp(String idgraf){
         return getGraf(idgraf).getTP();
     }
     /**
@@ -84,7 +84,7 @@ public class GraficaHandler {
      * @param idgraf
      * @return 
      */
-    public static int getSl(String idgraf){
+    public static Double getSl(String idgraf){
         return getGraf(idgraf).getSL();
     }
     /**

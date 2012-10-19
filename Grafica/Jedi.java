@@ -1,5 +1,15 @@
 package oms.Grafica;
 
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import oms.deliverer.OrderHandler;
+import quickfix.FieldNotFound;
+import quickfix.fix42.ExecutionReport;
+
 /**
  * Esta clase maneja funciones del expert de mas alto nivel. como saber en tiempo de
  * ejecucion si tenemos una orden para bloquear o desbloquer entradas/salidas.
@@ -13,10 +23,13 @@ public abstract class Jedi {
     //es venta
     public char currentOrder = '0';
     public boolean lock= true;
+    public boolean modify= false;
     public int velasCont = 0;
     public double bid=0.0;
     public double ask=0.0;
     public double open_min=0.0;
+    public double lastOrderPrice;
+    public ExecutionReport lastOrder;
     Jedi(Settings setts, int periodo){
         this.setts = setts;
     }
@@ -81,6 +94,7 @@ public abstract class Jedi {
      */
     public void orderClose(Double price, char type){
         order.Close(price, '1');
+        this.lastOrderPrice = price;
     }
     /**
      * 
@@ -103,10 +117,16 @@ public abstract class Jedi {
      * Nos avisan si una orden entro
      * @param type 
      */
-    public void openNotify(char type){
-        currentOrder = type;
-        System.err.println("Orden abrio");
-        this.lock = false;
+    public void openNotify(quickfix.fix42.ExecutionReport order){
+        try {
+            this.lastOrder = order;
+            currentOrder = order.getSide().getObject();
+            System.err.println("Orden abrio");
+            this.lock = false;
+            lastOrderPrice= order.getLastPx().getValue();
+        } catch (FieldNotFound ex) {
+            Logger.getLogger(Jedi.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     /*
      * Método que promedia un Promedio de bollingers con la variable spreadAask.
@@ -122,6 +142,26 @@ public abstract class Jedi {
         return temp;
     }
     
+    public void orderModify(double nwtp, double nwsl){
+        try {
+            DBCollection coll = OrderHandler.mongo.getCollection("operaciones");
+            BasicDBObject mod = new BasicDBObject();
+            mod.append("$set", new BasicDBObject().append("Modify", "Y"));
+            coll.update(new BasicDBObject().append("OrderID", lastOrder.getOrigClOrdID().getValue()), mod);
+            ///Cuando se quiere modificar un OCO, primero cerramos la orden.
+            OrderHandler.closeOCO(lastOrder.getClOrdID().getValue(),'M');
+            Thread.sleep(5);
+            //Enseguida enviamos una orden nueva.
+            OrderHandler.SendOCO(lastOrder.getSymbol().getValue(), lastOrder.getSide().getValue(), lastOrder.getClOrdID().getValue(), 
+                    (int)lastOrder.getOrderQty().getValue(), lastOrder.getLastPx().getValue(),'M');
+             
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Jedi.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FieldNotFound ex) {
+            Logger.getLogger(Jedi.class.getName()).log(Level.SEVERE, null, ex);
+        }        
+        this.modify = true;
+    }
     public double redondear(double val){
         double temp;
         temp = Math.rint(val * 1000000) / 1000000;
