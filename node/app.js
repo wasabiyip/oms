@@ -152,7 +152,10 @@ function evaluar(msj, socket){
             webServer.onOrder(income.data,income.length);
             break;
         case 'onOrderClose':
-            webServer.onOrderClose(income.data)
+            webServer.onOrderClose(income.data);
+            break;
+        case 'orderModify':
+            webServer.orderModify(income.data);
     }
     //Cachamos cualquier error y lo imprimimos.
     }catch(error){

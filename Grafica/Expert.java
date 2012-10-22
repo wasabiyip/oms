@@ -142,22 +142,17 @@ public class Expert extends Jedi{
                 }
             }
             /**
-             * Volatilidad: Si al haber entrado una orden 
+             * Volatilidad: Si al haber entrado una orden regresa al punto de entrada movemos 
+             * el tp.
              */
             if(!this.lock && !modify && this.setts.volatilidad){
-                
                 this.volB = this.lastOrderPrice - setts.volVal;
                 this.volS = this.lastOrderPrice + setts.volVal;
-                System.out.println((this.lastOrderPrice+setts.volVal));
                 if(this.currentOrder == '1' && this.bid <= volB){
-                    System.err.println("Modificando Compra");
-                    System.out.println(this.lastOrderPrice-setts.sl + " " +this.lastOrderPrice+setts.tp);
-                    orderModify(this.lastOrderPrice-setts.sl, this.lastOrderPrice+setts.tp);
+                    orderModify();
 
                 }else if(this.currentOrder == '2' && this.ask >= volS){
-                    System.err.println("Modificando Venta");
-                    System.out.println((this.lastOrderPrice+setts.sl) + " " +(this.lastOrderPrice-setts.tp));
-                    orderModify(this.lastOrderPrice+setts.sl, this.lastOrderPrice-setts.tp);
+                    orderModify();
                 }
             }
         }

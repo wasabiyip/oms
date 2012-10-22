@@ -353,6 +353,20 @@ public class Graphic extends Thread {
         this.dao.recordOrden(this.id,orden,setts.MAGICMA);
         this.operaciones.add(temp);
     }
+    
+    public void orderModify(String ordid, Double precio){
+        expert.modNotify();
+        StringBuffer temp = new StringBuffer();
+            temp.append("{");        
+                temp.append("\"type\":\"orderModify\",");
+                temp.append("\"data\":");
+                temp.append("{"); 
+                    temp.append("\"id\":\""+ordid+"\",");
+                    temp.append("\"nwTp\":\""+precio+"\"");
+                temp.append("}"); 
+            temp.append("}");
+            this.writeNode(temp.toString());
+    }
     /**
      * Asignamos los Stops a la orden debida.
      * @param ordid

@@ -121,6 +121,10 @@ exports.onOrder = function(data){
 exports.onOrderClose = function(data){
     notify('grafica-orderClose', data)
 }
+
+exports.orderModify = function(data){
+    notify('grafica-orderModify', data);    
+}
 /*
 al recibir algun evento mandamos llamar a este método
 para que emita un mensaje determinado a los clientes conectados.

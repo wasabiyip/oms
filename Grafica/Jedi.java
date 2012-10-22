@@ -23,7 +23,7 @@ public abstract class Jedi {
     //es venta
     public char currentOrder = '0';
     public boolean lock= true;
-    public boolean modify= false;
+    boolean modify= false;
     public int velasCont = 0;
     public double bid=0.0;
     public double ask=0.0;
@@ -112,6 +112,13 @@ public abstract class Jedi {
         System.err.println("Orden cerro");
         this.lock = true;
         this.velasCont = 0;
+        this.modify = false;
+    }
+    /**
+     * Ponemos modify como true para asegurarnos que no se vuelva a modificar una orden.
+     */
+    public void modNotify(){
+        this.modify = true;
     }
     /**
      * Nos avisan si una orden entro
@@ -142,7 +149,7 @@ public abstract class Jedi {
         return temp;
     }
     
-    public void orderModify(double nwtp, double nwsl){
+    public void orderModify(){
         try {
             DBCollection coll = OrderHandler.mongo.getCollection("operaciones");
             BasicDBObject mod = new BasicDBObject();

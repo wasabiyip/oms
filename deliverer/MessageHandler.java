@@ -92,11 +92,14 @@ public class MessageHandler {
          */
         if(msj.getOrdType().getValue() == 'V'){
             System.out.println("Modificamos OCO");
+            
         }else if (msj.getOrdType().getValue() == 'W' && !OrderHandler.ocoExists(msj)) {
-            //Entro OCO
-            if(OrderHandler.ocoModify(msj)){
-                System.out.println("Se modifico la orden "+msj.getOrderID().getValue());
+            //Si la entrante es un oco y ya fue modifica notificamos que entro un ajuste 
+            //de oco
+            if(OrderHandler.isModify(msj)){
+                OrderHandler.ocoModify(msj);
             }else{
+                //Si no pues que entro una OCO neuva.
                 OrderHandler.ocoRecord(msj);
             }
         } else if (OrderHandler.Exists(msj) && msj.getOrdStatus().getValue() == '2' && msj.getOrdType().getValue()=='C') {

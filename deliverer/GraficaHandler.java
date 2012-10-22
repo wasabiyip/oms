@@ -2,7 +2,12 @@ package oms.deliverer;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import oms.Grafica.Graphic;
+import quickfix.DoubleField;
+import quickfix.FieldNotFound;
+import quickfix.IntField;
 import quickfix.fix42.ExecutionReport;
 
 /**
@@ -38,25 +43,13 @@ public class GraficaHandler {
      * @param orden 
      */
     public static void orderAccept(String id, ExecutionReport orden) {
-        //recorremo las gráficas en busca de el id correspondiente a la orden que
-        //fue aceptada para notificarla de que su orden fue aceptada.
-        for (int i = 0; i < graficas.size(); i++) {
-            if(graficas.get(i).getID().equals(id)){
-                graficas.get(i).newOrder(orden);
-            }   
-        }
+        getGraf(id).newOrder(orden);
     }
     /**
      * Notificamos a una grafica que su peticion de cierre fue aceptada.
      */
     public static void orderClose(String grafid, String id){
-        
-        for (int i = 0; i < graficas.size(); i++) {
-            if(graficas.get(i).getID().equals(grafid)){
-                System.out.println("notificando acerca de cierre "+ id);
-                graficas.get(i).onOrderClose(id);
-            }   
-        }
+        getGraf(grafid).onOrderClose(id);        
     }
         
     /*
@@ -97,6 +90,19 @@ public class GraficaHandler {
      */
     public static void setStop(String id, String ordid,double sl, double tp){
          getGraf(id).setStops(ordid, sl, tp);
+    }
+    /**
+     * Notificamos que entro una modificación.
+     * @param order 
+     */
+    public static void orderModify(ExecutionReport order){
+        
+        try {
+            //getGraf(order.getClOrdID().getValue()).orderModify(OrderHandler.getGrafId(order.getClOrdID().getValue()),order.getLastPx().getValue());
+            getGraf(OrderHandler.getGrafId(order.getClOrdID().getValue())).orderModify(order.getClOrdID().getValue(), order.getField(new DoubleField(7540)).getValue());
+        } catch (FieldNotFound ex) {
+            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     /**
      * Obtenemos una grafica determinada.

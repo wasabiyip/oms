@@ -86,7 +86,7 @@ public class Settings {
             bollxDn = new Double(config.getProperty("BollxDn"));
             volVal = new Double(config.getProperty("volatibidad"))* this.Point;
             velasS = new Integer (config.getProperty("num_velas_salida"));
-            nwTp = new Double(config.getProperty("nwTP"));
+            nwTp = new Double(config.getProperty("nwTP"))*this.Point;
             //Hacemos esto por que las variables booleanas esperan leer desde el archivo
             // un true o un false y nosotros tenemos un 0 o un 1, y por eso debemos
             // leerlo como un entero y despues asiganar el valor true o false.

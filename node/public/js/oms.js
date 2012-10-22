@@ -127,6 +127,10 @@ $(document).ready(function(){
         else
             document.title = 'Operaciones';
     });
+    //Una orden fue modificada.
+    socket.on('grafica-orderModify',function(data){
+       $("#"+data.id+ " #tp").empty().append(data.nwTp);
+    });
     //Cerramos una orden desde el cliente web.
     closeOrder= function(grafica,order){
         

@@ -117,6 +117,7 @@ public class OrderHandler {
         }
         if (type.equals('1')) {
             try{
+                System.out.println((precio - sl) +" "+ (precio + tp));
                 oco.setField(new DoubleField(7542, redondear(symbol, precio - sl)));
                 oco.setField(new DoubleField(7540, redondear(symbol, precio + tp)));
             }catch (NullPointerException ex){
@@ -132,6 +133,7 @@ public class OrderHandler {
             }
             
         }else if(type.equals('2')){
+            System.out.println((precio + sl) +" "+ (precio - tp));
             oco.setField(new DoubleField(7542, redondear(symbol,precio + sl)));
             oco.setField(new DoubleField(7540, redondear(symbol,precio - tp)));
         }
@@ -269,8 +271,12 @@ public class OrderHandler {
         } else 
             return false;
     }
-    
-    public static boolean ocoModify(quickfix.fix42.ExecutionReport msj){
+    /**
+     * Verificamos que 
+     * @param msj
+     * @return 
+     */
+    public static boolean isModify(quickfix.fix42.ExecutionReport msj){
         boolean temp= false;
         DBCursor res;
         DBCollection coll = mongo.getCollection("operaciones");
@@ -285,6 +291,18 @@ public class OrderHandler {
             temp= true;
         }            
         return temp;
+    }
+    public static void ocoModify(quickfix.fix42.ExecutionReport msj){
+        DBCollection coll = OrderHandler.mongo.getCollection("operaciones");
+        BasicDBObject mod = new BasicDBObject();
+        try {
+            mod.append("$set", new BasicDBObject().append("TakeP", msj.getField(new DoubleField(7540)).getValue()));
+            coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), mod);
+            System.err.println("Modificando : "+ msj.getClOrdID().getValue());
+            GraficaHandler.orderModify(msj);
+        } catch (FieldNotFound ex) {
+            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     /**
      * verificamos si existe una orden con el valor de oco especificado.
@@ -356,7 +374,7 @@ public class OrderHandler {
      * @param ordid
      * @return 
      */
-    private static String getGrafId(String ordid){
+    public static String getGrafId(String ordid){
         String tmp="";
         for (int i = 0; i < ordPool.size(); i++) {
             if(ordPool.get(i).get(1).equals(ordid))
