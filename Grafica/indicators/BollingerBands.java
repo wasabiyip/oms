@@ -1,11 +1,7 @@
 package oms.Grafica.indicators;
 
 
-import oms.Grafica.DAO.MongoDao;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 /**
  * @author Ivan - Hermano de César

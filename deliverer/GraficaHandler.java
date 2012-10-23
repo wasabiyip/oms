@@ -1,13 +1,11 @@
 package oms.deliverer;
 
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Graphic;
 import quickfix.DoubleField;
 import quickfix.FieldNotFound;
-import quickfix.IntField;
 import quickfix.fix42.ExecutionReport;
 
 /**

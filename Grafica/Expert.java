@@ -39,7 +39,6 @@ public class Expert extends Jedi{
     //Esta la usamos para que no entre a revisar la salida de operaciones si no 
     //hay operaciones.
     private int periodo;
-    boolean temp= true;
     /**
      * Constructor...
      * @param symbol Indica el par de monedas con el se va a trabajar.
@@ -82,7 +81,7 @@ public class Expert extends Jedi{
         //descansan por lo menfos un día de la semana...
         if (this.range(date.getHour())) { //TODO Borrar la condicion de open_min.
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
-            if (open_min > 10 && lock && ask - bid <= setts.spread * setts.Point){
+            if (open_min > 0 && lock && ask - bid <= setts.spread * setts.Point){
                 //entrada de operaciones.
                 if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())
                         && this.bollingerDif() < this.setts.bollxUp && this.bollingerDif()> setts.bollxDn && limiteCruce()) {
@@ -173,11 +172,6 @@ public class Expert extends Jedi{
     @Override
     public void onOpen(Double price){
         open_min = price;
-        
-        if(temp){
-            orderSend(this.bid, '1');
-            temp = false;
-        }
     }
     /**
      * Refrescamos las bandas con el precio de apertura de la vela.
