@@ -28,6 +28,7 @@ public abstract class Jedi {
     public double open_min=0.0;
     public double lastOrderPrice;
     public ExecutionReport lastOrder;
+    public int contVelas=0;
     Jedi(Settings setts, int periodo){
         this.setts = setts;
     }
@@ -129,6 +130,7 @@ public abstract class Jedi {
             System.err.println("Orden abrio");
             this.lock = false;
             lastOrderPrice= order.getLastPx().getValue();
+            contVelas =0;
         } catch (FieldNotFound ex) {
             Logger.getLogger(Jedi.class.getName()).log(Level.SEVERE, null, ex);
         }

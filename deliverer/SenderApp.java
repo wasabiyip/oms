@@ -34,20 +34,9 @@ public class SenderApp extends MessageCracker implements Application{
      */
     @Override
     public void onCreate(SessionID id){
-        
-        
-        /*pricebeat.addObserver(new Expert());*/
+        //Si queremos usar la consola personalizada.
         //Console console = new Console();   
         mongo = MongoConnection.getInstance();
-        /*try {
-            Graphic eurusd = new Graphic("EUR/USD", 5);
-            //Graphic usdjpy = new Graphic("USD/JPY", 5);
-            eurusd.start();
-            //usdjpy.start();
-        } catch (IOException ex) {
-            Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        */
     }
     
     /**

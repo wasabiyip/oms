@@ -36,7 +36,7 @@ public class Settings {
     public Double horaIniS = 0.0;
     public Double horaFinS = 0.0;
     public String symbol;
-    public boolean salidaVelas;
+    //public boolean salidaVelas;
     public boolean salidaBollinger;
     public boolean salidaMin;
     public Integer spreadAsk;
@@ -91,7 +91,7 @@ public class Settings {
             // un true o un false y nosotros tenemos un 0 o un 1, y por eso debemos
             // leerlo como un entero y despues asiganar el valor true o false.
             //I <3 Ternario
-            this.salidaVelas = (velasS == 0) ? false : true;
+            //this.salidaVelas = (velasS == 0) ? false : true;
             this.salidaBollinger = (new Integer(config.getProperty("Salida")) == 0) ? false : true;
             this.salidaMin = (new Integer(config.getProperty("SalidaHora")) == 0) ? false : true;
             this.volatilidad = (new Integer(config.getProperty("Volatibidad")) == 0) ? false : true;

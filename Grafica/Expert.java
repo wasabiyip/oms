@@ -33,9 +33,9 @@ public class Expert extends Jedi{
     private int velas = 0;    
     private Date date = new oms.Grafica.Date();
     private idGenerator idord = new idGenerator();
-    private int contVelas=0;
     private double volB;
     private double volS;
+    boolean temp =  true;
     //Esta la usamos para que no entre a revisar la salida de operaciones si no 
     //hay operaciones.
     private int periodo;
@@ -88,19 +88,19 @@ public class Expert extends Jedi{
                     //Compra
                     System.out.println("Enviando compra");
                     orderSend(this.bid, '1');
-                    contVelas =0;
+                    
                 } else if (this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp()) 
                         && this.bollingerDif() < this.setts.bollxUp && this.bollingerDif()> setts.bollxDn && limiteCruce()) {
                     //Venta
                     System.out.println("Enviando venta");
                     orderSend(this.ask, '2');
-                    contVelas =0;
                 }
             //Revisamos que haya entrado alguna operación y que los precios se 
             //encuentren dentro de el rango de salida.    
             }
-            //System.out.println(this.getAvgOpen() + " " + this.getAvgBoll(this.bollDnS()));
+            //System.out.println(!lock+" "+ (ask - bid) +" "+ (setts.spreadSalida * setts.Point));
             if (!lock && (ask - bid <= setts.spreadSalida * setts.Point)) {
+                System.out.println(contVelas + " " + setts.velasS + " " + (contVelas == setts.velasS));
                 if (setts.salidaBollinger) {
                     //Cierre de compras por promedios bollinger.
                     if (this.currentOrder == '1') {
@@ -127,6 +127,7 @@ public class Expert extends Jedi{
                  * si el numero de velas que van desde que entro la operación es igual
                  * a las velas de salida (velasS) tenemos que cerrar las operaciones
                  */
+               
                if (contVelas == setts.velasS || this.rangeSalida(date.getHour())) {
                     if (this.currentOrder == '1') {
                         System.out.println("Cerrando orden por velas");
@@ -164,14 +165,18 @@ public class Expert extends Jedi{
     @Override
     public void onCandle(Double price){
         setPriceBoll(price);
-        //System.out.println("Apertura de vela: " + price);
         if(currentOrder!='0')
             contVelas ++;
+        System.out.println("Apertura de vela: " + price + " " + contVelas);
          
     }
     @Override
     public void onOpen(Double price){
         open_min = price;
+        if(temp){
+            orderSend(this.bid,'1');
+            temp = false;
+        }
     }
     /**
      * Refrescamos las bandas con el precio de apertura de la vela.
