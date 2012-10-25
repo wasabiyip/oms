@@ -178,7 +178,6 @@ public class Expert extends Jedi{
      * @param price 
      */
     private void setPriceBoll(double price){
-        System.out.println("Precio de apertura vela " + price);
         bollBand1.setPrice(price);
         bollBand2.setPrice(price);
         bollBand3.setPrice(price);

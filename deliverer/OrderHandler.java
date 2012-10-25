@@ -79,6 +79,17 @@ public class OrderHandler {
             }
         }
     }
+    public static void ocoResend(quickfix.fix42.ExecutionReport msj){
+        try {
+            String ordid = msj.getClOrdID().getValue();
+            Character tipo = msj.getSide().getValue() =='1'?'2':'1';
+            double precio =  msj.getField(new DoubleField(7542)).getValue()-GraficaHandler.getGraf(getGrafId(ordid)).getSL();
+            
+            SendOCO(msj.getSymbol().getValue(),tipo, ordid,(int)msj.getOrderQty().getValue(),precio,'N');
+        } catch (FieldNotFound ex) {
+            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     /**
      * 

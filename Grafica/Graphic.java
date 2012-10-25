@@ -125,8 +125,8 @@ public class Graphic extends Thread {
             System.err.println("Desfase: "+ this.symbol + " " +dao.getCloseAnterior(this.symbol));
             for(int i=1; i<=dif;i++){
                 System.out.println("Descolapsando...");
-                expert.onTick(dao.getCloseAnterior(this.symbol));
-                //candle.onTick(dao.getCloseAnterior(this.symbol));
+                //Si 
+                expert.onOpen(dao.getCloseAnterior(this.symbol));
                 this.cont++;
             }
         }

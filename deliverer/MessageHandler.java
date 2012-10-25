@@ -72,7 +72,6 @@ public class MessageHandler {
             System.out.println(ex);
         }
     }
-
     /**
      * Mètodo que maneja el mensaje recibido despues de haber enviado una orden.
      *
@@ -87,7 +86,12 @@ public class MessageHandler {
          * revisamos que el OrderID no exista, por que si existe quiere decir
          * que la orden entrante es el cierre de una existente.
          */
-        if(msj.getOrdType().getValue() == 'V'){
+        
+        if(msj.getOrdStatus().getValue() == '8' && msj.getOrdType().getValue() == 'W'){
+            //Si son las 4 entonces todas nuestras OCO expiraran, entoces tenemos
+            //que reenviarlas.ç
+            
+        }else if(msj.getOrdType().getValue() == 'V'){
             System.out.println("Modificamos OCO");
             
         }else if (msj.getOrdType().getValue() == 'W' && !OrderHandler.ocoExists(msj)) {
