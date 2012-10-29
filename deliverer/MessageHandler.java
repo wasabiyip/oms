@@ -79,80 +79,94 @@ public class MessageHandler {
      * @throws FieldNotFound
      */
     public static void executionReport(quickfix.fix42.ExecutionReport msj) throws FieldNotFound, Exception {
-        /**
-         * Aquí recibimos la respuesta del servidor de como fué tratada nuestra
-         * orden el campo ExecType del mensaje contiene esta información.
-         * Primero revisamos que la orden entrante no sea un limit o estop, sino
-         * revisamos que el OrderID no exista, por que si existe quiere decir
-         * que la orden entrante es el cierre de una existente.
-         */
-        
-        if(msj.getOrdStatus().getValue() == '8' && msj.getOrdType().getValue() == 'W'){
-            //Si son las 4 entonces todas nuestras OCO expiraran, entoces tenemos
-            //que reenviarlas.
-            
-        }else if(msj.getOrdType().getValue() == 'V'){
-            System.out.println("Modificamos OCO");
-            
-        }else if (msj.getOrdType().getValue() == 'W' && !OrderHandler.ocoExists(msj)) {
-            //Si la entrante es un oco y ya fue modifica notificamos que entro un ajuste 
-            //de oco
-            if(OrderHandler.isModify(msj)){
-                OrderHandler.ocoModify(msj);
-            }else{
-                //Si no pues que entro una OCO neuva.
-                OrderHandler.ocoRecord(msj);
-            }
-        } else if (OrderHandler.Exists(msj) && msj.getOrdStatus().getValue() == '2' && msj.getOrdType().getValue()=='C') {
-            //Cerramos la OCO de la orden que recibimos un cierre.
-            System.out.println("Cerrando oco "+msj.getClOrdID());
-            OrderHandler.closeOCO(msj.getOrigClOrdID().getValue(),'N');
-        }else if(OrderHandler.Exists(msj)&& msj.getExecType().getValue() =='2' && msj.getOrdType().getValue()=='W'){
-            //Cuando una operacion fue cerrada por TP o SL.
-            System.err.println("La orden " +msj.getClOrdID().getValue()+" cerro por SL o TP");
-            OrderHandler.closeFromOco(msj.getClOrdID().getValue());
-        } else {
-            //Entrada de orden
-            switch (msj.getExecType().getValue()) {
-                case '0':
-                    System.err.println("Pensando " + msj.getClOrdID().getValue() + "...");
-                    break;
-
-                case '1':
-                    System.err.println("La orden fue: \"Partial filled\"");
-                    break;
-
-                case '2':
-                    /**
-                     * Si es 2 quiere decir que la orden fué aceptada y
-                     * procedemos a guardarla en Mongo.
-                     */
-                    OrderHandler.orderNotify(msj);
-                    if (msj.getSide().getValue() == '1') {
-                        OrderHandler.SendOCO(msj.getSymbol().getValue(),'1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue(),'N');
-                        System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
-                               + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
+       switch (msj.getExecType().getValue()) {
+           /*
+            * Aqui entramos por cuatros motivos:
+            * C - Por que una C/V fué aceptada por el servidor y procedera a mandarnos un
+            *     un mensaje de que la orden fue "filled", asi que solo esperamos por el 
+            *     siguiente mensaje para actuar.
+            * W - N - Por que un entro una OCO nueva.
+            * W - M - Por que se modifico una OCO.
+            */
+           case '0':
+               if(msj.getOrdType().getValue() == 'C')
+                   System.err.println("Procesando orden " + msj.getSymbol().getValue() + "...");
+               else if(msj.getOrdType().getValue() == 'W'){
+                   //si regresa true quiere decir que la entrante es una modificación.
+                   if(OrderHandler.isModify(msj)){
+                        System.err.println("Modificando OCO " + msj.getClOrdID().getValue());
+                        OrderHandler.ocoModify(msj);
+                    }else{
+                        //Si no pues que entro una OCO nueva.
+                        System.err.println("Guardando OCO " + msj.getClOrdID().getValue());
+                        OrderHandler.ocoRecord(msj);
                     }
-                    if (msj.getSide().getValue() == '2') {
-                        OrderHandler.SendOCO(msj.getSymbol().getValue(),'2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(),(double)msj.getLastPx().getValue(),'N');
-                        System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
-                              + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
-                    }
-                    break;
-
-                case '4':
-                    //System.err.println("La orden: " + msj.getClOrdID().getValue() + " fué rechazada por el servidor (Insufficient Margin).");
-                    break;
-
-                case '8':
-                    System.err.println("La orden: " + msj.getClOrdID().getValue() + "fué rechazada por el servidor.");
-                    break;
-            }
-        }
+               }
+               break;
+           /**
+            * Acualmente no hemos visto que nos llene parcialmente alguna orden, nos mantenemos
+            * escépticos.
+            */
+           case '1':
+               System.err.println("**¡Peligro: Partial fill " + msj.getClOrdID().getValue() + " algo fué mal!...");
+               break;
+           /**
+            * La orden fue aceptada correctamente, asi que emitimos la notificación
+            * relacionada con las ordenés nuevas o ordenes que cierran.
+            */
+           case '2':
+               if (OrderHandler.Exists(msj)) {
+                   if (msj.getOrdType().getValue() == 'C') {
+                       //Cerramos la orden en el sistema.
+                       OrderHandler.shutDown(msj.getClOrdID().getValue(), msj.getAvgPx().getValue());
+                       //Enviamos cierre de OCO
+                       OrderHandler.closeOCO(msj.getOrigClOrdID().getValue(), 'N');
+                   }else if(msj.getOrdType().getValue() == 'W'){
+                       System.err.println("La orden " + msj.getExecType().getValue() + " cerró por Sl o TP");
+                       OrderHandler.closeFromOco(msj.getClOrdID().getValue());
+                   }
+               }else{
+                   //Si no existe pues notificamos de orden nueva.
+                   OrderHandler.orderNotify(msj);
+               }
+               break;
+           case '3':
+               System.err.println("Done for a day " + msj.getClOrdID().getValue() + " favor de revisar currenex...");
+               break;
+           case '4':
+               if(msj.getOrdType().getValue() == 'W'){
+                   System.err.println("Cerramos OCO " + msj.getClOrdID().getValue());
+               }else{
+                   System.err.println("El horror! la orden fue cancelada " + msj.getClOrdID().getValue() + " no deberiamos entrar aqui, revisar log!");
+               }
+               break;
+           case '5':
+               System.err.println("El horror! *Replace* no esta soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
+               break;
+           case '6':
+               System.err.println("El horror! Pending Cancel no esta soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
+               break;
+           case '7':
+               System.err.println("El horror!  Stopped soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
+               break;
+           case '8':
+               System.err.println("El horror!  Order Rejected " + msj.getClOrdID().getValue() + " -> Colapso, ¡NO ESTA SOPORTADO!");
+               break;
+           case '9':
+               System.err.println("El horror!  Suspended soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
+               break;
+           case 'C':
+               if(msj.getOrdType().getValue() == 'W'){
+                   //Expiro una OCO
+               }else{
+                    System.err.println("El horror!  Expiro algo que no es OCO " + msj.getClOrdID().getValue() + " -> revisar log!");
+               }
+               break;
+       }
+            
     }
 
     public static void errorHandler(quickfix.fix42.Reject msj) throws FieldNotFound {
-
         System.out.println("Error: " + msj.getText().getValue());
     }
 }

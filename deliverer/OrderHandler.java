@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 import oms.Grafica.Graphic;
 import oms.Grafica.Order;
 import oms.dao.MongoDao;    
-import oms.util.idGenerator;
 import quickfix.*;
 import quickfix.field.*;
 import quickfix.fix42.ExecutionReport;
@@ -68,17 +67,31 @@ public class OrderHandler {
      * @param orden
      * @throws Exception
      */
-    public static void orderNotify(ExecutionReport orden) throws Exception {
+    public static void orderNotify(ExecutionReport msj) throws Exception {
         String entry = "";
         for (int i = 0; i < ordPool.size(); i++) {
             //Buscamos la orden que entro en ordPool para obtener el ID de la gráfica
             //que lo envió y así notificar a la respectiva gráfica.
-            if(ordPool.get(i).get(1).equals(orden.getClOrdID().getValue())){
-                GraficaHandler.orderAccept((String)ordPool.get(i).get(0),orden);
+            if (ordPool.get(i).get(1).equals(msj.getClOrdID().getValue())) {
+                GraficaHandler.orderAccept((String) ordPool.get(i).get(0), msj);
                 break;
             }
         }
+        /**
+         * Despues de haber recibido la confirmación de la ordén, enviamos su 
+         * correspondiente OCO.
+         */
+        if (msj.getSide().getValue() == '1') {
+            OrderHandler.SendOCO(msj.getSymbol().getValue(), '1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(), (double) msj.getLastPx().getValue(), 'N');
+            System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
+                    + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
+        }else if (msj.getSide().getValue() == '2') {
+            OrderHandler.SendOCO(msj.getSymbol().getValue(), '2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(), (double) msj.getLastPx().getValue(), 'N');
+            System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
+                    + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
+        }
     }
+    
     public static void ocoResend(quickfix.fix42.ExecutionReport msj){
         try {
             String ordid = msj.getClOrdID().getValue();
@@ -128,7 +141,6 @@ public class OrderHandler {
         }
         if (type.equals('1')) {
             try{
-                System.out.println((precio - sl) +" "+ (precio + tp));
                 oco.setField(new DoubleField(7542, redondear(symbol, precio - sl)));
                 oco.setField(new DoubleField(7540, redondear(symbol, precio + tp)));
             }catch (NullPointerException ex){
@@ -144,7 +156,6 @@ public class OrderHandler {
             }
             
         }else if(type.equals('2')){
-            System.out.println((precio + sl) +" "+ (precio - tp));
             oco.setField(new DoubleField(7542, redondear(symbol,precio + sl)));
             oco.setField(new DoubleField(7540, redondear(symbol,precio - tp)));
         }
@@ -253,8 +264,8 @@ public class OrderHandler {
      * @param coll
      * @throws Exception
      */
-    private static void shutDown(String id, Double price, DBCollection coll) throws Exception {
-
+    public static void shutDown(String id, Double price) throws Exception {
+        DBCollection coll = mongo.getCollection("operaciones");
         BasicDBObject set = new BasicDBObject().append("$set", new BasicDBObject().append("Status", 0));
         BasicDBObject push = new BasicDBObject().append("$set", new BasicDBObject().append("Close", price));
         BasicDBObject hora = new BasicDBObject().append("$set", new BasicDBObject().append("horaClose", new Date().toString()));
@@ -277,7 +288,6 @@ public class OrderHandler {
         query.put("OrderID", id);
         DBCursor cur = coll.find(query);
         if (cur.count() > 0) {
-            shutDown(id, price, coll);
             return true;
         } else 
             return false;
