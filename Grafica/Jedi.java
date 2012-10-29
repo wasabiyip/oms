@@ -34,7 +34,9 @@ public abstract class Jedi {
     }
     public abstract void onTick(Double price);
     public abstract void onCandle(Double price);
-    public abstract void onOpen(Double price);
+    public void onOpen(Double price){
+        open_min = price;
+    }
     /**
      * Método que regresa los valores que la clase Settings lee del archivo de
      * configuración .set
@@ -169,6 +171,7 @@ public abstract class Jedi {
         }        
         this.modify = true;
     }
+    
     public double redondear(double val){
         double temp;
         temp = Math.rint(val * 1000000) / 1000000;

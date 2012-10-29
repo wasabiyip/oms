@@ -89,7 +89,7 @@ public class MessageHandler {
         
         if(msj.getOrdStatus().getValue() == '8' && msj.getOrdType().getValue() == 'W'){
             //Si son las 4 entonces todas nuestras OCO expiraran, entoces tenemos
-            //que reenviarlas.ç
+            //que reenviarlas.
             
         }else if(msj.getOrdType().getValue() == 'V'){
             System.out.println("Modificamos OCO");

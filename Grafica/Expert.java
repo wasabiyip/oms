@@ -100,7 +100,6 @@ public class Expert extends Jedi{
             }
             //System.out.println(!lock+" "+ (ask - bid) +" "+ (setts.spreadSalida * setts.Point));
             if (!lock && (ask - bid <= setts.spreadSalida * setts.Point)) {
-                System.out.println(contVelas + " " + setts.velasS + " " + (contVelas == setts.velasS));
                 if (setts.salidaBollinger) {
                     //Cierre de compras por promedios bollinger.
                     if (this.currentOrder == '1') {
@@ -164,19 +163,7 @@ public class Expert extends Jedi{
      */
     @Override
     public void onCandle(Double price){
-        setPriceBoll(price);
-        if(currentOrder!='0')
-            contVelas ++;
-        System.out.println("Apertura de vela: " + price + " " + contVelas);
-         
-    }
-    @Override
-    public void onOpen(Double price){
-        open_min = price;
-        if(temp){
-            orderSend(this.bid,'1');
-            temp = false;
-        }
+        setPriceBoll(price);        
     }
     /**
      * Refrescamos las bandas con el precio de apertura de la vela.
