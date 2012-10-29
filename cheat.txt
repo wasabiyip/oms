@@ -1,5 +1,5 @@
 #THIS TEXT FILE AIM TO UNFUCK WHAT IS FUCKED. 
-**note: Maybe I nigga talk.
+*******note: Maybe I nigga talk.*************
 /*-------------------------------------------------------------------------------------------------*/
 ##
 #Command for running the node version manager. NVM only for a shell session, so it needs  to be run 
@@ -8,15 +8,15 @@
 . ~/nvm/nvm.sh 
 /*-------------------------------------------------------------------------------------------------*/
 ##
-#If you get the computer frozed mongo will collapse, 'cuz he always expect to be stoped. (
-#yeah sometimes Mongo is a #selfish bitch)
+# If you get the computer frozed mongo will collapse, 'cuz he always expect to be stoped. 
+##(yes sometimes Mongo act like a selfish bitch)
 ##
 systemctl start mongod.service
 /*-------------------------------------------------------------------------------------------------*/
 ##
-#If for some reason Node goes down you gonna need to kill the PID that Node blocked, you do so by:
+# If for some reason Node goes down you gonna need to kill the PID that Node blocked, you do so by:
 # running ps and the "kill -9 <PID>" where <PID> is the number of the Node CMD returned by ps, or you 
-# #can run just "killall -9 node" and this'll kill all node PID's. (killall is a badass command)
+# can just run "killall -9 node" and this'll kill all node PID's. (killall is a badass command)
 ##
 /*-------------------------------------------------------------------------------------------------*/
 
