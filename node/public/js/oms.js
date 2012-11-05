@@ -61,10 +61,10 @@ $(document).ready(function(){
             if(graficas[i].symbol == data.values.symbol){
                 //primero borramos lo que este y después ponemos el precio.
                 if(data.values.tipo == "ask"){
-                    $("#estrategias #"+ graficas[i].id +" .content-graf h2 .ask").empty().append(data.values.precio);
+                    $("#estrategias #"+ graficas[i].id +" .content-graf .ask").empty().append(data.values.precio);
                     graficas[i].onTick("ask", parseFloat(data.values.precio));
                 }else if(data.values.tipo == "bid"){
-                    $("#estrategias #"+ graficas[i].id +" .content-graf h2 .bid").empty().append(data.values.precio);
+                    $("#estrategias #"+ graficas[i].id +" .content-graf .bid").empty().append(data.values.precio);
                     graficas[i].onTick("bid", parseFloat(data.values.precio));
                 }
             }
@@ -75,14 +75,14 @@ $(document).ready(function(){
         id= unSlash(data.values.id);
         getGrafica(id).onCandle(data.values.vars);
         $.each(data.values.vars, function(key, val){
-            $("#"+id+' .promedios ul').append('<li id='+key + '>' + key +' : <span id="val"> '+ val + '</span> > <span id="resta"></span></li>');
+            $("#"+id+' .promedios ul').append('<li id='+key + '>' + key +' : <span class="text-info" id="val"> '+ val + '</span> > <span class="text-error"  id="resta"></span></li>');
         });
     });
     //cada que hay un precio de apertura de minuto.
     socket.on('grafica-open', function(data){
         var id = unSlash(data.values.id);    
         var temp = getGrafica(id);
-        $("#"+id+" .content-graf .promedios h3 span").empty().append(redondear(data.values.precio));
+        $("#"+id+" .content-graf .promedios h5 span").empty().append(redondear(data.values.precio));
         var up = redondear(temp.bollUp - (data.values.precio + temp.getPropiedad("Boll Special")));
         var dn = redondear((data.values.precio - temp.getPropiedad("Boll Special")) - temp.bollDn );
         var upS = redondear(temp.bollUpS - data.values.precio );
@@ -113,7 +113,8 @@ $(document).ready(function(){
                
            }else $("#"+data.ordid).append('<td><span id='+key+ '>'+val+'</span></td>');
        });
-       $("#"+data.ordid).append('<td><span class=\'cerrar\' title="Cerrar operacion" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">x</span></td>');
+       $("#"+data.ordid).append('<td><a class="btn" href="#"> <i class="icon-remove-circle"></i></td>');
+       //$("#"+data.ordid).append('<td><span class=\'cerrar\' title="Cerrar operacion" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">x</span></td>');
        //para que el title del navegador se muestre las operaciones que tenemos.
        document.title = 'Operaciones (' + ++contOp +')';
        
@@ -177,19 +178,24 @@ function buildGrafica(data){
     var id = unSlash(setts.ID);
     //guardamos los id de cada grafica.
     //Creamos html de grafica.
-    $("#estrategias").append('<div id='+graficas.length+'></div>');
-    $("#estrategias #"+graficas.length).append('<div class=\'grafica\' id=' + id + '></div>');
-    $("#"+id).append('<div class=\'content-graf\'></div>');
-    $("#"+id).append('<div class=\'menu-graf\'><div class=\'icons\'></div></div>');
-    $("#"+id +" .content-graf").append('<h2>'+ setts.symbol +' bid: <span class="bid">--------</span> ask: <span class="ask">-------</span></h2>');
-    $("#"+id +" .content-graf").append('<div id="log-data" style="display:none;"></div>');
+
+    if(graficas.length >1 && graficas.length % 2 ==1)
+       $("#estrategias").append('<div class="row-fluid"></div>');
+
+    $("#estrategias .row-fluid").last().append('<div class="span6" id='+graficas.length+'></div>');
+    $("#estrategias .row-fluid #"+graficas.length).append('<div class=\'grafica\' id=' + id + '></div>');
+    $("#"+id).append('<div class=\'content-graf\'></div>'); 
+    $("#"+id +" .content-graf").append('<h4>'+ setts.symbol +'</h4> <p id="stream">Bid: <span class="bid">--------</span> Ask: <span class="ask">-------</span></p>');
+    $("#"+id +" .content-graf").append('<hr/><div id="log-data" style="display:none;"></div>');
     $("#"+id +" .content-graf").append('<div class=\'promedios\'></<div>');
     $("#"+id +" .content-graf").append('<div class=\'operaciones\'></<div>');     
-    $("#"+id +" .content-graf .promedios").append('<h3>Apertura Minuto <span class=apertura>-------</span></h3>');
-    $("#"+id +" .content-graf .promedios").append('<h3>Promedios</h3><ul></ul>');
-    $("#"+id +" .content-graf .operaciones").append('<table></table>');
-    $("#"+id +" .content-graf .operaciones table").append('<tr><th>Orden</th><th>Tipo</th><th>Lotes</th><th>Símbolo</th><th>Precio</th><th>SL</th><th>TP</th></tr>');
-    $("#"+id +" .menu-graf .icons").append('<span id=\'estado\' title="Conectado" onClick=estadoClick(\''+id+'\')>l</span><span id=\'log\' title="Datos Expert" onClick=logClick(\''+ id +'\')>K</span>');
+    $("#"+id +" .content-graf .promedios").append('<h5>Apertura Minuto <span class=apertura>-------</span></h5>');
+    $("#"+id +" .content-graf .promedios").append('<h5>Promedios</h5><ul id="calculos"class="unstyled"></ul>');
+    $("#"+id +" .content-graf .operaciones").append('<table class="table table-condensed"></table>');
+    $("#"+id +" .content-graf .operaciones .table").append('<tr><th>Orden</th><th>Tipo</th><th>Lotes</th><th>Símbolo</th><th>Precio</th><th>SL</th><th>TP</th></tr>');
+    //Añadir botones de estado de la grafica y demás
+    //$("#"+id +" .menu-graf .icons").append('<span id=\'estado\' title="Conectado" onClick=estadoClick(\''+id+'\')>l</span><span id=\'log\' title="Datos Expert" onClick=logClick(\''+ id +'\')>K</span>');
+    
     //Borramos estos elementos por que no queremos escribirlos en la pagina
     delete  setts['symbol'];
     delete  setts['ID'];
@@ -281,3 +287,19 @@ function playWarn() {
          return 0.00001;
      }         
  }
+function getCurrencySymbol(symbol){
+    switch (symbol){
+        case 'EUR/USD':
+            return '€/$';
+            break;
+        case 'GBP/USD':
+            return '£/$';
+            break;
+        case 'USD/CHF':
+            return '$/₣';
+            break;
+        case 'USD/JPY':
+            return '$/¥';
+            break;
+    }
+}
