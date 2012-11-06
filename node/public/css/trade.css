@@ -1,0 +1,67 @@
+body {
+    line-height: 1;
+    color: #1A202C;
+    background-image:url(../imgs/transmit.gif); 
+    background-repeat:repeat
+    color: #333333;
+    font-family: ‘Lucida Console’, Monaco, monospace;
+}
+
+hr{
+    margin: 0;
+}
+
+#wrap{
+    background-color: rgba(249, 249, 249, 0.6);
+    height:100%;
+    width: 100%;
+    position: absolute;
+}
+h4,h5,p{
+    margin: 1px 0 2px 0;
+}
+
+#estrategias, .span3{
+    margin-top: 50px;
+}
+.span6{ 
+    margin-bottom: 10px;
+    background-color: #FFF;
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    -border-radius:3px;
+     box-shadow: 1px 2px 4px #666;
+    -webkit-box-shadow: 1px 2px 5px #666;
+    -moz-box-shadow: 1px 2px 4px #666; 
+    color : #343643;
+    font-family: ‘Courier New’, Courier, monospace;
+}
+
+.grafica{
+    padding: 10px;
+    font-weight: bold;
+    min-width: 350px;
+}
+.bid{
+    background-color: blue;
+    color:#FFF;
+}
+.ask{
+    background-color: #E00E0E;
+    color:#FFF;
+}
+
+#stream{
+    font-size: 16px;
+    line-height: 2em;
+}
+
+#calculos{
+    margin: 0 0 5px 50px;  
+}
+#calculos li {
+    
+}
+.well{
+    padding: 11px;
+}
