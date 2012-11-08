@@ -2,7 +2,6 @@
 var server_precios, server_op;
 var clients = [];
 var Graficas = [];
-
 //Creamos una grafica y la añadimos a Graficas[]. 
 exports.createGrafica = function(symbol, socket, settings){
 

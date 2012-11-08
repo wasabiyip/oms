@@ -4,7 +4,3 @@ module.exports = function(app,models){
 		res.render('index', { title: 'Trade' })
 	});
 }
-
-exports.crap = function(){
-	return "hola";
-}

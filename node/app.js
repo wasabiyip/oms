@@ -2,13 +2,13 @@
 **/
 //Dependencias
 var net = require('net');
-var webServer = require('./webServer');
+var webServer = require('./webServer/webServer');
 var app = net.createServer();
-var handler = require('./Handler');
-var excel = require('./util/Excel');
+var handler = require('./Handler'); 
 //Iniciamos el servidor TCP.
 var Graficas = [];
 var server_precios, server_op;
+
 app.on('connection', function(client) {
 
     client.name = client.remotePort;
@@ -52,6 +52,7 @@ function evaluar(msj, socket){
     try{
 
         var income = JSON.parse(msj);
+        
         switch (income.type){
             //Un cliente conectado
             case 'login':
