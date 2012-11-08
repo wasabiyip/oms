@@ -1,30 +1,28 @@
+/**
+ * Module dependencies.
+ */
+var net = require('net');
+var express = require('../../../../../lib/node_modules/express')
+  , routes = require('./routes')
+  ,io = require('../../../../../lib/node_modules/socket.io');
 
-//Este es el servidor web que maneja la comunicación entre la aplicación y el usuario.
-//
-//Dependecias->
-var sys = require('util'),
-express = require('../../../../lib/node_modules/express'),
-app= express.createServer('localhost'),
-io = require('../../../../lib/node_modules/socket.io');
-app.set('view options', {layout:false});
-app.use(express.static(__dirname + '/public'));
-//Iniciamos conexion con Mongo
-var databaseUrl = 'history';
-var collection = ['operaciones'];
-var db = require('../../../../lib/node_modules/mongojs').connect(databaseUrl, collection);
-
+var config = require('./config.js');
+var app = express.createServer();
 var webClients = [];
-var handler =  require('./Handler');
-var waitState;
-var waitOps;
+var handler =  require('../Handler');
 
-app.get('/', function (req, res) {
-    
-    });
+//Configuration
+var settings = new config(app, express);
 
-app.listen(3000);
-contState = 0;
-contOps = 0;
+var models={};
+console.log(settings.app());
+//Routes
+var routes = require('./routes')(app,models);
+
+app.listen(3000, function(){
+  console.log("WebServer listening on port %d in %s mode", app.address().port, app.settings.env);
+});
+
 var server = io.listen(app); 
 
 server.sockets.on('connection', function (client){ 
@@ -78,7 +76,6 @@ exports.clientsLength = function(){
 }
 
 exports.onTick = function(data){
-
     notify('grafica-tick', data);
 }
 /*
@@ -125,12 +122,12 @@ exports.onOrderClose = function(data){
 exports.orderModify = function(data){
     notify('grafica-orderModify', data);    
 }
+
 /*
 al recibir algun evento mandamos llamar a este método
 para que emita un mensaje determinado a los clientes conectados.
 */
 function notify(mensaje, data){
-
     for (i=0; i<webClients.length; i++){
         webClients[i].emit(mensaje,data);
     }
