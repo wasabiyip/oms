@@ -1,3 +1,4 @@
+//-------------------------**CONFIG**-------------------------------------//****
 module.exports = function (app, express){
 	
 	//Configuracion etandar

@@ -23,7 +23,7 @@ $(document).ready(function(){
         socket.emit('grafica-state',{
             id: data.setts.ID
         });
-        buildGrafica(data);
+        //buildGrafica(data);
     });
 
     //Recibimos un mensaje genérico.
@@ -178,7 +178,6 @@ function buildGrafica(data){
     var id = unSlash(setts.ID);
     //guardamos los id de cada grafica.
     //Creamos html de grafica.
-
     if(graficas.length >1 && graficas.length % 2 ==1)
        $("#estrategias").append('<div class="row-fluid"></div>');
 

@@ -49,10 +49,9 @@ public class SenderApp extends MessageCracker implements Application{
         //Para que los threads no se dupliquen cuando el servidor nos desconecta.
         if (!lock){
             this.graficaHandler.addGrafica("EUR/USD", 5);
-            //this.graficaHandler.addGrafica("EUR/USD", 15);
-            /*this.graficaHandler.addGrafica("GBP/USD", 5);
+            this.graficaHandler.addGrafica("GBP/USD", 5);
             this.graficaHandler.addGrafica("USD/CHF", 5);
-            this.graficaHandler.addGrafica("USD/JPY", 5);*/
+            this.graficaHandler.addGrafica("USD/JPY", 5);
             lock=true;
         }
     }

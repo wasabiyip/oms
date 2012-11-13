@@ -50,7 +50,6 @@ app.listen(8080);
 function evaluar(msj, socket){
     //convertimos la cadena entrante a JSON
     try{
-
         var income = JSON.parse(msj);
         
         switch (income.type){
@@ -72,6 +71,7 @@ function evaluar(msj, socket){
                     //el socket desde el cual recibimos conexion y los settings del expert que controla
                     //esa grafica.
                     handler.createGrafica(income.symbol, socket, income.settings);
+                    webServer.addGrafica(income.symbol, income.settings);
                     if (!server_precios){
                         console.log('Servidor de precios desconectado');
                     }

@@ -5,26 +5,22 @@ var net = require('net');
 var express = require('../../../../../lib/node_modules/express')
   , routes = require('./routes')
   ,io = require('../../../../../lib/node_modules/socket.io');
-
-var config = require('./config.js');
+var models = {};
+var obj_Config = require('./config.js');
 var app = express.createServer();
 var webClients = [];
 var handler =  require('../Handler');
-
-//Configuration
-var settings = new config(app, express);
-
-var models={};
-console.log(settings.app());
+//Configuration.
+var config = new obj_Config(app, express);
+models.graf_modl = require('./models/graficaModel');
 //Routes
-var routes = require('./routes')(app,models);
+require('./routes')(app, models);
 
 app.listen(3000, function(){
   console.log("WebServer listening on port %d in %s mode", app.address().port, app.settings.env);
 });
-
+//TODO -- Look for a place to move this shit on.
 var server = io.listen(app); 
-
 server.sockets.on('connection', function (client){ 
     
     client.on('disconnect', function () {
@@ -94,7 +90,7 @@ exports.onOpen= function(data){
 }
 
 exports.expertState = function(data){
-
+    var contState;
     if(waitState !== null){
         waitState.emit('expert-state',data);
         if(contState>=handler.graficasLength){
@@ -121,6 +117,14 @@ exports.onOrderClose = function(data){
 
 exports.orderModify = function(data){
     notify('grafica-orderModify', data);    
+}
+//Al recibir un login de una grafica, almacenamos e
+exports.addGrafica = function(symbol, settings){
+    var str = {
+        symbol : symbol,
+        setts : settings
+    }
+    models.graf_modl.addGrafica(str);
 }
 
 /*

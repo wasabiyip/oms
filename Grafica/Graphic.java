@@ -78,15 +78,19 @@ public class Graphic extends Thread {
                     + "\"symbol\":\"" + this.symbol + "\","
                     + this.expert.getExpertInfo() +","
                     + this.expert.getExpertState() 
-                    + "}\n");
-
+                    + "}");
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+            }
             StringBuffer msjout = new StringBuffer();
             StringBuffer msjin = new StringBuffer();
             msjout.append("{");
             msjout.append("\"type\": \"onCandle\",");
 
             msjout.append(expert.getExpertState());
-            msjout.append("}");
+            msjout.append("}\n");
             this.writeNode(msjout.toString());
             //Leemos mensajes de node
             BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
