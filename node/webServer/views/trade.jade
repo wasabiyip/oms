@@ -1,6 +1,7 @@
 extends layout
 
 block content
+
   .container-fluid
     .row-fluid
       .span3
@@ -8,13 +9,40 @@ block content
           .well.sidebar-nav
             h4 Journal
       .span9
-        #estrategias
-          - if (graficas.length == 0)
-              h1 No hay graficas conectadas :(
-          - else
-              for grafica in graficas
-                -if (graficas.length % 2 ==1)
-                .row-fluid
-                  .span6
-                    h1 #{grafica.setts.ID}
-                  
+        #estrategias    
+        -var cont=1
+        -var temps = []
+          if graficas.length==0
+            h1 No hay graficas conectadas :(
+          else  
+            each grafica in graficas
+              -temps.push(grafica.setts)
+              if temps.length == 2
+                .rowfluid
+                  each temp in temps
+                    .span6
+                      div(id= temp.ID, class="grafica")
+                        .content-graf
+                            h4 #{temp.symbol}
+                            p#stream
+                              strong Bid
+                                span.bid -------
+                              strong Ask
+                                span.ask -------
+                              .promedios
+                                h5 Apertura de minuto
+                                  span.apertura
+                                h5 Promedios
+                                  ul#calculos.unstyled
+                              .operaciones
+                                table.table.table-condensed
+                                  tr
+                                    th Order
+                                    th Tipo
+                                    th Lotes
+                                    th Par
+                                    th Precio
+                                    th SL
+                                    th TP
+
+                -temps =[]

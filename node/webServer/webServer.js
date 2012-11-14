@@ -119,9 +119,8 @@ exports.orderModify = function(data){
     notify('grafica-orderModify', data);    
 }
 //Al recibir un login de una grafica, almacenamos e
-exports.addGrafica = function(symbol, settings){
+exports.addGrafica = function(settings){
     var str = {
-        symbol : symbol,
         setts : settings
     }
     models.graf_modl.addGrafica(str);

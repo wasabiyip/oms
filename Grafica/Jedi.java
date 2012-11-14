@@ -59,13 +59,13 @@ public abstract class Jedi {
             init.append("\"BollS3\" : " + setts.bollS3 + ",");
             init.append("\"TP\" : " + setts.tp + ",");
             init.append("\"SL\" : " + setts.sl + ",");
-            init.append("\"Velas Salida\": " + setts.velasS + ",");
-            init.append("\"Hora Inicial\":" + setts.horaIni + ",");
-            init.append("\"Hora Final\" :" + setts.horaFin +",");
-            init.append("\"Hora Salida\" :" + setts.horaIniS+",");
-            init.append(" \"Periodo\" :" + periodo + ",");
-            init.append(" \"Boll Special\" :" + setts.boll_special+",");
-            init.append(" \"Spread Ask\" :" + setts.spreadAsk);
+            init.append("\"VelasSalida\": " + setts.velasS + ",");
+            init.append("\"horaInicial\":" + setts.horaIni + ",");
+            init.append("\"horaFinal\" :" + setts.horaFin +",");
+            init.append("\"horaSalida\" :" + setts.horaIniS+",");
+            init.append("\"Periodo\" :" + periodo + ",");
+            init.append("\"bollSpecial\" :" + setts.boll_special+",");
+            init.append("\"spreadAsk\" :" + setts.spreadAsk);
             init.append("}");
         return init;
     }
