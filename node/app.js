@@ -140,6 +140,7 @@ function evaluar(msj, socket){
                     "vars": income.variables
                     }
                 };
+            console.log('Estate');
             webServer.expertState(msj);
             break;
         case 'onOrderInit':

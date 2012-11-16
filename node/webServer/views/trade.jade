@@ -10,7 +10,6 @@ block content
             h4 Journal
       .span9
         #estrategias    
-        -var cont=1
         -var temps = []
           if graficas.length==0
             h1 No hay graficas conectadas :(
@@ -23,17 +22,25 @@ block content
                     .span6
                       div(id= temp.ID, class="grafica")
                         .content-graf
-                            h4 #{temp.symbol}
+                            .graf-head
+                              h4 #{temp.symbol}
+                              .btn-group.pull-right(id="opciones")
+                                a.btn-small.btn.btn-primary.dropdown-toggle(data-toggle='dropdown',href='#') Opciones 
+                                  span.caret
+                                ul.dropdown-menu
+                                  li(data-filter-camera-type='all')
+                                    a(id="inputs",rel="popover") Inputs                           
+                            hr
                             p#stream
                               strong Bid
-                                span.bid -------
+                              span.bid -------
                               strong Ask
-                                span.ask -------
+                              span.ask -------
                               .promedios
                                 h5 Apertura de minuto
                                   span.apertura
                                 h5 Promedios
-                                  ul#calculos.unstyled
+                                ul#calculos.unstyled
                               .operaciones
                                 table.table.table-condensed
                                   tr

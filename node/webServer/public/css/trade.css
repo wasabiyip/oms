@@ -24,18 +24,6 @@ h4,h5,p{
 #estrategias, .span3{
     margin-top: 50px;
 }
-.span6{ 
-    margin-bottom: 10px;
-    background-color: #FFF;
-    -webkit-border-radius:3px;
-    -moz-border-radius:3px;
-    -border-radius:3px;
-     box-shadow: 1px 2px 4px #666;
-    -webkit-box-shadow: 1px 2px 5px #666;
-    -moz-box-shadow: 1px 2px 4px #666; 
-    color : #343643;
-    font-family: ‘Courier New’, Courier, monospace;
-}
 
 .grafica{
     padding: 10px;
@@ -47,6 +35,7 @@ h4,h5,p{
     color:#FFF;
 }
 .ask{
+    padding-right: 5px;
     background-color: #E00E0E;
     color:#FFF;
 }
@@ -62,6 +51,39 @@ h4,h5,p{
 #calculos li {
     
 }
+#stream strong, .apertura{
+    margin: 5px
+}
+#inputs{
+    
+}
+#opciones li{
+    vertical-align: middle;
+    cursor: pointer;
+}
+#opciones ul li:hover{
+    color: #333333;
+    background-color: #e6e6e6;
+}
+//@Cosas que sobreescriben estilos de bootstrap
+.arrow {
+  top: 50%;
+}
+.popover{
+    width: 165px;
+}
 .well{
     padding: 11px;
+}
+.span6{ 
+    margin-bottom: 10px;
+    background-color: #FFF;
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    -border-radius:3px;
+     box-shadow: 1px 2px 4px #666;
+    -webkit-box-shadow: 1px 2px 5px #666;
+    -moz-box-shadow: 1px 2px 4px #666; 
+    color : #343643;
+    font-family: ‘Courier New’, Courier, monospace;
 }

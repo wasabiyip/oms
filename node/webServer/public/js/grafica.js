@@ -6,10 +6,14 @@
      this.id = unSlash(data.ID);
      this.symbol = data.symbol;
      this.openMin;
-     this.bollUp;
-     this.bollUpS;
-     this.bollDnS;
-     this.bollDn;
+     this.bollUp = 0;
+     this.bollUpDiff = 0;
+     this.bollUpS = 0;
+     this.bollUpSDiff=0;
+     this.bollDnS = 0;
+     this.bollDnSDiff =0;
+     this.bollDn = 0; 
+     this.bollDnDiff =0;
      this.velasS;
      this.lastBid;
      this.lastAsk;
@@ -39,6 +43,10 @@
       */
      this.onOpen = function(open){
          var openMin = parseFloat(open);
+         this.bollUpDiff = redondear(this.bollUp - (openMin +this.getPropiedad("bollSpecial")));
+         this.bollDnDiff = redondear((openMin - this.getPropiedad("bollSpecial")) - this.bollDn);
+         this.bollUpSDiff = redondear(this.bollUpS - openMin);
+         this.bollDnSDiff = redondear(openMin - this.bollDnS);
      }  
      /*
       * Evento de cambio de vela de la gráfica.
@@ -49,6 +57,13 @@
          this.bollUpS = parseFloat(bolls.bollUpS);
          this.bollDnS = parseFloat(bolls.bollDnS);
          velasS = parseInt(bolls.velas);
+     }
+     //Ponemos el valor inicial a los bollingers.
+     this.initState = function(vars){
+        this.bollUp = vars.bollUp;
+        this.bollDn = vars.bollDn;
+        this.bollUpS = vars.bollUpS;
+        this.bollDnS = vars.bollDnS;
      }
      /*
       * Evento de apertura de operación.

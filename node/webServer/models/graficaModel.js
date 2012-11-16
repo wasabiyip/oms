@@ -1,9 +1,11 @@
 //-------------------------**MODEL GRAFICA**----------------------------//****
 var graf_arr = [];
+var inputs='';
 var addGrafica = function(grafica){
 	grafica.setts.ID = unSlash(grafica.setts.ID);
 	graf_arr.push(grafica);
 };
+var addVars = function(values){}
 
 module.exports.graf_arr = graf_arr;
 module.exports.addGrafica = addGrafica;

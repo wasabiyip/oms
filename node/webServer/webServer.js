@@ -27,9 +27,10 @@ server.sockets.on('connection', function (client){
 		
      });
 
-    client.on('log-in', function(msj){
+    client.on('handshake', function(msj){
         //client.send(handler.get)
         if(msj.id == 'oms'){
+            console.log('new web client');
             var setts = handler.getSetts();
             webClients.push(client);
             checkClientsActivos();
@@ -44,6 +45,7 @@ server.sockets.on('connection', function (client){
     });
     
     client.on('grafica-state', function(msj){
+        console.log('state');
         handler.expertState(msj);
     });
     
@@ -125,6 +127,9 @@ exports.addGrafica = function(settings){
     }
     models.graf_modl.addGrafica(str);
 }
+exports.grafInit = function(data){
+    
+}
 
 /*
 al recibir algun evento mandamos llamar a este método
@@ -135,7 +140,7 @@ function notify(mensaje, data){
         webClients[i].emit(mensaje,data);
     }
 }
-//Este metodo evita que se acumulen clientes  que ya no existen cuando se refresa la pagina.
+//Este metodo evita que se acumulen clientes  que ya no existen cuando se refresca la pagina.
 function checkClientsActivos(){
     temp = [];
     for(i=0; i<webClients.length;i++){
