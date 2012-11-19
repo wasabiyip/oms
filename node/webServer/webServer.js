@@ -127,10 +127,12 @@ exports.addGrafica = function(settings){
     }
     models.graf_modl.addGrafica(str);
 }
+exports.closeGrafica = function(grafica){
+   models.graf_modl.closeGrafica(grafica); 
+}
 exports.grafInit = function(data){
     
 }
-
 /*
 al recibir algun evento mandamos llamar a este método
 para que emita un mensaje determinado a los clientes conectados.

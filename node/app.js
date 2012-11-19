@@ -106,8 +106,8 @@ function evaluar(msj, socket){
                     serverPrecios = null;
                     console.log('Servidor de precios desconectado.');
                 }else{
-
-                    handler.closeGrafica(socket)
+                    webServer.closeGrafica(handler.getGrafica(socket).settings.ID);
+                    handler.closeGrafica(socket);
                 }
                 break;	
             //al recibir un evento onTick de un cliente conectado.

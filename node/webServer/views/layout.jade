@@ -6,7 +6,7 @@ html
     link(rel='stylesheet', href='/css/bootstrap/bootstrap-responsive.css')
   body
     #wrap
-      .navbar.navbar-inverse.navbar-fixed-top
+      .navbar.navbar-inverse.navbar-top
         .navbar-inner
           .container-fluid
             a.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
@@ -21,13 +21,16 @@ html
                 li
                   a(href='./') Historial
 
-      block content
+      block content-trade
+    block footer-trade
     script(src='http://code.jquery.com/jquery-latest.min.js')
     script(src='js/lib/socket.io.js')
     script(src='js/lib/bootstrap-affix.js')
     script(src='js/lib/bootstrap-dropdown.js')
     script(src='js/lib/bootstrap-tooltip.js')
     script(src='js/lib/bootstrap-popover.js')
+    script(src='js/lib/bootstrap-tab.js')
+    script(src='js/lib/bootstrap-scrollspy.js')
     script(src='js/grafica.js')
     script(src='js/clientEventsHandler.js')
 

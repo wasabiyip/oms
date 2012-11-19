@@ -1,13 +1,11 @@
 extends layout
 
-block content
+block content-trade
 
   .container-fluid
     .row-fluid
       .span3
-        #lefty(data-spy='affix')
-          .well.sidebar-nav
-            h4 Journal
+        
       .span9
         #estrategias    
         -var temps = []
@@ -42,14 +40,49 @@ block content
                                 h5 Promedios
                                 ul#calculos.unstyled
                               .operaciones
-                                table.table.table-condensed
-                                  tr
-                                    th Order
-                                    th Tipo
-                                    th Lotes
-                                    th Par
-                                    th Precio
-                                    th SL
-                                    th TP
+                                
 
                 -temps =[]
+
+block footer-trade
+  .span3
+    #terminal(data-spy='affix')
+      .well.sidebar-nav(id="terminal-wrap")
+        ul.nav.nav-tabs(id='terminal-tab')
+          li.active
+            a(href="#trade", data-toggle="tab") Trade
+          li
+            a(href="#account-history", data-toggle="tab") Account History
+          li
+            a(href="#experts", data-toggle="tab") Experts  
+          li
+            a(href="#journal", data-toggle="tab") Journal
+        #terminal-cont.tab-content
+          #trade.tab-pane.active
+            table.table.table-striped
+              tr
+                th Order
+                th Tipo
+                th Lotes
+                th Par
+                th Precio
+                th S/L
+                th T/P
+          #account-history.tab-pane
+            table.table.table-striped
+              tr
+                th Order
+                th Hora
+                th Tipo
+                th Lotes
+                th Par
+                th Precio
+                th S/L
+                th T/P
+                th Hora
+                th Precio
+                Th Profit
+          
+          #experts.tab-pane
+            h4 Experts
+          #journal.tab-pane
