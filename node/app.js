@@ -86,6 +86,7 @@ function evaluar(msj, socket){
             //Cada que se recibe un precio.	
             case 'tick':
                 if(handler.symbolExists(income.symbol)){
+                    
                     msj = {
                         "values":{
                             "symbol": income.symbol,

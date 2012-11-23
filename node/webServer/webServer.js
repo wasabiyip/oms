@@ -42,6 +42,11 @@ server.sockets.on('connection', function (client){
                 waitOps = client;
             }
         }
+        if(msj.id == 'data'){
+            console.log('cliente data');
+            webClients.push(client);
+            checkClientsActivos();
+        }
     });
     
     client.on('grafica-state', function(msj){

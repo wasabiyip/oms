@@ -1,7 +1,6 @@
 extends layout
 
-block content-trade
-
+block content
   .container-fluid
     .row-fluid
       .span3
@@ -43,16 +42,12 @@ block content-trade
                                 
 
                 -temps =[]
-
-block footer-trade
   .span3
     #terminal(data-spy='affix')
       .well.sidebar-nav(id="terminal-wrap")
         ul.nav.nav-tabs(id='terminal-tab')
           li.active
             a(href="#trade", data-toggle="tab") Trade
-          li
-            a(href="#account-history", data-toggle="tab") Account History
           li
             a(href="#experts", data-toggle="tab") Experts  
           li
@@ -67,22 +62,8 @@ block footer-trade
                 th Par
                 th Precio
                 th S/L
-                th T/P
-          #account-history.tab-pane
-            table.table.table-striped
-              tr
-                th Order
-                th Hora
-                th Tipo
-                th Lotes
-                th Par
-                th Precio
-                th S/L
-                th T/P
-                th Hora
-                th Precio
-                Th Profit
-          
+                th T/P          
           #experts.tab-pane
             h4 Experts
           #journal.tab-pane
+  

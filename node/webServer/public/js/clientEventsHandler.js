@@ -10,7 +10,7 @@ var grafica = function(id){
 };
 $(document).ready(function(){
 
-    var socket = io.connect(document.location.href);
+    var socket = io.connect(document.location.host);
     //Al cargar la página enviamos señal de inicio.
     socket.on('connect', function () {
         socket.emit('handshake', {
