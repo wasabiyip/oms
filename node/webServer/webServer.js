@@ -19,10 +19,11 @@ require('./routes')(app, models);
 app.listen(3000, function(){
   console.log("WebServer listening on port %d in %s mode", app.address().port, app.settings.env);
 });
-//TODO -- Look for a place to move this shit on.
+
 var server = io.listen(app); 
 server.sockets.on('connection', function (client){ 
-    
+//Todo lo que esta aqui adentro maneja mensajes recibidos desde 
+//el navegador conectado.    
     client.on('disconnect', function () {
 		
      });
@@ -73,6 +74,13 @@ server.sockets.on('connection', function (client){
         
     });
 });
+exports.log = function(data){
+    notify('log-msj', data);
+}
+//mensajes que seran enviados a la pestaña de journal.
+exports.journal = function(data){
+    notify('journal-msj', data)
+}
 
 exports.clientsLength = function(){
     return webClients.length;
@@ -145,6 +153,7 @@ para que emita un mensaje determinado a los clientes conectados.
 function notify(mensaje, data){
     for (i=0; i<webClients.length; i++){
         webClients[i].emit(mensaje,data);
+        console.log(mensaje + " " + data);
     }
 }
 //Este metodo evita que se acumulen clientes  que ya no existen cuando se refresca la pagina.

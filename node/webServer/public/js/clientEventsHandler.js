@@ -5,12 +5,16 @@ var logs = [];
 var id = Math.floor(Math.random()*101);
 var graficas=[];
 var ordLock = false;
+
 var grafica = function(id){  
     this.grafid = id;
 };
 $(document).ready(function(){
-
+    
     var socket = io.connect(document.location.host);
+    //Todo lo que tenga socket.on quiere decir que es el server nos
+    //esta notificando algún evento.
+
     //Al cargar la página enviamos señal de inicio.
     socket.on('connect', function () {
         socket.emit('handshake', {
@@ -33,7 +37,6 @@ $(document).ready(function(){
                     temp += key + ": " + val + " </br><hr>";
                 }
             });
-
         //Añadimos controlador de popover.
         $(function(){
             //Para que la primer .rowfluid tenga el menu de los inputs diferente a todos los demas
@@ -68,6 +71,12 @@ $(document).ready(function(){
     });
     //Datos del tick.
     socket.on('grafica-tick', function(data){
+        var date = new Date();
+        //este desmadre es para que no imprima las valores si el cero.
+        var hora = date.getHours()<10 ? '0'+date.getHours():date.getHours();
+        var min = date.getMinutes()<10 ? '0'+date.getMinutes():date.getMinutes();
+        var segs = date.getSeconds()<10 ? '0'+date.getSeconds():date.getSeconds();;
+        $('#market-hora').empty().append('  '+ hora + ':' + min + ':'+ segs);
         for(var i in graficas){
             if(graficas[i].symbol == data.values.symbol){
                 //primero borramos lo que este y después ponemos el precio.
@@ -139,25 +148,36 @@ $(document).ready(function(){
     socket.on('grafica-orderModify',function(data){
        $("#"+data.id+ " #tp").empty().append(data.nwTp);
     });
-    //Cerramos una orden desde el cliente web.
-    closeOrder= function(grafica,order){
-        
-        var ask = confirm("¿Estas seguro que quieres cerrar la orden " + order+"?");
-        var str = {
-                    "type":"order-close",
-                    "grafica":Slash(grafica),
-                    "id":order
-                };
-        if (ask==true){
-            socket.emit('order-close',str);
-        }else{
-          //nada  
-        }        
-    }
-    getOperaciones = function(){
-        window.open('historico.html', 'historico de operaciones','');
-        return false;
-    }
+
+    socket.on('journal-msj',function(data){
+        console.log(data);
+       $('#journal .log').prepend('<tr class='+ data.label +'>'+
+        '<td class="time">'+ new Date().toUTCString()+'</td><td>'+ data.msj 
+        +'</td></tr>');
+    });
+    socket.on('log-msj', function(data){
+        $('#experts .log').prepend('<tr class='+ data.label +'>'+
+        '<td class="time">'+ new Date().toUTCString()+'</td><td>'+ data.msj 
+        +'</td></tr>');        
+    });
+//Cerramos una orden desde el cliente web.
+closeOrder= function(grafica,order){ 
+    var ask = confirm("¿Estas seguro que quieres cerrar la orden " + order+"?");
+    var str = {
+                "type":"order-close",
+                "grafica":Slash(grafica),
+                "id":order
+            };
+    if (ask==true){
+        socket.emit('order-close',str);
+    }else{
+      //nada  
+    }        
+}
+getOperaciones = function(){
+    window.open('historico.html', 'historico de operaciones','');
+    return false;
+}
 });
 getGraficasID = function(){
     var temp = [];

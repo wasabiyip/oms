@@ -1,14 +1,19 @@
 package oms.deliverer;
 
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import oms.Grafica.Graphic;
 import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.dao.MongoConnection;
-import oms.util.Console;
+import oms.util.ConsoleNot;
 import oms.deliverer.MessageHandler;
+import oms.util.Console;
 import oms.util.Node;
 import quickfix.*;
 import quickfix.Message;
@@ -28,6 +33,38 @@ public class SenderApp extends MessageCracker implements Application{
     public static SessionID sessionID;
     private GraficaHandler graficaHandler = new GraficaHandler();
     boolean lock = false;
+    private static Socket socket;
+    private static BufferedReader inFromNode;
+    private static DataOutputStream outNode;
+    
+    /**
+     * Constructor nos loggeamos a node al construir esta clase.
+     */
+    public SenderApp(){
+        try {
+            socket = new Socket("127.0.0.1", 8080);
+            outNode = new DataOutputStream(this.socket.getOutputStream());
+            outNode.writeUTF("{\"type\": \"login\", "
+                    + "\"name\":\"app\" "
+                    + "}");
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
+        }         
+    }
+    
+    /**
+     * Enviamos mensajes de la aplicación.
+     * @param msj 
+     */
+    public static void writeNode(String msj) {
+        try {
+            outNode.writeUTF(msj + "\n");
+        } catch (IOException ex) {
+            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     /**
      * Método que se ejecuta al crear aplicación.
      * @param id 
@@ -45,6 +82,7 @@ public class SenderApp extends MessageCracker implements Application{
      */
     @Override
     public void onLogon(SessionID id) {
+        Console.msg("Conectados exitosasmente con "+id+" desde la cuenta " + this.userName);
         SenderApp.sessionID = id;
         //Para que los threads no se dupliquen cuando el servidor nos desconecta.
         if (!lock){
@@ -62,7 +100,7 @@ public class SenderApp extends MessageCracker implements Application{
      */
     @Override
     public void onLogout(SessionID id){
-        System.out.println("onLogout->>");
+        Console.msg("Recibimos Logout del broker esperando para volver a conectarnos-...");
     }
     /**
      * Método que envia al servidor el Usuario y la contraseña

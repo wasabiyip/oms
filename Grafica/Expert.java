@@ -3,6 +3,7 @@ package oms.Grafica;
 import java.util.Properties;
 import oms.Grafica.indicators.BollingerBands;
 import oms.Grafica.indicators.Indicador;
+import oms.util.Console;
 import oms.util.idGenerator;
 
 /**
@@ -48,7 +49,7 @@ public class Expert extends Jedi{
         super(setts, periodo);
         order = new Order(symbol,setts.MAGICMA, setts.id);
         indicador = new Indicador(Graphic.unSlash(setts.symbol),periodo);
-        
+        System.out.println(setts.symbol);
         /**
          * Añadimos los periodos a las bandas.
          */
@@ -76,6 +77,10 @@ public class Expert extends Jedi{
     @Override
     public void onTick(Double bid) {
         this.bid = bid;
+        if(this.setts.symbol.equals("EUR/USD")){
+            Console.log(bid);
+        }
+        
         //System.out.println( prueba.values + " Up: " + prueba.getUpperBand() + " Dn: " + prueba.getLowerBand());
         //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
         //descansan por lo menfos un día de la semana...

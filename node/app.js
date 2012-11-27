@@ -7,7 +7,7 @@ var app = net.createServer();
 var handler = require('./Handler'); 
 //Iniciamos el servidor TCP.
 var Graficas = [];
-var server_precios, server_op;
+var server_precios, server_op, app;
 
 app.on('connection', function(client) {
 
@@ -55,8 +55,17 @@ function evaluar(msj, socket){
         switch (income.type){
             //Un cliente conectado
             case 'login':
-                if(income.name === 'SERVIDOR_PRECIOS'){
+                if(income.name === 'app'){
+                    app = socket;
+                    var temp={
+                        type: 'journal',
+                        label: 'error'                     
+                    }
+                    console.log('app conectada');
+                }else if(income.name === 'SERVIDOR_PRECIOS'){
                     server_precios = socket;
+                    temp.msj = "Streaming de precios conectado";
+                    webServer.journal(temp);
                     console.log('Servidor de precios conectado: ' + server_precios.name);	
                 }else
                 if (income.name === 'SERVIDOR_OP'){
@@ -101,14 +110,19 @@ function evaluar(msj, socket){
             break;
             //cuando un cliente se desconecta.
             case 'close':
-
+                var temp={
+                        type: 'journal',
+                        label: 'error'                     
+                    }
                 if(server_precios === socket){
-
                     serverPrecios = null;
-                    console.log('Servidor de precios desconectado.');
+                    temp.msj = 'El horror -> ¡El streaming de precios se desconecto!';                    
+                    webServer.journal(temp);
                 }else{
+                    temp.msj = 'Grafica ' + handler.getGrafica(socket).settings.ID+' fue desconectada :|';
                     webServer.closeGrafica(handler.getGrafica(socket).settings.ID);
                     handler.closeGrafica(socket);
+                    webServer.journal(temp);
                 }
                 break;	
             //al recibir un evento onTick de un cliente conectado.
@@ -141,7 +155,6 @@ function evaluar(msj, socket){
                     "vars": income.variables
                     }
                 };
-            console.log('Estate');
             webServer.expertState(msj);
             break;
         case 'onOrderInit':
@@ -155,6 +168,12 @@ function evaluar(msj, socket){
             break;
         case 'orderModify':
             webServer.orderModify(income.data);
+            break;
+        case 'journal':
+            webServer.journal(income);
+            break;
+        case 'log':
+            webServer.log(income);
     }
     //Cachamos cualquier error y lo imprimimos.
     }catch(error){

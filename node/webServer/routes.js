@@ -8,4 +8,8 @@ module.exports = function(app, models){
 	app.get('/chart', function(req, res){
 		res.render('chart', {title:'charts!'});
 	});
+
+	app.get('/new-trade', function(req, res){
+		res.render('new-trade', { title: 'New Trade', graficas: models.graf_modl.graf_arr});
+	});
 }

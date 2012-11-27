@@ -73,8 +73,7 @@ h4,h5,p{
     background-color: #e6e6e6;
 }
 #terminal{
-    bottom: 0;
-    left:0;
+    
 }
 #terminal-tab{
     margin: 4px;
@@ -82,24 +81,14 @@ h4,h5,p{
 #terminal-cont{
     margin: 15px;
     overflow: auto;
-    height: 150px;
+    height: 50px;
+    width: auto;
 }
-.log tr{
-    font-size: 13px;
+#content{
+    padding: 0px;
 }
-.time{
-    font-weight: bold;
-}
-#terminal-tab li a{
-    font-weight: bold;
-    font-size: 16px;      
-}
-#market-hora{
-    font-weight: bold;
-    color:red;
-}
-#market-watch{
-    padding-left: 10px;
+.tab-content{
+    
 }
 //@Cosas que sobreescriben estilos de bootstrap
 .arrow {
@@ -108,12 +97,7 @@ h4,h5,p{
 .popover{
     width: 165px;
 }
-#terminal .well{
-    margin: 0px;
-}
-#terminal-wrap{
-    background-color:#FFF;
-}
+
 .span6{ 
     margin-bottom: 10px;
     background-color: #FFF;
@@ -128,4 +112,7 @@ h4,h5,p{
 }
 .sidebar-nav{
     padding: 5px 2px 0px 2px;
+}
+#container-fluid{
+    padding: 0px;
 }

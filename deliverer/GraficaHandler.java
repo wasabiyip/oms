@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Graphic;
+import oms.util.Console;
 import quickfix.DoubleField;
 import quickfix.FieldNotFound;
 import quickfix.fix42.ExecutionReport;
@@ -26,6 +27,8 @@ public class GraficaHandler {
         //Podriamos poner aquí algunas opciones mas como pasar el archivo log.
         graficas.add(new Graphic(symbol, periodo));
         runGrafica(graficas.size() - 1);
+        Console.log("Grafica "+symbol +" de " + periodo + " minutos cargada correctamente");
+        
     }
     /**
      * Las gráficas son thread así que tenemos que correrlos para que comienzen

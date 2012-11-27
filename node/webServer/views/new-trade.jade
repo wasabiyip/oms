@@ -1,28 +1,21 @@
 extends layout
 
 block content
-  .container-fluid
+  .container-fluid(id='content')
     .row-fluid
       .span3
-        .well.sidebar-nav(id="market-watch")
-          p Market Watch:
-            span#market-hora
-      .span9
-        #estrategias    
-        -var temps = []
-          if graficas.length==0
+        
+      .span9(id='chart-window')
+        if graficas.length==0
             h1 No hay graficas conectadas :(
-          else  
-            each grafica in graficas
-              -temps.push(grafica.setts)
-              if temps.length == 2
-                .rowfluid
-                  each temp in temps
-                    .span6
-                      div(id= temp.ID, class="grafica")
+          else                  
+            .tab-content(id="tab-chart")
+              each grafica in graficas
+                .tab-pane(id=grafica.setts.ID)
+                  div(id= grafica.setts.ID, class="grafica")
                         .content-graf
                             .graf-head
-                              h4 #{temp.symbol}
+                              h4 #{grafica.setts.symbol}
                               .btn-group.pull-right(id="opciones")
                                 a.btn-small.btn.btn-primary.dropdown-toggle(data-toggle='dropdown',href='#') Opciones 
                                   span.caret
@@ -41,22 +34,22 @@ block content
                                 h5 Promedios
                                 ul#calculos.unstyled
                               .operaciones
-                                
-
-                -temps =[]
-    #terminal
-      .well.sidebar-nav(id="terminal-wrap")
-        ul.nav.nav-tabs(id='terminal-tab')
-          li.active
-            a(href="#trade", data-toggle="tab") Trade
-          li
-            a(href="#experts", data-toggle="tab") Experts  
-          li
-            a(href="#journal", data-toggle="tab") Journal
-        #terminal-cont.tab-content
-          #trade.tab-pane.active
-            table.table.table-striped
-              thead  
+            ul.nav.nav-tabs
+              each grafica in graficas
+                li
+                  a(href='#'+grafica.setts.ID, data-toggle="tab") #{grafica.setts.symbol}
+      #terminal
+        .well.sidebar-nav(id="terminal-wrap")
+          ul.nav.nav-tabs(id='terminal-tab')
+            li.active
+              a(href="#trade", data-toggle="tab") Trade
+            li
+              a(href="#experts", data-toggle="tab") Experts  
+            li
+              a(href="#journal", data-toggle="tab") Journal
+          #terminal-cont.tab-content
+            #trade.tab-pane.active
+              table.table.table-striped
                 tr
                   th Order
                   th Tipo
@@ -65,23 +58,24 @@ block content
                   th Precio
                   th S/L
                   th T/P          
-          #experts.tab-pane
-            table.table.table-hover.table-condensed.table-bordered
+            #experts.tab-pane
+              table.table.table-hover.table-condensed.table-bordered
               thead
                   tr
                     th Time
                     th Message
                 tbody.log
                   tr.warning
-                    td.time ---------------
+                    td ---------------
                     td "When you look at the dark side, careful you must be... for the dark side looks back".- Yoda
-          #journal.tab-pane
-            table.table.table-hover.table-condensed.table-bordered
+            #journal.tab-pane
+              table.table.table-hover.table-condensed.table-bordered
               thead
                 tr
                   th Time
                   th Message
               tbody.log
                 tr.warning
-                  td.time ---------------
+                  td ---------------
                   td "Money is the root of all evil today.".- Pink Floyd
+      
