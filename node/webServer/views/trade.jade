@@ -40,10 +40,13 @@ block content
                                   span.caret
                                 ul.dropdown-menu
                                   li(data-filter-camera-type='all')
-                                    a(id="inputs",rel="popover") Inputs                        
+                                    a(id="inputs",rel="popover") Inputs
+                              h4 #{temp.symbol}                           
+                            hr
                             #chart-div
                               -var id = temp.symbol +'-chart'
-                              .chart(id=id)                            
+                              .chart(id=id)
+                            
                 -temps =[]
     #terminal
       .well.sidebar-nav(id="terminal-wrap")

@@ -5,8 +5,6 @@ var monedas_arr = [];
 $(document).ready(function(){
   for(var i =0; i< last_prices_arr.length;i++){
     monedas_arr[i]= new Moneda(last_prices_arr[i][0]);
-    //console.log(last_prices_arr[i][0]);
-    console.log(monedas_arr[i].symbol);
   }
     var socket = io.connect(document.location.host);
     socket.on('connect', function () {
@@ -33,28 +31,27 @@ $(document).ready(function(){
         }
       }
 
-	    }else if(data.values.tipo == "bid"){
-     	
-			 for(i=0; i<last_prices_arr.length;i++){
-	            if(last_prices_arr[i][0] == symbol){
-		            /**
-		            /*si el precio entrante es mayor al anterior entonces pintamos los precios 
-		            /*de azul, si no los pintamos de rojo.
-		            **/
-		            if(data.values.precio>last_prices_arr[i][1]){
-		                selector = 'blue';
-		                last_prices_arr[i][1] = data.values.precio;
-		            }else{ 
-		                if(data.values.precio<last_prices_arr[i][1]){
-		                    selector = 'red';
-		                    last_prices_arr[i][1] = data.values.precio;
-		                }
-		            }
-	            }
-            }    
-            $('#'+ symbol + " .bid").empty().append(data.values.precio);
-            $('#'+ symbol + " .bid").css('color',selector);
-            $('#'+ symbol + " .ask").css('color',selector);
+	    }else if(data.values.tipo == "bid"){     	  
+        for(i=0; i<last_prices_arr.length;i++){
+          if(last_prices_arr[i][0] == symbol){
+            /**
+            /*si el precio entrante es mayor al anterior entonces pintamos los precios 
+            /*de azul, si no los pintamos de rojo.
+            **/
+            if(data.values.precio>last_prices_arr[i][1]){
+              selector = 'blue';
+              last_prices_arr[i][1] = data.values.precio;
+            }else{ 
+              if(data.values.precio<last_prices_arr[i][1]){
+                selector = 'red';
+                last_prices_arr[i][1] = data.values.precio;
+              }
+            }
+          }
+        }    
+        $('#'+ symbol + " .bid").empty().append(data.values.precio);
+        $('#'+ symbol + " .bid").css('color',selector);
+        $('#'+ symbol + " .ask").css('color',selector);
         for(i=0; i<monedas_arr.length;i++){
           if(monedas_arr[i].symbol == symbol){
             monedas_arr[i].onTick('bid',data.values.precio);
@@ -66,10 +63,6 @@ $(document).ready(function(){
     
 });
 
-//Quitamos un / de el symbolo generalmente USD/JPY es igual a USDJPY
-function unSlash(cadena){
-    return cadena.replace("/","");
-}
 function getLastPrices(symbol){
 	var temp=[];
 	for (var i=0; i<last_prices_arr.length;i++){
@@ -92,10 +85,7 @@ function setLastPrice(symbol,tipo,precio){
 		}
 	}
 }
-function getDate(){
-    var date = new Date();
-    return date.getHours() + ':'+ date.getMinutes();
-}
+
 //Objeto que representa una moneda.
 function Moneda(symbol){
   this.lastBid;

@@ -120,7 +120,7 @@ public class Graphic extends Thread {
      * @param price
      */
     public void onOpen(Double price) {
-        
+        oms.util.Console.log("open: "+price);
         this.cont++;
         //Restamos el minuto actual 
         int dif = GMTDate.getDate().getMinute() - lastOpen;
@@ -155,7 +155,7 @@ public class Graphic extends Thread {
      */
     public void onCandle(double openCandle) {
         this.expert.onCandle(openCandle);
-
+        
         StringBuffer msj = new StringBuffer();
         msj.append("{");
         msj.append("\"type\": \"onCandle\",");

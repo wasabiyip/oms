@@ -36,6 +36,7 @@ public abstract class Jedi {
     public abstract void onCandle(Double price);
     public void onOpen(Double price){
         open_min = price;
+        System.out.println(getAvgOpen());
     }
     /**
      * Método que regresa los valores que la clase Settings lee del archivo de

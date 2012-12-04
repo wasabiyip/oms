@@ -22,21 +22,28 @@ block content
                     td.ask(id='high') ------
       .span9
         #estrategias    
-        -var temps = []
+        -var cont =1
           if monedas.length==0
             h1 No hay monedas :(
-          else  
-            each moneda in monedas
-              -temps.push(moneda)
-              if temps.length == 2
-                .rowfluid
-                  each temp in temps
+          else
+            if(monedas.length % 2 == 1) 
+              -for (var i=0;i< monedas.length;i++){
+                -if(i%2==0){
+                  .rowfluid
                     .span6
-                      div(id= temp, class="grafica")
+                      div(id= monedas[i], class="grafica")
                         .content-graf
                             .graf-head                        
                             #chart-div
-                              -var id = temp +'-chart'
+                              -var id = monedas[i] +'-chart'
                               .chart(id=id)
-
-                -temps =[]
+                    
+                    .span6
+                      div(id= monedas[i++], class="grafica")
+                        .content-graf
+                            .graf-head                        
+                            #chart-div
+                              -var id = monedas[i] +'-chart'
+                              .chart(id=id)
+                -}
+              -}

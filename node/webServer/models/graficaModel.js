@@ -7,21 +7,7 @@ var graf_arr = [];
 var monedas_arr = ['EURUSD','GBPUSD','USDCHF','USDJPY', 'EURGBP'];
 //Un poco de administracion de nuestro array de graficas.
 //añadimos
-var addGrafica = function(grafica){if(last_prices_arr[i][0] == symbol){
-	             /**
-		            /*si el precio entrante es mayor al anterior entonces pintamos los precios 
-		            /*de azul, si no los pintamos de rojo.
-		            **/
-		            if(data.values.precio>last_prices_arr[i][1]){
-		                selector = 'blue';
-		                last_prices_arr[i][1] = data.values.precio;
-		            }else{ 
-		                if(data.values.precio<last_prices_arr[i][1]){
-		                    selector = 'red';
-		                    last_prices_arr[i][1] = data.values.precio;
-		                }
-		            }
-	            }
+var addGrafica = function(grafica){
 	grafica.setts.ID = unSlash(grafica.setts.ID);
 	graf_arr.push(grafica);
 };

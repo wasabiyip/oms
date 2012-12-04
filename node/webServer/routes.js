@@ -10,22 +10,11 @@ module.exports = function(app, models){
 				monedas : models.graf_modl.monedas_arr
 			});
 	});
-	app.get('/chart', function(req, res){
-		res.render('chart', {title:'charts!'});
-	});
+	
 	app.get('/monitor', function(req, res){
 		res.render('monitor', {
 			title:'Monitoreo',
 			monedas : models.graf_modl.monedas_arr
 		});
-	});
-	app.get('/new-trade', function(req, res){
-		console.log(models.graf_modl.monedas_arr);
-		res.render('new-trade', 
-			{ 
-				title: 'New Trade', 
-				graficas: models.graf_modl.graf_arr, 
-				monedas : models.graf_modl.monedas_arr
-			});
 	});
 }

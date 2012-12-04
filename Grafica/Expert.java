@@ -49,7 +49,7 @@ public class Expert extends Jedi{
         super(setts, periodo);
         order = new Order(symbol,setts.MAGICMA, setts.id);
         indicador = new Indicador(Graphic.unSlash(setts.symbol),periodo);
-        System.out.println(setts.symbol);
+        
         /**
          * Añadimos los periodos a las bandas.
          */
@@ -233,6 +233,7 @@ public class Expert extends Jedi{
      * @return estado de los valoes.
      */
     public String getExpertState(){
+        Console.log("bollUp: " + this.bollUp()+" bollDn: "+ this.bollDn());
         StringBuffer temp = new StringBuffer();
         temp.append("\"variables\":{");
             temp.append("\"bollUp\":"+ redondear(this.getAvgBoll(this.bollUp()))+ ",");

@@ -16,15 +16,12 @@ html
                 | Logged in as 
                 a.navbar-link(href='') Omar
               ul.nav
-                li.active
+                li(id="trading")
                   a(href='./') Trading
-                li
-                  a(href='./') Historial
-                li
+                li(id="monitor")
                   a(href='./monitor') Monitoreo
 
       block content
-
     script(src='http://code.jquery.com/jquery-latest.min.js')
     script(src='js/lib/socket.io.js')
     script(src='https://www.google.com/jsapi')
@@ -33,10 +30,10 @@ html
     script(src='js/lib/bootstrap-tooltip.js')
     script(src='js/lib/bootstrap-popover.js')
     script(src='js/lib/bootstrap-tab.js')
-    script(src='js/lib/bootstrap-scrollspy.js')
-    
+    script(src='js/lib/bootstrap-scrollspy.js') 
     if(title == 'Monitoreo')
       script(src='js/monitor.js')
     else
       script(src='js/grafica.js')
       script(src='js/clientEventsHandler.js')
+    script(src='js/util.js') 
