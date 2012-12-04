@@ -7,6 +7,19 @@ block content
         .well.sidebar-nav(id="market-watch")
           p Market Watch:
             span#market-hora
+        .well.sidebar-nav(id="stream")
+          table.table.table-striped.table-bordered.table-hover
+              thead.stream-tab  
+                tr
+                  th Symbol
+                  th Bid
+                  th Ask
+              tbody.log  
+                each moneda in monedas
+                  tr.moneda(id= moneda)
+                    td #{moneda}
+                    td.bid(id='high') ------
+                    td.ask(id='high') ------
       .span9
         #estrategias    
         -var temps = []
@@ -22,27 +35,15 @@ block content
                       div(id= temp.ID, class="grafica")
                         .content-graf
                             .graf-head
-                              h4 #{temp.symbol}
                               .btn-group.pull-right(id="opciones")
                                 a.btn-small.btn.btn-primary.dropdown-toggle(data-toggle='dropdown',href='#') Opciones 
                                   span.caret
                                 ul.dropdown-menu
                                   li(data-filter-camera-type='all')
-                                    a(id="inputs",rel="popover") Inputs                           
-                            hr
-                            p#stream
-                              strong Bid
-                              span.bid -------
-                              strong Ask
-                              span.ask -------
-                              .promedios
-                                h5 Apertura de minuto
-                                  span.apertura
-                                h5 Promedios
-                                ul#calculos.unstyled
-                              .operaciones
-                                
-
+                                    a(id="inputs",rel="popover") Inputs                        
+                            #chart-div
+                              -var id = temp.symbol +'-chart'
+                              .chart(id=id)                            
                 -temps =[]
     #terminal
       .well.sidebar-nav(id="terminal-wrap")
@@ -73,7 +74,7 @@ block content
                     th Message
                 tbody.log
                   tr.warning
-                    td.time ---------------
+                    td.time "Mensaje de prueba"
                     td "When you look at the dark side, careful you must be... for the dark side looks back".- Yoda
           #journal.tab-pane
             table.table.table-hover.table-condensed.table-bordered
@@ -83,5 +84,5 @@ block content
                   th Message
               tbody.log
                 tr.warning
-                  td.time ---------------
+                  td.time "Mensaje de prueba"
                   td "Money is the root of all evil today.".- Pink Floyd

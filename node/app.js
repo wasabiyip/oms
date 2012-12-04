@@ -51,7 +51,7 @@ function evaluar(msj, socket){
     //convertimos la cadena entrante a JSON
     try{
         var income = JSON.parse(msj);
-        
+       
         switch (income.type){
             //Un cliente conectado
             case 'login':
@@ -94,19 +94,18 @@ function evaluar(msj, socket){
                 
             //Cada que se recibe un precio.	
             case 'tick':
+                msj = 
+                {
+                    "values":{
+                        "symbol": income.symbol,
+                        "tipo": income.entry, 
+                        "precio": income.precio
+                    }
+                };
                 if(handler.symbolExists(income.symbol)){
-                    
-                    msj = {
-                        "values":{
-                            "symbol": income.symbol,
-                            "tipo": income.entry, 
-                            "precio": income.precio
-                            }
-                        };
+                    handler.notify(income.entry,income.symbol, income.precio);
+                }
                 webServer.onTick(msj);
-                handler.notify(income.entry,income.symbol, income.precio)
-                
-            }
             break;
             //cuando un cliente se desconecta.
             case 'close':

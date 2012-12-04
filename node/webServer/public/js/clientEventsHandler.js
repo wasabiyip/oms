@@ -5,12 +5,14 @@ var logs = [];
 var id = Math.floor(Math.random()*101);
 var graficas=[];
 var ordLock = false;
-
+//Eventualmente debemos buscar la forma de que esto se cree dinámicamente.
+var last_prices_arr = [["EURUSD",0],["GBPUSD",0],["USDCHF",0],["USDJPY",0]];
 var grafica = function(id){  
     this.grafid = id;
 };
+google.load("visualization", "1", {packages:["corechart"]});
+
 $(document).ready(function(){
-    
     var socket = io.connect(document.location.host);
     //Todo lo que tenga socket.on quiere decir que es el server nos
     //esta notificando algún evento.
@@ -72,26 +74,53 @@ $(document).ready(function(){
     //Datos del tick.
     socket.on('grafica-tick', function(data){
         var date = new Date();
+        var symbol = unSlash(data.values.symbol);
+        var selector;
+        console.log();
+        if(symbol == 'EURUSD' && data.values.tipo == 'bid'){
+           // drawChart(data.values.precio);
+        }                
         //este desmadre es para que no imprima las valores si el cero.
         var hora = date.getHours()<10 ? '0'+date.getHours():date.getHours();
         var min = date.getMinutes()<10 ? '0'+date.getMinutes():date.getMinutes();
         var segs = date.getSeconds()<10 ? '0'+date.getSeconds():date.getSeconds();;
         $('#market-hora').empty().append('  '+ hora + ':' + min + ':'+ segs);
+
         for(var i in graficas){
             if(graficas[i].symbol == data.values.symbol){
                 //primero borramos lo que este y después ponemos el precio.
                 if(data.values.tipo == "ask"){
-                    $("#"+ graficas[i].id +" .content-graf #stream .ask").empty().append(data.values.precio);
+                    $('#'+ symbol + " .ask").empty().append(data.values.precio);
                     graficas[i].onTick("ask", parseFloat(data.values.precio));
                 }else if(data.values.tipo == "bid"){
-                    $("#"+ graficas[i].id +" .content-graf #stream .bid").empty().append(data.values.precio);
                     graficas[i].onTick("bid", parseFloat(data.values.precio));
+                    for(i=0; i<last_prices_arr.length;i++){
+                        if(last_prices_arr[i][0] == symbol){
+                             /**
+                            /*si el precio entrante es mayor al anterior entonces pintamos los precios 
+                            /*de azul, si no los pintamos de rojo.
+                            **/
+                            if(data.values.precio>last_prices_arr[i][1]){
+                                selector = 'blue';
+                                last_prices_arr[i][1] = data.values.precio;
+                            }else{ 
+                                if(data.values.precio<last_prices_arr[i][1]){
+                                    selector = 'red';
+                                    last_prices_arr[i][1] = data.values.precio;
+                                }
+                            }
+                        }
+                    }    
+                    $('#'+ symbol + " .bid").empty().append(data.values.precio);
+                    $('#'+ symbol + " .bid").css('color',selector);
+                    $('#'+ symbol + " .ask").css('color',selector);
                 }
             }
         }
     });
     //Estado actual de la grafica/expert
     socket.on('expert-state', function(data){
+        console.log(data.values);
         id= unSlash(data.values.id);
         var temp = getGrafica(id);
         temp.initState(data.values.vars);
@@ -102,6 +131,7 @@ $(document).ready(function(){
     });
     //cada que hay un precio de apertura de minuto.
     socket.on('grafica-open', function(data){
+        console.log("state " +data);
         var id = unSlash(data.values.id);    
         var temp = getGrafica(id);
         temp.onOpen(data.values.precio);
@@ -298,4 +328,8 @@ function getInputs(){
     for(var grafica in graficas){
         console.log(grafica);
     }
+}
+function getDate(){
+    var date = new Date();
+    return date.getHours() + ':'+ date.getMinutes();
 }

@@ -1,0 +1,42 @@
+extends layout
+
+block content
+  .container-fluid
+    .row-fluid
+      .span3
+        .well.sidebar-nav(id="market-watch")
+          p Market Watch:
+            span#market-hora
+        .well.sidebar-nav(id="stream")
+          table.table.table-striped.table-bordered.table-hover
+              thead.stream-tab  
+                tr
+                  th Symbol
+                  th Bid
+                  th Ask
+              tbody.log  
+                each moneda in monedas
+                  tr.moneda(id= moneda)
+                    td #{moneda}
+                    td.bid(id='high') ------
+                    td.ask(id='high') ------
+      .span9
+        #estrategias    
+        -var temps = []
+          if monedas.length==0
+            h1 No hay monedas :(
+          else  
+            each moneda in monedas
+              -temps.push(moneda)
+              if temps.length == 2
+                .rowfluid
+                  each temp in temps
+                    .span6
+                      div(id= temp, class="grafica")
+                        .content-graf
+                            .graf-head                        
+                            #chart-div
+                              -var id = temp +'-chart'
+                              .chart(id=id)
+
+                -temps =[]

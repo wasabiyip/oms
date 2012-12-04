@@ -56,7 +56,7 @@ server.sockets.on('connection', function (client){
     });
     
     client.on('order-close', function(msj){
-        console.log(msj);
+        
         handler.closeOrder(msj);
     });
     
@@ -100,7 +100,6 @@ exports.onCandle = function(data){
 recibimos un evento onOpen.
 */
 exports.onOpen= function(data){  
-    console.log(data);
     notify('grafica-open', data);
 }
 
@@ -153,7 +152,6 @@ para que emita un mensaje determinado a los clientes conectados.
 function notify(mensaje, data){
     for (i=0; i<webClients.length; i++){
         webClients[i].emit(mensaje,data);
-        console.log(mensaje + " " + data);
     }
 }
 //Este metodo evita que se acumulen clientes  que ya no existen cuando se refresca la pagina.

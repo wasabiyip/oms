@@ -1,3 +1,5 @@
+
+
 /**
   * Este es el objecto gracias al cual podemos representar a una grafica
   */
@@ -19,6 +21,9 @@
      this.lastAsk;
      this.point = (this.symbol == "USD/JPY") ? 0.001 : 0.0001;
      this.orders = []
+     this.data_arr = [['Date','Bid', 'Ask']];
+     this.chart;
+     this.chart_id;
      /*
       * Regresamos el valor de determinada propiedad para esta grafica.
       */
@@ -32,11 +37,12 @@
          return temp;
      }
      this.onTick = function(tipo, precio){
-         if(tipo == "bid"){
-             this.lastBid = precio;
-         }else if(tipo == "ask"){
-             this.lastAsk = precio;
-         }
+        if(tipo == "bid"){
+          this.lastBid = precio;
+        }else if(tipo == "ask"){
+          this.lastAsk = precio;
+        }
+        this.drawChart();
      }
      /*
       * Evento de precio de apertura de minuto la gráfica.
@@ -64,6 +70,7 @@
         this.bollDn = vars.bollDn;
         this.bollUpS = vars.bollUpS;
         this.bollDnS = vars.bollDnS;
+        this.chart_id = document.getElementById(this.symbol+'-chart');
      }
      /*
       * Evento de apertura de operación.
@@ -78,4 +85,20 @@
          
      }
      
+      this.drawChart = function() {
+        var temp;
+        
+        if(this.data_arr.length >40){
+          this.data_arr.splice(1,1);
+          this.data_arr[this.data_arr.length] = [getDate(),this.lastBid,this.lastAsk];
+        }else{
+          this.data_arr[this.data_arr.length] = [getDate(),this.lastBid,this.lastAsk];
+        }
+        var data = google.visualization.arrayToDataTable(this.data_arr);
+        var options = {
+          //title: 'Grafica de prueba - ' +this.symbol
+        };
+        this.chart = new google.visualization.LineChart(this.chart_id);
+        this.chart.draw(data, options);
+      }     
  }

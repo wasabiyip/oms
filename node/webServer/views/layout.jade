@@ -20,18 +20,23 @@ html
                   a(href='./') Trading
                 li
                   a(href='./') Historial
+                li
+                  a(href='./monitor') Monitoreo
 
       block content
 
     script(src='http://code.jquery.com/jquery-latest.min.js')
     script(src='js/lib/socket.io.js')
+    script(src='https://www.google.com/jsapi')
     script(src='js/lib/bootstrap-affix.js')
     script(src='js/lib/bootstrap-dropdown.js')
     script(src='js/lib/bootstrap-tooltip.js')
     script(src='js/lib/bootstrap-popover.js')
     script(src='js/lib/bootstrap-tab.js')
     script(src='js/lib/bootstrap-scrollspy.js')
-    script(src='js/grafica.js')
-    script(src='js/clientEventsHandler.js')
-
-
+    
+    if(title == 'Monitoreo')
+      script(src='js/monitor.js')
+    else
+      script(src='js/grafica.js')
+      script(src='js/clientEventsHandler.js')
