@@ -1,6 +1,7 @@
 package oms.deliverer;
 
 import java.util.Date;
+import oms.util.Console;
 import quickfix.FieldNotFound;
 import quickfix.SessionID;
 import quickfix.field.*;
@@ -14,6 +15,7 @@ public class MessageHandler {
 
     quickfix.fix42.TradingSessionStatus status;
     SessionID sessionID;
+    static String temp_msj = new String();
     public static Date date = null;
     /**
      * Método que recibe un mensaje, busca en este mensaje y obtiene el bid y
@@ -27,7 +29,8 @@ public class MessageHandler {
      * @param msj
      */
     public static void marketDataPx(quickfix.fix42.MarketDataIncrementalRefresh msj) {
-
+        
+        
         try {
             SendingTime time = new SendingTime();
             MDReqID mdreqid = new MDReqID();
@@ -89,16 +92,21 @@ public class MessageHandler {
             * W - M - Por que se modifico una OCO.
             */
            case '0':
-               if(msj.getOrdType().getValue() == 'C')
-                   System.err.println("Procesando orden " + msj.getSymbol().getValue() + "...");
-               else if(msj.getOrdType().getValue() == 'W'){
+               if(msj.getOrdType().getValue() == 'C'){
+                   temp_msj = "Procesando orden " + msj.getSymbol().getValue() + "...";
+                   System.out.println(temp_msj);
+                   Console.msg(temp_msj);
+               }else if(msj.getOrdType().getValue() == 'W'){
                    //si regresa true quiere decir que la entrante es una modificación.
                    if(OrderHandler.isModify(msj)){
-                        System.err.println("Modificando OCO " + msj.getClOrdID().getValue());
+                        temp_msj= "Modificando OCO " + msj.getClOrdID().getValue();
+                        System.out.println(temp_msj);
+                        Console.msg(temp_msj);
                         OrderHandler.ocoModify(msj);
                     }else{
                         //Si no pues que entro una OCO nueva.
-                        System.err.println("Guardando OCO " + msj.getClOrdID().getValue());
+                        temp_msj = "Guardando OCO " + msj.getClOrdID().getValue();
+                        System.out.println(temp_msj);
                         OrderHandler.ocoRecord(msj);
                     }
                }
@@ -108,7 +116,9 @@ public class MessageHandler {
             * escépticos.
             */
            case '1':
-               System.err.println("**¡Peligro: Partial fill " + msj.getClOrdID().getValue() + " algo fué mal!...");
+               temp_msj = "**¡Peligro: Partial fill " + msj.getClOrdID().getValue() + " algo fué mal!...";
+               System.out.println(temp_msj);
+               Console.msg(temp_msj);
                break;
            /**
             * La orden fue aceptada correctamente, asi que emitimos la notificación
@@ -122,7 +132,9 @@ public class MessageHandler {
                        //Enviamos cierre de OCO
                        OrderHandler.closeOCO(msj.getOrigClOrdID().getValue(), 'N');
                    }else if(msj.getOrdType().getValue() == 'W'){
-                       System.err.println("La orden " + msj.getExecType().getValue() + " cerró por Sl o TP");
+                       temp_msj = "La orden " + msj.getExecType().getValue() + " cerró por Sl o TP";
+                       System.out.println(temp_msj);
+                       Console.msg(temp_msj);
                        OrderHandler.closeFromOco(msj.getClOrdID().getValue());
                    }
                }else{
@@ -131,7 +143,9 @@ public class MessageHandler {
                }
                break;
            case '3':
-               System.err.println("Done for a day " + msj.getClOrdID().getValue() + " favor de revisar currenex...");
+               temp_msj = "Done for a day " + msj.getClOrdID().getValue() + " favor de revisar currenex...";
+               System.out.println(temp_msj);
+               Console.msg(temp_msj);
                break;
            case '4':
                if(msj.getOrdType().getValue() == 'W'){
@@ -167,6 +181,8 @@ public class MessageHandler {
     }
 
     public static void errorHandler(quickfix.fix42.Reject msj) throws FieldNotFound {
-        System.out.println("Error: " + msj.getText().getValue());
+        temp_msj = "Error: " + msj.getText().getValue();
+        System.out.println(temp_msj);
+        Console.msg(temp_msj);
     }
 }

@@ -120,7 +120,6 @@ public class Graphic extends Thread {
      * @param price
      */
     public void onOpen(Double price) {
-        oms.util.Console.log("open: "+price);
         this.cont++;
         //Restamos el minuto actual 
         int dif = GMTDate.getDate().getMinute() - lastOpen;
@@ -293,6 +292,7 @@ public class Graphic extends Thread {
      */
     public void onOrderClose(String id){
         expert.closeNotify();
+        System.out.println("Order Close");
         StringBuffer temp = new StringBuffer();
             temp.append("{");        
                 temp.append("\"type\":\"onOrderClose\",");

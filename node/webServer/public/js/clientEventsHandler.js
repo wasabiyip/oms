@@ -75,10 +75,7 @@ $(document).ready(function(){
   socket.on('grafica-tick', function(data){
     var date = new Date();
     var symbol = unSlash(data.values.symbol);
-    var selector;
-    if(symbol == 'EURUSD' && data.values.tipo == 'bid'){
-       // drawChart(data.values.precio);
-    }                
+    var selector;                
     //este desmadre es para que no imprima las valores si el cero.
     var hora = date.getHours()<10 ? '0'+date.getHours():date.getHours();
     var min = date.getMinutes()<10 ? '0'+date.getMinutes():date.getMinutes();
@@ -134,28 +131,28 @@ $(document).ready(function(){
   socket.on('grafica-open', function(data){
     var id = unSlash(data.values.id);    
     var temp = getGrafica(id);
-    console.log(data.values.id);
     temp.onOpen(data.values.precio);
   });
   //Entro una orden.
   socket.on('grafica-order', function(data){
    playOrder(); 
-   var graf =  unSlash(data.id);
+   var id =  unSlash(data.id);
    var ord = data.ordid;
-   //getGrafica(data).onOrder(data);
-   $("#"+ graf + " .operaciones table").append("<tr id="+ data.ordid +"></tr>");
-   delete  data['id'];
-  /* $.each(data, function(key,val){
-       if(key =='tipo'){
-           if(val ==1)
-               $("#"+data.ordid).append('<td><span id='+key+ '>Compra</span></td>');
-           else
-               $("#"+data.ordid).append('<td><span id='+key+ '>Venta</span></td>');
-           
-       }else $("#"+data.ordid).append('<td><span id='+key+ '>'+val+'</span></td>');
-   });*/
-   //$("#"+data.ordid).append('<td><a class="btn" href="#"> <i class="icon-remove-circle"></i></td>');
-   //$("#"+data.ordid).append('<td><span class=\'cerrar\' title="Cerrar operacion" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">x</span></td>');
+   console.log(data);
+   //getGrafica(data).onOrder(id);
+   $("#trade .log").prepend('<tr class="info" id='+ord+'></tr>');
+   $.each(data, function(key,val){
+  		if(key == 'id')	{
+				//para que no ponga el id de la grafica en la tabla
+  		}else if(key =='tipo'){
+         if(val ==1)
+             $("#" + ord).append('<td><span id='+key+ '>Compra</span></td>');
+         else
+             $("#" + ord).append('<td><span id='+key+ '>Venta</span></td>');
+     }else $("#" + ord).append('<td><span id='+key+ '>'+val+'</span></td>');
+   });
+   $("#" + ord).append('<td><button class="btn" onClick="closeOrder(\''+data.id+'\',\''+ord+'\')">cerrar</button></td>');
+   //$("#" + ord).append('<td><span class=\'cerrar\' title="Cerrar operacion" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">x</span></td>');
    //para que el title del navegador se muestre las operaciones que tenemos.
    document.title = 'Operaciones (' + ++contOp +')';
    
@@ -185,12 +182,12 @@ $(document).ready(function(){
 });	
 
 //Cerramos una orden desde el cliente web.
-closeOrder= function(grafica,order){ 
-  var ask = confirm("¿Estas seguro que quieres cerrar la orden " + order+"?");
+closeOrder= function(grafica,orden){ 
+  var ask = confirm("¿Estas seguro que quieres cerrar la orden "+orden+"?");
   var str = {
 	  "type":"order-close",
-	  "grafica":Slash(grafica),
-	  "id":order
+	  "grafica":unSlash(grafica),
+	  "id":orden
   };
   if (ask==true){
     socket.emit('order-close',str);

@@ -83,7 +83,7 @@ public class Expert extends Jedi{
         //descansan por lo menfos un día de la semana...
         if (this.range(date.getHour())) { //TODO Borrar la condicion de open_min.
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
-            if (open_min > 1000 && lock && ask - bid <= setts.spread * setts.Point){
+            if (open_min > 0 && lock && ask - bid <= setts.spread * setts.Point){
                 //entrada de operacionsues.
                 if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())
                         && this.bollingerDif() < this.setts.bollxUp && this.bollingerDif()> setts.bollxDn && limiteCruce()) {

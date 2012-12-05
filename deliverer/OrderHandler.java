@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import oms.Grafica.Graphic;
 import oms.Grafica.Order;
 import oms.dao.MongoDao;    
+import oms.util.Console;
 import quickfix.*;
 import quickfix.field.*;
 import quickfix.fix42.ExecutionReport;
@@ -69,6 +70,7 @@ public class OrderHandler {
      */
     public static void orderNotify(ExecutionReport msj) throws Exception {
         String entry = "";
+        String temp = "";
         for (int i = 0; i < ordPool.size(); i++) {
             //Buscamos la orden que entro en ordPool para obtener el ID de la gráfica
             //que lo envió y así notificar a la respectiva gráfica.
@@ -83,12 +85,16 @@ public class OrderHandler {
          */
         if (msj.getSide().getValue() == '1') {
             OrderHandler.SendOCO(msj.getSymbol().getValue(), '1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(), (double) msj.getLastPx().getValue(), 'N');
-            System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
-                    + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
+            temp = "Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
+                    + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue();
+            System.out.println(temp);
+            Console.msg(temp);
         }else if (msj.getSide().getValue() == '2') {
             OrderHandler.SendOCO(msj.getSymbol().getValue(), '2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(), (double) msj.getLastPx().getValue(), 'N');
-            System.err.println("Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
-                    + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue());
+            temp = "Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
+                    + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue();
+            System.out.println(temp);
+            Console.msg(temp);
         }
     }
     
@@ -316,10 +322,13 @@ public class OrderHandler {
     public static void ocoModify(quickfix.fix42.ExecutionReport msj){
         DBCollection coll = OrderHandler.mongo.getCollection("operaciones");
         BasicDBObject mod = new BasicDBObject();
+        String temp;
         try {
             mod.append("$set", new BasicDBObject().append("TakeP", msj.getField(new DoubleField(7540)).getValue()));
             coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), mod);
-            System.err.println("Modificando : "+ msj.getClOrdID().getValue());
+            temp = "Modificando : "+ msj.getClOrdID().getValue();
+            System.out.println(temp);
+            Console.msg(temp)            ;
             GraficaHandler.orderModify(msj);
         } catch (FieldNotFound ex) {
             Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);

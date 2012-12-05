@@ -100,9 +100,10 @@ exports.closeOrder = function(close){
             "value":close.id
         }
     });
+    console.log(close.grafica);
     for(i=0; i<Graficas.length;i++){
-        console.log(Graficas[i].getSetts().ID);
         if(Graficas[i].getSetts().ID===close.grafica){
+            console.log(msj);
             Graficas[i].getSocket().write(msj +"\n");
         }
     }
@@ -116,11 +117,10 @@ function Grafica(symbol, socket, settings){
     this.symbol = symbol;
     this.socket = socket;
     this.settings = settings;
-	
     var bollUp,bollDn;
     var bollUpS, bollDnS;
     var price;
-
+    console.log(settings);
     this.getData = function(){
         return data;
     }

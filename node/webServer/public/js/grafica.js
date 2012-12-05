@@ -19,7 +19,8 @@ function Grafica(data){
   this.lastAsk;
   this.point = (this.symbol == "USD/JPY") ? 0.001 : 0.0001;
   this.orders = []
-  this.data_arr = [['Date','bollUp','Open','bollDn']];
+  this.data_in_arr = [['Date','bollUp','Open','bollDn']];
+  this.data_temp_arr = [['Date','bollUpS','Open','bollDnS']];
   this.chart;
   this.chart_id;
   /*
@@ -91,15 +92,18 @@ function Grafica(data){
   this.drawChart = function() {
     var temp;
 
-    if(this.data_arr.length >40){
-      this.data_arr.splice(1,1);
-      this.data_arr[this.data_arr.length] = [getDate(),this.bollUp,this.openMin,this.bollDn];
+    if(this.data_in_arr.length >40){
+      this.data_in_arr.splice(1,1);
+      this.data_temp_arr.splice(1,1);
+      this.data_temp_arr[this.data_temp_arr.length] = [getDate(),this.bollUpS,this.openMin,this.bollDnS];
+      this.data_in_arr[this.data_in_arr.length] = [getDate(),this.bollUp,this.openMin,this.bollDn];
     }else{
-      this.data_arr[this.data_arr.length] = [getDate(),this.bollUp,this.openMin,this.bollDn];
+      this.data_in_arr[this.data_in_arr.length] = [getDate(),this.bollUp,this.openMin,this.bollDn];
+      this.data_temp_arr[this.data_temp_arr.length] = [getDate(),this.bollUpS,this.openMin,this.bollDnS];
     }
-    var data = google.visualization.arrayToDataTable(this.data_arr);
+    var data = google.visualization.arrayToDataTable(this.data_temp_arr);
     var options = {
-      //title: 'Grafica de prueba - ' +this.symbol
+      title: this.symbol
     };
     this.chart = new google.visualization.LineChart(this.chart_id);
     this.chart.draw(data, options);
