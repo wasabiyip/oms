@@ -233,7 +233,7 @@ public class Expert extends Jedi{
      * @return estado de los valoes.
      */
     public String getExpertState(){
-        Console.log("bollUp: " + this.bollUp()+" bollDn: "+ this.bollDn());
+        
         StringBuffer temp = new StringBuffer();
         temp.append("\"variables\":{");
             temp.append("\"bollUp\":"+ redondear(this.getAvgBoll(this.bollUp()))+ ",");

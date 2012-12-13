@@ -5,7 +5,7 @@ function Grafica(data){
   this.data = data;
   this.id = unSlash(data.ID);
   this.symbol = data.symbol;
-  this.openMin;
+  this.open_min;
   this.bollUp = 0;
   this.bollUpDiff = 0;
   this.bollUpS = 0;
@@ -18,9 +18,10 @@ function Grafica(data){
   this.lastBid;
   this.lastAsk;
   this.point = (this.symbol == "USD/JPY") ? 0.001 : 0.0001;
-  this.orders = []
-  this.data_in_arr = [['Date','bollUp','Open','bollDn']];
-  this.data_temp_arr = [['Date','bollUpS','Open','bollDnS']];
+  this.order= false;
+  //Este array guarda los valores que crean las graficas cuanda hay o no hay
+  //operaciones.
+  this.data_master = [['Date','Open','bollUp','bollDn','bollUpS','bollDnS']];
   this.chart;
   this.chart_id;
   /*
@@ -47,12 +48,12 @@ function Grafica(data){
   * Evento de precio de apertura de minuto la gráfica.
   */
   this.onOpen = function(open){
-    this.openMin = redondear(parseFloat(open));
+    this.open_min = redondear(parseFloat(open));
     this.bollUpDiff = redondear(this.bollUp - (this.openMin +this.getPropiedad("bollSpecial")));
     this.bollDnDiff = redondear((this.openMin - this.getPropiedad("bollSpecial")) - this.bollDn);
     this.bollUpSDiff = redondear(this.bollUpS - this.openMin);
     this.bollDnSDiff = redondear(this.openMin - this.bollDnS);
-    this.drawChart();
+    this.setDataOpen();
   }  
   /*
   * Evento de cambio de vela de la gráfica.
@@ -78,34 +79,80 @@ function Grafica(data){
   * Evento de apertura de operación.
   */
   this.onOrderOpen = function(orden){
-    this.orders.push(order);
+    this.order = orden;
+    this.drawChart();
   }
   /*
   *Evento de cierre de operación
   */
   this.onOrderClose = function(){
-     
+     this.order = false;
+     this.drawChart();
+  }
+  this.setDataOpen = function(open){
+
+    if(this.data_master.length >40){
+      //Si tiene mas de 40 datos, quitamos el 1 para que no se acumulen.
+      this.data_master.splice(1,1);
+      this.data_master[this.data_master.length] = [
+        getDate(),this.open_min, this.bollUp, this.bollDn,this.bollUpS,this.bollDnS
+      ];
+    }else{
+      this.data_master[this.data_master.length] = [
+        getDate(),this.open_min,this.bollUp, this.bollDn,this.bollUpS,this.bollDnS
+      ];
+    }
+    this.drawChart();
   }
   /*
   *Dibujamos la gráfica en su correspondiente div
   */
   this.drawChart = function() {
-    var temp;
-
-    if(this.data_in_arr.length >40){
-      this.data_in_arr.splice(1,1);
-      this.data_temp_arr.splice(1,1);
-      this.data_temp_arr[this.data_temp_arr.length] = [getDate(),this.bollUpS,this.openMin,this.bollDnS];
-      this.data_in_arr[this.data_in_arr.length] = [getDate(),this.bollUp,this.openMin,this.bollDn];
+    var data;
+    //Si no hay operaciones entonces, graficamos las entradas, sino las salidas.
+    if(this.order){
+      data = google.visualization.arrayToDataTable(this.getOutData());
     }else{
-      this.data_in_arr[this.data_in_arr.length] = [getDate(),this.bollUp,this.openMin,this.bollDn];
-      this.data_temp_arr[this.data_temp_arr.length] = [getDate(),this.bollUpS,this.openMin,this.bollDnS];
+      data = google.visualization.arrayToDataTable(this.getInData());
     }
-    var data = google.visualization.arrayToDataTable(this.data_temp_arr);
+
     var options = {
       title: this.symbol
     };
     this.chart = new google.visualization.LineChart(this.chart_id);
+    
     this.chart.draw(data, options);
   } 
+  /**
+  *Regresamos datos de entra de operaciones que serán graficados.
+  */
+  this.getInData = function(){
+    var temp = [];
+    for (var i=0; i< this.data_master.length;i++){
+      temp[temp.length] = [
+        this.data_master[i][0],
+        this.data_master[i][1],
+        this.data_master[i][2],
+        this.data_master[i][3]
+      ];
+    }
+    return temp;
+  }
+  /**
+  *Regresamos datos de entra de operaciones que serán graficados.
+  */
+  this.getOutData = function(){
+    var temp = [['Date','Open','boll-salida', 'SL','TP']];
+
+    for (var i=1; i< this.data_master.length;i++){
+      temp[temp.length] = [
+        this.data_master[i][0],
+        this.data_master[i][1],
+        this.order.tipo == "1"? this.data_master[i][4]:this.data_master[i][5],
+        parseFloat(this.order.sl),
+        parseFloat(this.order.tp)
+      ];
+    }
+    return temp;
+  }
 }

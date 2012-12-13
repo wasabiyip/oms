@@ -93,7 +93,7 @@ public class MessageHandler {
             */
            case '0':
                if(msj.getOrdType().getValue() == 'C'){
-                   temp_msj = "Procesando orden " + msj.getSymbol().getValue() + "...";
+                   temp_msj = "Procesando petición " + msj.getSymbol().getValue() + "...";
                    System.out.println(temp_msj);
                    Console.msg(temp_msj);
                }else if(msj.getOrdType().getValue() == 'W'){

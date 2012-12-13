@@ -138,8 +138,8 @@ $(document).ready(function(){
    playOrder(); 
    var id =  unSlash(data.id);
    var ord = data.ordid;
-   console.log(data);
-   //getGrafica(data).onOrder(id);
+   getGrafica(id).onOrderOpen(data);
+   
    $("#trade .log").prepend('<tr class="info" id='+ord+'></tr>');
    $.each(data, function(key,val){
   		if(key == 'id')	{
@@ -159,6 +159,14 @@ $(document).ready(function(){
   });
   //Salio una orden
   socket.on('grafica-orderClose', function(data) {
+  	console.log(data.id);
+  	for(var i in graficas){
+  		
+  		if(graficas[i].order.ordid == data.id){
+  			console.log(graficas[i].order.ordid);
+  			graficas[i].order = false;
+  		}
+  	}
     $("#"+data.id).remove();
     if (--contOp > 0)
       document.title = 'Operaciones (' + contOp +')';
