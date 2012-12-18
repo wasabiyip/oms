@@ -24,7 +24,7 @@ public abstract class IMongoDAO {
         Properties config = new Properties();
         try {
                 
-                config.load(new FileInputStream("config/app.cnf"));
+                config.load(new FileInputStream("/home/omar/OMS/config/app.cnf"));
                 
             } catch (IOException ex) {
                 Logger.getLogger(MongoConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -33,10 +33,6 @@ public abstract class IMongoDAO {
         host = config.getProperty("host"); 
         puerto = new Integer( config.getProperty("puerto"));;
         datab = config.getProperty("data_base");
-        jsonF = config.getProperty("json_file");
-        history = config.getProperty("history");
-        collection = config.getProperty("colleccion");
-        
-        
+        collection = config.getProperty("colleccion");        
     }
 }

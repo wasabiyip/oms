@@ -1,12 +1,11 @@
 package oms.deliverer;
 
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
+import java.io.*;
 import oms.Grafica.Graphic;
-import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -85,12 +84,9 @@ public class SenderApp extends MessageCracker implements Application{
         Console.msg("Conectados exitosasmente con "+id+" desde la cuenta " + this.userName);
         SenderApp.sessionID = id;
         //Para que los threads no se dupliquen cuando el servidor nos desconecta.
-        if (!lock){
-            this.graficaHandler.addGrafica("EUR/USD", 5);
-            this.graficaHandler.addGrafica("GBP/USD", 5);
-            this.graficaHandler.addGrafica("USD/CHF", 5);
-            this.graficaHandler.addGrafica("USD/JPY", 5);
-            lock=true;
+        if(!lock){
+            //this.graficaHandler.runProfile();
+            lock = true;
         }
     }
     

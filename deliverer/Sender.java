@@ -27,7 +27,7 @@ public class Sender  {
     public Sender() throws Exception{
         InputStream inputS = new BufferedInputStream(
                                 new FileInputStream(
-                                new File("config/sender.cnf")));
+                                new File("/home/omar/OMS/config/app.cnf")));
      
         SessionSettings settings = new SessionSettings(inputS);
         inputS.close();

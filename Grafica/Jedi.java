@@ -29,7 +29,7 @@ public abstract class Jedi {
     public double lastOrderPrice;
     public ExecutionReport lastOrder;
     public int contVelas=0;
-    Jedi(Settings setts, int periodo){
+    Jedi(Settings setts){
         this.setts = setts;
     }
     public abstract void onTick(Double price);
@@ -45,7 +45,7 @@ public abstract class Jedi {
     public StringBuffer getExpertInfo() {
 
         StringBuffer init = new StringBuffer();
-
+        
         init.append("\"settings\" : {");
             init.append("\"symbol\" : \"" + setts.symbol+"\",");
             init.append("\"ID\" : \"" + setts.id + "\",");
@@ -63,7 +63,7 @@ public abstract class Jedi {
             init.append("\"horaInicial\":" + setts.horaIni + ",");
             init.append("\"horaFinal\" :" + setts.horaFin +",");
             init.append("\"horaSalida\" :" + setts.horaIniS+",");
-            init.append("\"Periodo\" :" + periodo + ",");
+            init.append("\"Periodo\" :" + setts.periodo + ",");
             init.append("\"bollSpecial\" :" + setts.boll_special+",");
             init.append("\"spreadAsk\" :" + setts.spreadAsk);
             init.append("}");
@@ -177,4 +177,6 @@ public abstract class Jedi {
         temp = Math.rint(val * 1000000) / 1000000;
         return temp;
     }
+    
+    
 }

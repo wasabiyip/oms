@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.simple.JSONObject;
@@ -40,6 +41,7 @@ public class Graphic extends Thread {
     public static MongoDao dao = new MongoDao();
     private Settings setts;
     private int lastOpen = GMTDate.getDate().getMinute();
+    private boolean grafic_lock = true;
     /**
      * Constructor!
      *
@@ -47,16 +49,15 @@ public class Graphic extends Thread {
      * @param periodo tiempo con el que trabajaremos.
      * @throws IOException
      */
-    public Graphic(String symbol, int periodo) {
-        setts = new Settings(symbol);
-        expert = new Expert(symbol, periodo, setts);
+    public Graphic(Properties log_file) {
+        setts = new Settings(log_file);
+        expert = new Expert(setts);
         this.id = expert.getID();
-        dif = GMTDate.getDate().getMinute() % periodo;
-        this.symbol = symbol;
+        dif = GMTDate.getDate().getMinute() % setts.periodo;
+        this.symbol = setts.symbol;
         this.periodo = periodo;
-        this.candle = new Candle(periodo, this.getHistorial(dif));
+        this.candle = new Candle(setts.periodo, this.getHistorial(dif));
         cont = dif;
-        System.out.println("Grafica de " + symbol + " " + periodo +  " " + id);
     }
 
     /**
@@ -176,12 +177,13 @@ public class Graphic extends Thread {
         ArrayList data = new ArrayList();
         //Utilizamos unSlash para quitar el / ya que en la base de datos tenemos las monedas
         //sin este.
-        ArrayList temp = dao.getCandleData(this.unSlash(symbol), cant);
+        ArrayList temp = dao.getCandleData(symbol, cant);
         return temp;
     }
 
     /**
      * Metodo que quita el / en un symbol, EUR/USD resulta en EURUSD ya que en
+     * mongo los nombres de las monedas se encuentran así.
      * mongo los nombres de las monedas se encuentran así.
      *
      * @param symbol
@@ -192,6 +194,8 @@ public class Graphic extends Thread {
         str.append(symbol.substring(0, 3)).append(symbol.substring(4));
         return str.toString();
     }
+   
+   
 
     /**
      * Cada que recibimos un mensaje de Node lo mandamos aquí para ser evaluado.
@@ -227,7 +231,9 @@ public class Graphic extends Thread {
                     break;
                 case "bid":
                     this.bid = (double) json.get("precio");
-                    expert.onTick((double) json.get("precio"));
+                    //Si la grafica esta activa, enviamos tick para que circule.
+                    if(!this.grafic_lock)
+                        expert.onTick((double) json.get("precio"));
                     break;
                 case "close-order":
                     expert.order.Close(this.id, dao.getOrder((String)json.get("value")));

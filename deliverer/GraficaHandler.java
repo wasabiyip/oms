@@ -1,6 +1,10 @@
 package oms.deliverer;
 
+import CustomException.NoProfileFoundException;
+import java.io.*;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Graphic;
@@ -8,6 +12,8 @@ import oms.util.Console;
 import quickfix.DoubleField;
 import quickfix.FieldNotFound;
 import quickfix.fix42.ExecutionReport;
+import java.util.Properties;
+
 
 /**
  * Esta clase es a la cuál nos dirigimos cuando queremos comunicar eventos que 
@@ -17,18 +23,67 @@ import quickfix.fix42.ExecutionReport;
 public class GraficaHandler {
 
     public static ArrayList<Graphic> graficas = new ArrayList();
+    public ArrayList<Properties> chart_files = new ArrayList();
+    private String last_profile;
+    Properties prof_conf = new Properties();
+    /**
+     * Generamos las gráficas
+     */
+    public GraficaHandler(){
+        
+        try {
+            prof_conf.load(new FileInputStream("/home/omar/OMS/profiles/profiles.cnf"));
+            this.last_profile = (prof_conf.getProperty("last_profile"));
+            setProfile(this.last_profile);
+        } catch (IOException ex) {
+            System.err.println("El archivo de configuracion de perfiles no está, vamos a restaurarlo por tí ;)");
+            this.last_profile = "default";
+            setProfile(this.last_profile);
+        }
+    }
+    /**
+     * Añadimos un nuevo perfil, si el perfil no existe o no se ha indicado usarremos
+     * el último o el default.
+     * @param profile 
+     */
+    void setProfile(String perfil){
+        //Si es null cargamos el pérfil de default
+        try {
+            //Cargamos configuración inicial de perfiles.
+            this.chart_files = this.getChartFiles(perfil);
+            //salvamos perfil como el último perfil que se usó.
+            prof_conf.setProperty("last_profile",perfil);
+            prof_conf.store(new FileOutputStream("/home/omar/OMS/profiles/profiles.cnf"),"");
+            //Si no existe el perfil llamas otra vez al método para usar el default. 
+        } catch (NoProfileFoundException ex) {
+            try {
+                
+                this.chart_files = this.getChartFiles(this.last_profile);
+            } catch (NoProfileFoundException ex1) {
+                Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex1);
+            }
+        }catch(IOException ex){
+            System.err.println("El archivo de configuracion de perfiles no pudo ser creado, te fallé.");
+        }   
+       
+    }
+    void runProfile(){
+        for(Properties file : this.chart_files){
+            System.err.println("Grafica "+file.getProperty("symbol") +" de " + file.getProperty("period") + " minutos cargada correctamente");
+            this.addGrafica(file);
+        }
+    }
     /**
      * Si queremos añadir una nueva grafica acá es donde.
      *
      * @param symbol
      * @param periodo
      */
-    public void addGrafica(String symbol, int periodo) {
+    void addGrafica(Properties log_file) {
         //Podriamos poner aquí algunas opciones mas como pasar el archivo log.
-        graficas.add(new Graphic(symbol, periodo));
+        graficas.add(new Graphic(log_file));
+        Console.log("Grafica "+log_file.getProperty("symbol") +" de " + log_file.getProperty("period") + " minutos cargada correctamente");
         runGrafica(graficas.size() - 1);
-        Console.log("Grafica "+symbol +" de " + periodo + " minutos cargada correctamente");
-        
     }
     /**
      * Las gráficas son thread así que tenemos que correrlos para que comienzen
@@ -116,6 +171,31 @@ public class GraficaHandler {
             if (graficas.get(i).getID().equals(id)) {
                 temp = graficas.get(i);
                 break;
+            }
+        }
+        return temp;
+    }
+    /**
+     * Obtenemos un array de los archivos contenidos en la carpeta del perfil.
+     * @param perfil
+     * @return 
+     */
+    private ArrayList<Properties> getChartFiles(String perfil) throws NoProfileFoundException{
+        ArrayList<Properties> temp = new ArrayList();
+        File folder = new File("/home/omar/OMS/profiles/" + perfil);
+        //Si la carpeta de perfil no existe o esta vacía, lanzamos exceptión.
+        if (!folder.exists() || folder.listFiles().length==0){
+            throw new NoProfileFoundException(perfil);
+        }
+        File[] prof_files = folder.listFiles();
+        
+        for(File file : prof_files){
+            try {
+                Properties prop_temp = new Properties();
+                prop_temp.load(new FileInputStream(file.getPath()));
+                temp.add(prop_temp);
+            } catch (IOException ex) {
+                Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         return temp;

@@ -44,11 +44,11 @@ public class Expert extends Jedi{
      * Constructor...
      * @param symbol Indica el par de monedas con el se va a trabajar.
      */
-    public Expert(String symbol,int periodo, Settings setts) {
+    public Expert(Settings setts) {
         //llamamos a el constructor de el padre (Settings).
-        super(setts, periodo);
-        order = new Order(symbol,setts.MAGICMA, setts.id);
-        indicador = new Indicador(Graphic.unSlash(setts.symbol),periodo);
+        super(setts);
+        
+        indicador = new Indicador(setts.symbol,setts.periodo);
         
         /**
          * Añadimos los periodos a las bandas.

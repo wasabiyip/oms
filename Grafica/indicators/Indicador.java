@@ -39,12 +39,10 @@ public class Indicador {
      * @return el bollinger
      */
     public BollingerBands createBollinger(int periodo) {
-
         ArrayList data = new ArrayList();
         MongoDao dao = new MongoDao();
         int cont =0;
         ArrayList temp = dao.getCandleData(this.symbol, (periodo * periodoGrafica) + this.dif);
-        DBObject non = null;
         for (int i = 1; i < dif; i++) {
             temp.remove(0);
         }

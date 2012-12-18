@@ -7,6 +7,9 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 /**
  *
@@ -44,69 +47,69 @@ public class Settings {
     public Integer bollx1;
     public Integer bollx2;
     public Integer bollx3;
+    public Integer periodo;
     public double bollxUp;
     public double bollxDn;
     public boolean volatilidad;
     public double volVal;
     public double nwTp;
-    public Settings(String symbol) {
-        this.symbol = symbol;
+    private Pattern p = Pattern.compile("(USDJPY|EURUSD|GBPUSD|USDCHF|EURGBP)");
+    
+    public Settings(Properties config) {
         
+        Matcher m = p.matcher(config.getProperty("symbol"));
+        if(m.find()){
+            this.symbol = m.group();
+        }
         /**
          * Todas las monedas tienen el mismo Point excepto el Yen.
          */
-        if(symbol.equals("USD/JPY"))
+        if(symbol.equals("USDJPY"))
             this.Point = 0.0001;
         else this.Point = 0.00001;
-        try {
-            Properties config = new Properties();
-            config.load(new FileInputStream("config/Estrategias/" + Graphic.unSlash(this.symbol) + ".set"));
-            
-            MAGICMA = new Integer(config.getProperty("MAGICMA"));
-            boll1 = new Integer(config.getProperty("periodoBoll"));
-            boll2 = new Integer(config.getProperty("periodoBoll2"));
-            boll3 = new Integer(config.getProperty("periodoBoll3"));
-            bollS1 = new Integer(config.getProperty("periodoBollsalida"));
-            bollS2 = new Integer(config.getProperty("periodoBollsalida2"));
-            bollS3 = new Integer(config.getProperty("periodoBollsalida3"));
-            boll_special = new Double(config.getProperty("bollspecial"));
-            spread = new Double(config.getProperty("spread"));
-            lots = new Double(config.getProperty("Lots"));
-            tp = new Integer(config.getProperty("tp")) * this.Point;
-            sl = new Integer(config.getProperty("sl")) * this.Point;
-            horaIni = new Double(config.getProperty("horainicial"));
-            horaFin = new Double(config.getProperty("horafinal"));
-            horaIniS = new Double(config.getProperty("timesalidainicial"));
-            horaFinS = new Double(config.getProperty("timesalidafinal"));
-            limiteCruce = new Integer(config.getProperty("limiteCruce"));
-            bollx1 = new Integer(config.getProperty("XBoll"));
-            bollx2 = new Integer(config.getProperty("XBoll2"));
-            bollx3 = new Integer(config.getProperty("XBoll3"));
-            bollxUp = new Double(config.getProperty("BollxUp"));
-            bollxDn = new Double(config.getProperty("BollxDn"));
-            volVal = new Double(config.getProperty("volatibidad"))* this.Point;
-            velasS = new Integer (config.getProperty("num_velas_salida"));
-            nwTp = new Double(config.getProperty("nwTP"))*this.Point;
-            //Hacemos esto por que las variables booleanas esperan leer desde el archivo
-            // un true o un false y nosotros tenemos un 0 o un 1, y por eso debemos
-            // leerlo como un entero y despues asiganar el valor true o false.
-            //I <3 Ternario
-            //this.salidaVelas = (velasS == 0) ? false : true;
-            this.salidaBollinger = (new Integer(config.getProperty("Salida")) == 0) ? false : true;
-            this.salidaMin = (new Integer(config.getProperty("SalidaHora")) == 0) ? false : true;
-            this.volatilidad = (new Integer(config.getProperty("Volatibidad")) == 0) ? false : true;
-            ///-----------------------------------------------------------------///
-            spreadSalida = new Integer(config.getProperty("spread_salida"));
-            spreadAsk = new Integer(config.getProperty("spread_ask"));
-            this.id = config.getProperty("grafid");
-            //Si el archivo log no cuenta con un orden id generamos uno para el.
-            if(this.id ==null){
-                this.id = genId(symbol);
-                config.setProperty("grafid", id);
-                config.store(new FileOutputStream("config/Estrategias/" + Graphic.unSlash(this.symbol) + ".set"), "");
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
+                  
+        this.periodo = new Integer(config.getProperty("period"));
+        MAGICMA = new Integer(config.getProperty("MAGICMA"));
+        boll1 = new Integer(config.getProperty("periodoBoll"));
+        boll2 = new Integer(config.getProperty("periodoBoll2"));
+        boll3 = new Integer(config.getProperty("periodoBoll3"));
+        bollS1 = new Integer(config.getProperty("periodoBollsalida"));
+        bollS2 = new Integer(config.getProperty("periodoBollsalida2"));
+        bollS3 = new Integer(config.getProperty("periodoBollsalida3"));
+        boll_special = new Double(config.getProperty("bollspecial"));
+        spread = new Double(config.getProperty("spread"));
+        lots = new Double(config.getProperty("Lots"));
+        tp = new Integer(config.getProperty("tp")) * this.Point;
+        sl = new Integer(config.getProperty("sl")) * this.Point;
+        horaIni = new Double(config.getProperty("horainicial"));
+        horaFin = new Double(config.getProperty("horafinal"));
+        horaIniS = new Double(config.getProperty("timesalidainicial"));
+        horaFinS = new Double(config.getProperty("timesalidafinal"));
+        limiteCruce = new Integer(config.getProperty("limiteCruce"));
+        bollx1 = new Integer(config.getProperty("XBoll"));
+        bollx2 = new Integer(config.getProperty("XBoll2"));
+        bollx3 = new Integer(config.getProperty("XBoll3"));
+        bollxUp = new Double(config.getProperty("BollxUp"));
+        bollxDn = new Double(config.getProperty("BollxDn"));
+        volVal = new Double(config.getProperty("volatibidad"))* this.Point;
+        velasS = new Integer (config.getProperty("num_velas_salida"));
+        nwTp = new Double(config.getProperty("nwTP"))*this.Point;
+        //Hacemos esto por que las variables booleanas esperan leer desde el archivo
+        // un true o un false y nosotros tenemos un 0 o un 1, y por eso debemos
+        // leerlo como un entero y despues asiganar el valor true o false.
+        //I <3 Ternario
+        //this.salidaVelas = (velasS == 0) ? false : true;
+        this.salidaBollinger = (new Integer(config.getProperty("Salida")) == 0) ? false : true;
+        this.salidaMin = (new Integer(config.getProperty("SalidaHora")) == 0) ? false : true;
+        this.volatilidad = (new Integer(config.getProperty("Volatibidad")) == 0) ? false : true;
+        ///-----------------------------------------------------------------///
+        spreadSalida = new Integer(config.getProperty("spread_salida"));
+        spreadAsk = new Integer(config.getProperty("spread_ask"));
+        this.id = config.getProperty("grafid");
+        //Si el archivo log no cuenta con un orden id generamos uno para el.
+        if(this.id ==null){
+            this.id = genId(symbol);
+            config.setProperty("grafid", id);
         }
     }
     
@@ -131,6 +134,11 @@ public class Settings {
                 j--;//<---------|| ¡CUIDADO ESTO ES UNA CHARRADA!
             }
         }
+        return str.toString();
+    }
+    static String Slash(String symbol) {
+        StringBuffer str = new StringBuffer(symbol.length());
+        str.append(symbol.substring(0, 3)).append("/").append(symbol.substring(3));
         return str.toString();
     }
 }

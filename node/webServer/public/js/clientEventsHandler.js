@@ -32,6 +32,7 @@ $(document).ready(function(){
         id: data.setts.ID
     }); 
     graficas.push(new Grafica(data.setts));
+    console.log(data.setts);
     $.each(data.setts, function(key, val){
       if(key != 'ID' && key != 'symbol'){
         if(key== 'TP' || key == 'SL')
