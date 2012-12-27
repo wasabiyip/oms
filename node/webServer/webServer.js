@@ -93,7 +93,7 @@ exports.onTick = function(data){
 recibimos un evento onCandle.
 */
 exports.onCandle = function(data){
-    console.log('onCandle webserver');
+    
     notify('grafica-candle', data);
 }
 /*

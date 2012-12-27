@@ -20,7 +20,7 @@ public abstract class Jedi {
     //La usamos para guardar el tipo de orden que esta entrando. 1 es compra y 2 
     //es venta
     public char currentOrder = '0';
-    public boolean lock= true;
+    public boolean lock_op= true;
     boolean modify= false;
     public int velasCont = 0;
     public double bid=0.0;
@@ -29,13 +29,16 @@ public abstract class Jedi {
     public double lastOrderPrice;
     public ExecutionReport lastOrder;
     public int contVelas=0;
+    private boolean grafic_lock = false;
     Jedi(Settings setts){
         this.setts = setts;
+        order = new Order(setts.symbol,setts.MAGICMA,setts.id);
     }
     public abstract void onTick(Double price);
     public abstract void onCandle(Double price);
     public void onOpen(Double price){
         open_min = price;
+        //System.out.println(this.setts.symbol + " " + this.setts.periodo + " " + this.isActive());
     }
     /**
      * Método que regresa los valores que la clase Settings lee del archivo de
@@ -65,7 +68,8 @@ public abstract class Jedi {
             init.append("\"horaSalida\" :" + setts.horaIniS+",");
             init.append("\"Periodo\" :" + setts.periodo + ",");
             init.append("\"bollSpecial\" :" + setts.boll_special+",");
-            init.append("\"spreadAsk\" :" + setts.spreadAsk);
+            init.append("\"spreadAsk\" :" + setts.spreadAsk + ",");
+            init.append("\"limiteCruce\" :" + setts.limiteCruce);
             init.append("}");
         return init;
     }
@@ -103,6 +107,7 @@ public abstract class Jedi {
      * @param type 
      */
     public void orderSend(Double price, char type){
+        System.out.println(this.setts.symbol + " " + price + " " + type);
         order.Open(price, type);
     }
     /**
@@ -110,8 +115,7 @@ public abstract class Jedi {
      */
     public void closeNotify(){
         currentOrder = '0';
-        System.err.println("Orden cerro");
-        this.lock = true;
+        this.lock_op = true;
         this.velasCont = 0;
         this.modify = false;
     }
@@ -130,7 +134,7 @@ public abstract class Jedi {
             this.lastOrder = order;
             currentOrder = order.getSide().getObject();
             System.err.println("Orden abrio");
-            this.lock = false;
+            this.lock_op = false;
             lastOrderPrice= order.getLastPx().getValue();
             contVelas =0;
         } catch (FieldNotFound ex) {
@@ -144,7 +148,9 @@ public abstract class Jedi {
         double temp = (boll  + (boll +(this.setts.spreadAsk * setts.Point)))/2;
         return redondear(temp);
     }
-    
+    /**
+     * @return retornamos un promedio del precio de apertura relacionado con el Spread
+     */
     public double getAvgOpen(){
         double temp = 0.0;
         temp = ((this.open_min) + (this.open_min +(this.ask - this.bid)))/2;
@@ -177,6 +183,36 @@ public abstract class Jedi {
         temp = Math.rint(val * 1000000) / 1000000;
         return temp;
     }
-    
-    
+    /**
+     * Guardamos el valor del ask.
+     * @param ask 
+     */
+    public void setAsk(Double ask){
+        this.ask = ask;
+    }
+    /**
+     * verificamos que nos encontremos en horas de operacion.
+     * @param hora
+     * @return 
+     */
+    public boolean isActive(){
+        Date date = new oms.Grafica.Date();
+        boolean temp=false;
+        double hora = date.getHour() + (date.getMinute()*0.01);
+        
+        if(hora < setts.horaFin && hora >= setts.horaIni && !this.grafic_lock && this.open_min>0)
+            temp=true;
+        return temp;
+    }
+    /*
+     * verificamos que nos encontremos en horas de salida de operaciones.
+     */
+    public boolean rangeSalida(){
+        Date date = new oms.Grafica.Date();  
+        double hora = date.getHour() + (date.getMinute()*0.01);
+        boolean temp=false;
+        if(hora < setts.horaFinS && hora >= setts.horaIniS)
+            temp=true;
+        return temp;
+    }
 }

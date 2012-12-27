@@ -24,7 +24,7 @@ public class Candle {
      * @param historial esto es para mantener la vela sincronizada.
      */
     public Candle(int periodo, ArrayList historial) {
-
+        
         if (historial.get(0) == null) {
         } else {
             this.periodo = periodo;
@@ -36,7 +36,7 @@ public class Candle {
     /**
      * onTick significa que recibimos un precio de apertura de minuto.
      *
-     * @param price este precio de minuto es usado para conformar la vela
+     * @param price es el precio de minuto es usado para conformar la vela
      */
     public void onTick(Double price) {
         precios.add(price);
@@ -71,5 +71,11 @@ public class Candle {
      */
     public Double getOpenPrice() {
         return this.openPrice;
+    }
+    
+    public boolean cambioVela(){
+        if(this.precios.size()>= this.periodo){
+            return true;
+        }else return false;
     }
 }

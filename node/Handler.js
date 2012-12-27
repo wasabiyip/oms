@@ -36,7 +36,6 @@ exports.expertState = function(txt){
         //**CUIDADO esto es una Charrada!
         if(Graficas[i].getSetts().ID == id){
             //tenemos que extraer los bytes del mensaje que vamos a enviar.	    	
-            console.log('obteniendo estado ' + id);   
             //Es muy importante enviar '\n' ya que java espera un fin de 
             //linea: readLine();
             Graficas[i].getSocket().write(msj +'\n');
@@ -51,6 +50,7 @@ exports.graficasLength = function(){
 }
 //Revisamos si hay una grafica de determinado symbolo.
 exports.symbolExists = function(symbol){
+    
     for(i=0; i<Graficas.length;i++){
         if(Graficas[i].getSymbol() === symbol){
             return true;
@@ -77,8 +77,6 @@ exports.closeGrafica= function(socket){
     for(i=0; i<Graficas.length; i++){
 						
         if (Graficas[i].getSocket().name === socket.name){
-
-            console.log('Client ' + socket.name + ' desconectado. ');
             Graficas.splice(i,1);
         }		
     }
@@ -100,13 +98,22 @@ exports.closeOrder = function(close){
             "value":close.id
         }
     });
-    console.log(close.grafica);
+    
     for(i=0; i<Graficas.length;i++){
         if(Graficas[i].getSetts().ID===close.grafica){
-            console.log(msj);
             Graficas[i].getSocket().write(msj +"\n");
         }
     }
+}
+function Slash(cadena){
+  var text = cadena.split("");
+  var res ="";
+  for(i=0; i<text.length; i++){
+      res +=text[i];
+      if(i==2)
+          res += '/';
+  }
+  return res;
 }
 //-------------------------------------------------------------------//
 /*
@@ -120,7 +127,7 @@ function Grafica(symbol, socket, settings){
     var bollUp,bollDn;
     var bollUpS, bollDnS;
     var price;
-    console.log(settings);
+    
     this.getData = function(){
         return data;
     }

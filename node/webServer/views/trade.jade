@@ -5,7 +5,9 @@ block content
     .row-fluid
       .span3
         .well.sidebar-nav(id="market-watch")
-          p Market Watch:
+          p 
+            i.icon-eye-open
+            Market Watch:
             span#market-hora
         .well.sidebar-nav(id="stream")
           table.table.table-striped.table-bordered.table-hover
@@ -18,45 +20,74 @@ block content
                 each moneda in monedas
                   tr.moneda(id= moneda)
                     td #{moneda}
+                      i.icon-chevron-right
                     td.bid(id='high') ------
                     td.ask(id='high') ------
       .span9
-        #estrategias    
-        -var temps = []
-          if graficas.length==0
-            h1 No hay graficas conectadas :(
-          else  
-            each grafica in graficas
-              -temps.push(grafica.setts)
-              if temps.length == 2
-                .rowfluid
-                  each temp in temps
-                    .span6
-                      div(id= temp.ID, class="grafica")
-                        .content-graf
-                            .graf-head
-                              .btn-group.pull-right(id="opciones")
-                                a.btn-small.btn.btn-primary.dropdown-toggle(data-toggle='dropdown',href='#') Opciones 
-                                  span.caret
-                                ul.dropdown-menu
-                                  li(data-filter-camera-type='all')
-                                    a(id="inputs",rel="popover") Inputs
-                              h4 #{temp.symbol}                           
-                            hr
-                            #chart-div
-                              -var id = temp.symbol +'-chart'
-                              .chart(id=id)
-                            
-                -temps =[]
+        #estrategias.well    
+          -var temps = []
+          -console.log(graficas);
+            if graficas.length==0
+              h1 No hay graficas conectadas :(
+            else 
+              .tabbable.tabs-below
+                .tab-content
+                  -for(var i=0;i<graficas.length;i++){
+                    -var temp = graficas[i];
+                    -var title = graficas[i][0].toLowerCase();
+                    .tab-pane(id=title)
+                      -for(var j=1; j<temp.length; j++){
+                        -var chart = temp[j].setts
+                        .span6
+                          div(id= chart.ID, class="grafica")
+                            .content-graf
+                                .graf-head
+                                  .btn-group.pull-right(id="opciones")
+                                    a.btn-small.btn.btn-primary.dropdown-toggle(data-toggle='dropdown',href='#') Opciones 
+                                      i(id="active")
+                                      span.caret
+                                    ul.dropdown-menu
+                                      li(data-filter-camera-type='all')
+                                        a(id="inputs",rel="popover") 
+                                          i.icon-list 
+                                          span Inputs
+                                      li(data-filter-camera-type='all')
+                                        a
+                                          form  
+                                            input(type="checkbox", name="", value="") 
+                                            span Activo
+                                  .graf-header
+                                    i.icon-bookmark
+                                    span #{chart.symbol} #{chart.Periodo}                           
+                                hr
+                                #chart-div
+                                  -var id = chart.ID +'-chart'
+                                  .chart(id=id)
+                      -}
+                  -}
+                                  
+                ul.nav.nav-tabs(id="charts-tab")
+                  -for(var i=0;i<graficas.length;i++){
+                    -var symbol = graficas[i][0];
+                    -var title = "#"+symbol.toLowerCase();
+                    li
+                      a(href=title,data-toggle="tab") #{symbol}
+                  -}                     
     #terminal
       .well.sidebar-nav(id="terminal-wrap")
         ul.nav.nav-tabs(id='terminal-tab')
           li.active
-            a(href="#trade", data-toggle="tab") Trade
+            a(href="#trade", data-toggle="tab") 
+              i.icon-shopping-cart
+              span Trade
           li
-            a(href="#experts", data-toggle="tab") Experts  
+            a(href="#experts", data-toggle="tab") 
+              i.icon-exclamation-sign
+              span Experts  
           li
-            a(href="#journal", data-toggle="tab") Journal
+            a(href="#journal", data-toggle="tab") 
+              i.icon-info-sign
+              span Journal
         #terminal-cont.tab-content
           #trade.tab-pane.active
             table.table.table-striped.table-hover.table-condensed.table-bordered
@@ -89,4 +120,4 @@ block content
               tbody.log
                 tr.warning
                   td.time "Mensaje de prueba"
-                  td "Money is the root of all evil today.".- Pink Floyd
+                  td "Money is the root of all evil today.".- Pink Floyd                 

@@ -21,7 +21,7 @@ public class Order {
     int magicma;
     String grafid;
     public Order(String symbol, int magicma, String grafid){
-        this.symbol = symbol;
+        this.symbol = Settings.Slash(symbol);
         this.currency = symbol.substring(0, 3);
         this.magicma = magicma;
         this.grafid = grafid;

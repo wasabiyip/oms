@@ -1,12 +1,15 @@
 module.exports = function(app, models){
 	//Index
 	app.get('/', function(req, res){
-		console.log(models.graf_modl.graf_arr);
+		var grafs = models.graf_modl.getCharts();
+		for(var i=0; i< grafs.length;i++){
+			console.log(grafs[i].length);
+		}
 
 		res.render('trade', 
 			{ 
 				title: 'Trade', 
-				graficas: models.graf_modl.graf_arr,
+				graficas: models.graf_modl.getCharts(),
 				monedas : models.graf_modl.monedas_arr
 			});
 	});

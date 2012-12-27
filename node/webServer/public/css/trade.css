@@ -67,7 +67,9 @@ h4,h5,p{
     font-size: 14px;
     text-align: center;
 }
-
+#opciones{
+    margin-top: -10px;
+}
 #opciones li{
     vertical-align: middle;
     cursor: pointer;
@@ -116,6 +118,9 @@ h4,h5,p{
     list-style-type: none;
     font-size: 12px;
 }
+.graf-header{
+    margin: 10px;
+}
 //@Cosas que sobreescriben estilos de bootstrap
 .arrow {
   top: 50%;
@@ -143,4 +148,7 @@ h4,h5,p{
 }
 .sidebar-nav{
     padding: 5px 2px 0px 2px;
+}
+i{
+    margin: 2px;
 }

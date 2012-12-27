@@ -85,13 +85,13 @@ public class OrderHandler {
          */
         if (msj.getSide().getValue() == '1') {
             OrderHandler.SendOCO(msj.getSymbol().getValue(), '1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(), (double) msj.getLastPx().getValue(), 'N');
-            temp = "Se abrió una orden: #" + msj.getClOrdID().getValue() + " Buy " + msj.getOrderQty().getValue() / 10000 + " "
+            temp = "Se abrió una orden: #" + msj.getClOrdID().getValue() + " Compra " + msj.getOrderQty().getValue() / 10000 + " "
                     + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue();
             System.out.println(temp);
             Console.msg(temp);
         }else if (msj.getSide().getValue() == '2') {
             OrderHandler.SendOCO(msj.getSymbol().getValue(), '2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(), (double) msj.getLastPx().getValue(), 'N');
-            temp = "Se abrió una orden: #" + msj.getClOrdID().getValue() + " Sell " + msj.getOrderQty().getValue() / 10000 + " "
+            temp = "Se abrió una orden: #" + msj.getClOrdID().getValue() + " Venta " + msj.getOrderQty().getValue() / 10000 + " "
                     + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue();
             System.out.println(temp);
             Console.msg(temp);
@@ -277,7 +277,7 @@ public class OrderHandler {
         BasicDBObject hora = new BasicDBObject().append("$set", new BasicDBObject().append("horaClose", new Date().toString()));
         coll.update(new BasicDBObject().append("OrderID", id), set);
         coll.update(new BasicDBObject().append("OrderID", id), push);
-        coll.update(new BasicDBObject().append("OrderID", id), hora);
+        coll.update(new BasicDBObject().append("OrderID", id), hora);        
     }
     /**
      * Revisamos si existe una orden.

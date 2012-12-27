@@ -42,13 +42,12 @@ function Grafica(data){
     }else if(tipo == "ask"){
       this.lastAsk = precio;
     }
-    
   }
   /*
   * Evento de precio de apertura de minuto la gráfica.
   */
   this.onOpen = function(open){
-    this.open_min = redondear(parseFloat(open));
+    this.open_min = redondear(open);
     this.bollUpDiff = redondear(this.bollUp - (this.openMin +this.getPropiedad("bollSpecial")));
     this.bollDnDiff = redondear((this.openMin - this.getPropiedad("bollSpecial")) - this.bollDn);
     this.bollUpSDiff = redondear(this.bollUpS - this.openMin);
@@ -73,7 +72,7 @@ function Grafica(data){
     this.bollDn = vars.bollDn;
     this.bollUpS = vars.bollUpS;
     this.bollDnS = vars.bollDnS;
-    this.chart_id = document.getElementById(this.symbol+'-chart');
+    this.chart_id = document.getElementById(this.data.ID+'-chart');
   }
   /*
   * Evento de apertura de operación.

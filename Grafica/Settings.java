@@ -54,7 +54,7 @@ public class Settings {
     public double volVal;
     public double nwTp;
     private Pattern p = Pattern.compile("(USDJPY|EURUSD|GBPUSD|USDCHF|EURGBP)");
-    
+    private final int  CUSTOM_HORA = 16; 
     public Settings(Properties config) {
         
         Matcher m = p.matcher(config.getProperty("symbol"));
@@ -81,8 +81,8 @@ public class Settings {
         lots = new Double(config.getProperty("Lots"));
         tp = new Integer(config.getProperty("tp")) * this.Point;
         sl = new Integer(config.getProperty("sl")) * this.Point;
-        horaIni = new Double(config.getProperty("horainicial"));
-        horaFin = new Double(config.getProperty("horafinal"));
+        horaIni = new Double(config.getProperty("horainicial"))+this.CUSTOM_HORA;
+        horaFin = new Double(config.getProperty("horafinal"))+this.CUSTOM_HORA;
         horaIniS = new Double(config.getProperty("timesalidainicial"));
         horaFinS = new Double(config.getProperty("timesalidafinal"));
         limiteCruce = new Integer(config.getProperty("limiteCruce"));
@@ -111,6 +111,8 @@ public class Settings {
             this.id = genId(symbol);
             config.setProperty("grafid", id);
         }
+        horaIni = horaIni>24? horaIni-24:horaIni;
+        horaFin = horaFin>24? horaFin-24:horaFin;
     }
     
     /**

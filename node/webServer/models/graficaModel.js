@@ -9,19 +9,47 @@ var monedas_arr = ['EURUSD','GBPUSD','USDCHF','USDJPY', 'EURGBP'];
 //añadimos
 var addGrafica = function(grafica){
 	grafica.setts.ID = unSlash(grafica.setts.ID);
-	graf_arr.push(grafica);
+	sortChart(grafica);
 };
 //Borramos
 var closeGrafica = function(grafica){
-	console.log('cerrando grafica ' + grafica);
 	for(var i=0; i<graf_arr.length; i++){
 		if(graf_arr[i].setts.ID == grafica){
 			graf_arr.splice(i,1);
 		}
 	}
 };
+/*
+*ordenamos la grafica entrante de acuerdo a su tipo de moneda y período.
+*/
+var sortChart = function(chart){
+	
+	var temp = [];
+	//Si el symbol no existe el index lo añadimos
+	if(!exists(chart.setts.symbol)){
+		temp.push(chart.setts.symbol);
+		temp.push(chart);
+		graf_arr.push(temp);
+	}else{
+		for(var i=0; i<graf_arr.length; i++){
+			if(graf_arr[i][0] == chart.setts.symbol){
+				graf_arr[i].push(chart);
+			}
+		}
+	}
+}
+function exists(symbol){
+	for (var i=0; i< graf_arr.length;i++){
+		if(graf_arr[i][0] == symbol){
+			return true
+		}
+	}
+}
+var getCharts = function(){
+	return graf_arr;
+}
 module.exports.monedas_arr = monedas_arr;
-module.exports.graf_arr = graf_arr;
+module.exports.getCharts = getCharts;
 module.exports.addGrafica = addGrafica;
 module.exports.closeGrafica = closeGrafica;
 function unSlash(cadena){

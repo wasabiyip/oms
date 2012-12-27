@@ -130,9 +130,12 @@ public class MessageHandler {
                        //Cerramos la orden en el sistema.
                        OrderHandler.shutDown(msj.getClOrdID().getValue(), msj.getAvgPx().getValue());
                        //Enviamos cierre de OCO
+                       temp_msj = "La orden #" + msj.getClOrdID().getValue() + " cerró a: "+ msj.getAvgPx().getValue();
                        OrderHandler.closeOCO(msj.getOrigClOrdID().getValue(), 'N');
+                       System.err.println(temp_msj);
+                       Console.msg(temp_msj);
                    }else if(msj.getOrdType().getValue() == 'W'){
-                       temp_msj = "La orden " + msj.getExecType().getValue() + " cerró por Sl o TP";
+                       temp_msj = "La orden #" + msj.getClOrdID().getValue()+ " cerró por Sl o TP";
                        System.out.println(temp_msj);
                        Console.msg(temp_msj);
                        OrderHandler.closeFromOco(msj.getClOrdID().getValue());

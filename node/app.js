@@ -45,7 +45,9 @@ function formatStr(string){
     return str;
 }
 app.listen(8080);
-
+function unSlash(cadena){
+  return cadena.replace("/","");
+}
 //Evaluamos todos los mensajes entrantes (JSON);
 function evaluar(msj, socket){
     //convertimos la cadena entrante a JSON
@@ -89,7 +91,8 @@ function evaluar(msj, socket){
 
             //un open es un precio de apertura de minuto.
             case 'open':
-                handler.notify('open',income.data.Moneda, income.data.Open);
+               
+                handler.notify('open',unSlash(income.data.Moneda), income.data.Open);
                 break;
                 
             //Cada que se recibe un precio.	
@@ -102,6 +105,7 @@ function evaluar(msj, socket){
                         "precio": income.precio
                     }
                 };
+               
                 if(handler.symbolExists(income.symbol)){
                     handler.notify(income.entry,income.symbol, income.precio);
                 }
@@ -127,6 +131,7 @@ function evaluar(msj, socket){
             //al recibir un evento onTick de un cliente conectado.
             case 'onOpen':
                 id = handler.getGrafica(socket).settings.ID;
+
                 msj = {
                     "values":{
                         "id":id , 

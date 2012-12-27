@@ -32,7 +32,7 @@ public class Expert extends Jedi{
     private double promedio;
     
     private int velas = 0;    
-    private Date date = new oms.Grafica.Date();
+    
     private idGenerator idord = new idGenerator();
     private double volB;
     private double volS;
@@ -77,13 +77,13 @@ public class Expert extends Jedi{
     @Override
     public void onTick(Double bid) {
         this.bid = bid;
-                
+                        
         //System.out.println( prueba.values + " Up: " + prueba.getUpperBand() + " Dn: " + prueba.getLowerBand());
         //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
         //descansan por lo menfos un día de la semana...
-        if (this.range(date.getHour())) { //TODO Borrar la condicion de open_min.
+        if (this.isActive()) { 
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
-            if (open_min > 0 && lock && ask - bid <= setts.spread * setts.Point){
+            if (ask - bid <= setts.spread * setts.Point && lock_op){
                 //entrada de operacionsues.
                 if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())
                         && this.bollingerDif() < this.setts.bollxUp && this.bollingerDif()> setts.bollxDn && limiteCruce()) {
@@ -101,7 +101,7 @@ public class Expert extends Jedi{
             //encuentren dentro de el rango de salida.    
             }
             //System.out.println(!lock+" "+ (ask - bid) +" "+ (setts.spreadSalida * setts.Point));
-            if (!lock && (ask - bid <= setts.spreadSalida * setts.Point)) {
+            if (!lock_op && (ask - bid <= setts.spreadSalida * setts.Point)) {
                 if (setts.salidaBollinger) {
                     //Cierre de compras por promedios bollinger.
                     if (this.currentOrder == '1') {
@@ -129,7 +129,7 @@ public class Expert extends Jedi{
                  * a las velas de salida (velasS) tenemos que cerrar las operaciones
                  */
                
-               if (contVelas == setts.velasS || this.rangeSalida(date.getHour())) {
+               if (contVelas == setts.velasS || this.rangeSalida()) {
                     if (this.currentOrder == '1') {
                         System.out.println("Cerrando orden por velas");
                         order.Close(bid,'1');
@@ -146,7 +146,7 @@ public class Expert extends Jedi{
              * Volatilidad: Si al haber entrado una orden regresa al punto de entrada movemos 
              * el tp.
              */
-            if(!this.lock && !modify && this.setts.volatilidad){
+            if(!this.lock_op && !modify && this.setts.volatilidad){
                 this.volB = this.lastOrderPrice - setts.volVal;
                 this.volS = this.lastOrderPrice + setts.volVal;
                 if(this.currentOrder == '1' && this.bid <= volB){
@@ -185,7 +185,7 @@ public class Expert extends Jedi{
      * Obtenemos el promedio de bollinger de entrada (UP).
      * @return 
      */
-    private double bollUp() {
+    public double bollUp() {
         return (bollBand1.getUpperBand() + bollBand2.getUpperBand() + 
                             bollBand3.getUpperBand())/3;
         
@@ -204,7 +204,7 @@ public class Expert extends Jedi{
      * Obtenemos el promedio de bollinger de entrada (Down).
      * @return 
      */
-    private double bollDn() {
+    public double bollDn() {
 
         return (bollBand1.getLowerBand() + bollBand2.getLowerBand() + 
                             bollBand3.getLowerBand()) / 3;
@@ -241,6 +241,7 @@ public class Expert extends Jedi{
             temp.append("\"bollUpS\":"+redondear(this.getAvgBoll(this.bollUpS())) + ",");
             temp.append("\"bollDnS\":"+redondear(this.getAvgBoll(this.bollDnS()))+ ",");
             temp.append("\"Velas\":"+this.contVelas + ",");
+            temp.append("\"Active\":"+this.isActive() + ",");
             temp.append("\"Hora\" :"+this.setts.horaIniS);
         temp.append("}");
         return temp.toString();
@@ -252,35 +253,9 @@ public class Expert extends Jedi{
             temp.append("\"bollDn\":"+ redondear(redondear(this.getAvgBoll(this.bollUp()))-redondear(this.getAvgOpen() - this.setts.boll_special)) + ",");
             temp.append("\"bollUpS\":"+ redondear(((this.getAvgOpen())) - (this.getAvgBoll(this.bollUpS()))) + ",");
             temp.append("\"bollDnS\":"+ redondear(redondear(this.getAvgBoll(this.bollDnS())) - redondear((this.getAvgOpen()))) + ",");
-            temp.append("\"Hora\":"+ this.rangeSalida(date.getHour()));        
+            temp.append("\"Hora\":"+ this.rangeSalida());        
         temp.append("}");
         return temp.toString();
     }
-    /**
-     * Guardamos el valor del ask.
-     * @param ask 
-     */
-    public void setAsk(Double ask){
-        this.ask = ask;
-    }
-    /**
-     * verificamos que nos encontremos en horas de operacion.
-     * @param hora
-     * @return 
-     */
-    public boolean range(int hora){
-        boolean temp=false;
-        if(hora < setts.horaFin && hora >= setts.horaIni)
-            temp=true;
-        return temp;
-    }
-    /*
-     * verificamos que nos encontremos en horas de salida de operaciones.
-     */
-    public boolean rangeSalida(int hora){
-        boolean temp=false;
-        if(hora < setts.horaFinS && hora >= setts.horaIniS)
-            temp=true;
-        return temp;
-    }
+    
 }

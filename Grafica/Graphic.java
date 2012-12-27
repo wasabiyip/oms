@@ -41,7 +41,7 @@ public class Graphic extends Thread {
     public static MongoDao dao = new MongoDao();
     private Settings setts;
     private int lastOpen = GMTDate.getDate().getMinute();
-    private boolean grafic_lock = true;
+    
     /**
      * Constructor!
      *
@@ -55,7 +55,7 @@ public class Graphic extends Thread {
         this.id = expert.getID();
         dif = GMTDate.getDate().getMinute() % setts.periodo;
         this.symbol = setts.symbol;
-        this.periodo = periodo;
+        this.periodo = setts.periodo;
         this.candle = new Candle(setts.periodo, this.getHistorial(dif));
         cont = dif;
     }
@@ -134,8 +134,10 @@ public class Graphic extends Thread {
                 this.cont++;
             }
         }
+        
         candle.onTick(price);
         expert.onOpen(price);
+                
         if (this.cont >= this.periodo) {
             this.onCandle(price);
             cont = 0;
@@ -143,7 +145,7 @@ public class Graphic extends Thread {
         StringBuffer msj = new StringBuffer();
         msj.append("{");
         msj.append("\"type\": \"onOpen\",");
-        msj.append("\"precio\": " + expert.getAvgOpen());
+        msj.append("\"precio\": " + (expert.getAvgOpen()));
 //        msj.append(expert.getRemain());
         msj.append("}");
         this.writeNode(msj.toString());
@@ -155,7 +157,6 @@ public class Graphic extends Thread {
      */
     public void onCandle(double openCandle) {
         this.expert.onCandle(openCandle);
-        
         StringBuffer msj = new StringBuffer();
         msj.append("{");
         msj.append("\"type\": \"onCandle\",");
@@ -231,9 +232,7 @@ public class Graphic extends Thread {
                     break;
                 case "bid":
                     this.bid = (double) json.get("precio");
-                    //Si la grafica esta activa, enviamos tick para que circule.
-                    if(!this.grafic_lock)
-                        expert.onTick((double) json.get("precio"));
+                    expert.onTick((double) json.get("precio"));
                     break;
                 case "close-order":
                     expert.order.Close(this.id, dao.getOrder((String)json.get("value")));
@@ -243,6 +242,7 @@ public class Graphic extends Thread {
             }
 
         } catch (ParseException ex) {
+            System.out.println("Colapso!: " + msj);
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

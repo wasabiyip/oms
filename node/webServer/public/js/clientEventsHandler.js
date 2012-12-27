@@ -32,7 +32,6 @@ $(document).ready(function(){
         id: data.setts.ID
     }); 
     graficas.push(new Grafica(data.setts));
-    console.log(data.setts);
     $.each(data.setts, function(key, val){
       if(key != 'ID' && key != 'symbol'){
         if(key== 'TP' || key == 'SL')
@@ -68,9 +67,13 @@ $(document).ready(function(){
   socket.on('grafica-candle', function(data){
     var id = unSlash(data.values.id);
     getGrafica(id).onCandle(data.values.vars);
-    $.each(data.values.vars, function(key, val){
+    if(data.values.vars.Active==false)
+      $('#'+id+' .content-graf #active').addClass('icon-thumbs-down icon-white');
+    else 
+      $('#'+id+' .content-graf #active').addClass('icon-thumbs-up icon-white');
+    /*$.each(data.values.vars, function(key, val){
       $('#'+id+' .content-graf .promedios ul #' + key + ' #val').empty().append(val);
-    });
+    });*/
   });
   //Datos del tick.
   socket.on('grafica-tick', function(data){
@@ -124,6 +127,12 @@ $(document).ready(function(){
     var temp = getGrafica(id);
     temp.initState(data.values.vars);
     $("#"+id+' .content-graf .promedios ul').empty();
+
+    if(!data.values.vars.Active)
+      $('#'+id+' .content-graf #active').addClass('icon-thumbs-down icon-white');
+    else 
+      $('#'+id+' .content-graf #active').addClass('icon-thumbs-up icon-white');
+      
     $.each(data.values.vars, function(key, val){
       $("#"+id+' .content-graf .promedios ul').append('<li id='+key + '>' + key +' : <span class="text-info" id="val"> '+ val + '</span> > <span class="text-error"  id="resta"></span></li>');
     });
@@ -160,12 +169,11 @@ $(document).ready(function(){
   });
   //Salio una orden
   socket.on('grafica-orderClose', function(data) {
-  	console.log(data.id);
+  	
   	for(var i in graficas){
   		
   		if(graficas[i].order.ordid == data.id){
-  			console.log(graficas[i].order.ordid);
-  			graficas[i].order = false;
+  			graficas[i].onOrderClose();
   		}
   	}
     $("#"+data.id).remove();
@@ -265,6 +273,7 @@ function hardSorting(id, up, dn, upS, dnS){
 }
 
 function playOrder() {
+  
  $('#sound_order').html(
     "<embed src=sounds/alert.wav hidden=true autostart=true loop=false>");
 }

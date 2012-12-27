@@ -1,9 +1,11 @@
 html
-  head
+  headSystem.out.println(expert.getAvgOpen() + " <= "+
+                expert.getAvgBoll(expert.bollDn()) + " " +(expert.getAvgOpen())
+                + " >= " + expert.getAvgBoll(expert.bollUp()));
     title= title
   body
     #chart_div
-
+    
   script(src='http://code.jquery.com/jquery-latest.min.js')
   script(src='http://www.google.com/jsapi')
   script(src='js/lib/socket.io.js')
