@@ -62,7 +62,7 @@ function Grafica(data){
     this.bollDn = redondear(parseFloat(bolls.bollDn) - this.getPropiedad("bollSpecial"));
     this.bollUpS = redondear(parseFloat(bolls.bollUpS));
     this.bollDnS = redondear(parseFloat(bolls.bollDnS));
-    
+    console.log(bolls);
     velasS = parseInt(bolls.velas);
   }
   //Ponemos el valor inicial a los bollingers.

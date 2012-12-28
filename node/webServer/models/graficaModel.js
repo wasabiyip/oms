@@ -13,9 +13,13 @@ var addGrafica = function(grafica){
 };
 //Borramos
 var closeGrafica = function(grafica){
+	
 	for(var i=0; i<graf_arr.length; i++){
-		if(graf_arr[i].setts.ID == grafica){
-			graf_arr.splice(i,1);
+		var temp = graf_arr[i];
+		for( var j=1;j<temp.length;j++){
+			if(temp[j].setts.ID == grafica){
+				graf_arr[i].splice(j,1);
+			}
 		}
 	}
 };

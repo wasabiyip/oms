@@ -14,6 +14,7 @@ google.load("visualization", "1", {packages:["corechart"]});
 
 $(document).ready(function(){
   var socket = io.connect(document.location.host);
+  $("#charts-tab .tab-content:first-child").addClass('active');
   //Todo lo que tenga socket.on quiere decir que es el server nos
   //esta notificando algún evento.
 
@@ -139,6 +140,7 @@ $(document).ready(function(){
   });
   //cada que hay un precio de apertura de minuto.
   socket.on('grafica-open', function(data){
+    console.log('open ' +data);
     var id = unSlash(data.values.id);    
     var temp = getGrafica(id);
     temp.onOpen(data.values.precio);
@@ -273,7 +275,7 @@ function hardSorting(id, up, dn, upS, dnS){
 }
 
 function playOrder() {
-  
+
  $('#sound_order').html(
     "<embed src=sounds/alert.wav hidden=true autostart=true loop=false>");
 }

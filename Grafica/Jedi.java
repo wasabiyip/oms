@@ -107,7 +107,6 @@ public abstract class Jedi {
      * @param type 
      */
     public void orderSend(Double price, char type){
-        System.out.println(this.setts.symbol + " " + price + " " + type);
         order.Open(price, type);
     }
     /**
@@ -199,7 +198,6 @@ public abstract class Jedi {
         Date date = new oms.Grafica.Date();
         boolean temp=false;
         double hora = date.getHour() + (date.getMinute()*0.01);
-        
         if(hora < setts.horaFin && hora >= setts.horaIni && !this.grafic_lock && this.open_min>0)
             temp=true;
         return temp;

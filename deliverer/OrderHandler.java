@@ -6,11 +6,13 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.CustomException.TradeContextBusy;
 import oms.Grafica.Graphic;
 import oms.Grafica.Order;
-import oms.dao.MongoDao;    
+import oms.dao.MongoDao;
 import oms.util.Console;
 import quickfix.*;
 import quickfix.field.*;
@@ -24,47 +26,83 @@ import quickfix.fix42.NewOrderSingle;
 public class OrderHandler {
 
     public static MongoDao mongo = new MongoDao();
-    //static DBObject obj;
     /**
-     * Este array
+     * Cada elemento de este array representa una orden que esta activa, las
+     * guaradamos por la grafica que la metio y el ordid.
      */
     static ArrayList<ArrayList> ordPool = new ArrayList();
-      
+    /**
+     * Aquí yacen los cruces que están en Trade context busy.
+     */
+    private static ArrayList contextBusy = new ArrayList();
     /**
      * Metodo que envia las ordenes a Currenex, es sincronizado para que no se
      * confunda si muchas graficas quieren enviar ordenés al mismo tiempo.
      *
      * @param msj
      */
-    public synchronized static void sendOrder(NewOrderSingle msj, String id, boolean tipo ) {
+    public synchronized static void sendOrder(NewOrderSingle msj, String id, boolean tipo ) throws TradeContextBusy{
         ArrayList temp = new ArrayList();
+        String symbol="";
+        String order="";
+        //este try es por si no encuentra los campos en el mensaje, no te asustes.
         try {
-            Session.sendToTarget(msj, SenderApp.sessionID);
-        } catch (SessionNotFound ex) {
+            symbol = msj.getSymbol().getValue();
+            order = msj.getClOrdID().getValue();
+        } catch (FieldNotFound ex) {
             Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        if (tipo){
-            temp.add(id);
-            try {
-                temp.add(msj.getClOrdID().getValue());
-            } catch (FieldNotFound ex) {
-                Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            ordPool.add(temp);
         }
-        else{
-            for(int i=0; i<ordPool.size();i++){
-                if(ordPool.get(i).get(0) == id){
-                    ordPool.remove(i);
+        /**
+        * Si el trade context esta busy para ese cruce entoncés lanzamos 
+        * la excepción, si no enviamos la orden.
+        */
+        if(isTradeBusy(symbol)){
+            throw new TradeContextBusy(order,symbol);                
+        }else{
+            try {
+                Session.sendToTarget(msj, SenderApp.sessionID);
+                //si es una operacion nueva bloqueamos el symbol
+                if(tipo)
+                    contextBusy.add(symbol);
+            } catch (SessionNotFound ex) {
+                Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+            } 
+            if (tipo){
+                temp.add(id);
+                try {
+                    temp.add(msj.getClOrdID().getValue());
+                } catch (FieldNotFound ex) {
+                    Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                ordPool.add(temp);
+            }
+            else{
+                for(int i=0; i<ordPool.size();i++){
+                    if(ordPool.get(i).get(0) == id){
+                        ordPool.remove(i);
+                    }
                 }
             }
         }
     }
-
+    /**
+     * Revisamos si tenemos context busy.
+     * @param symbol cruce a evaluar.
+     * @return si es false ademas, marcamos esta moneda en context busy
+     */
+    public static boolean isTradeBusy(String symbol){
+        boolean temp = false;
+        for(int i=0; i<contextBusy.size();i++){
+            if(contextBusy.get(i).equals(symbol)){
+                temp = true;
+            }            
+        }
+        return temp;
+    }
     /**
      * Guardamos una cadena de Json que representa a una ordén. El array ordPool
-     * asocia una orden con la gráfica que la envió, esto es por que cuando enviamos
-     * una orden no tenemos que 
+     * asocia una orden con la gráfica que la envió, ademas una vez que la orden
+     * fue aceptada, desbloqueamos la moneda del context busy.
      * @param orden
      * @throws Exception
      */
@@ -95,6 +133,15 @@ public class OrderHandler {
                     + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue();
             System.out.println(temp);
             Console.msg(temp);
+        }
+        /**
+         * Una vez enviado el OCO liberamos el cruce del context busy.
+         */
+        for(int i=0;i<contextBusy.size();i++){
+            if(contextBusy.get(i).equals(msj.getSymbol().getValue())){
+                contextBusy.remove(i);
+                System.out.println("liberando... " + contextBusy);
+            }
         }
     }
     
@@ -299,7 +346,7 @@ public class OrderHandler {
             return false;
     }
     /**
-     * Verificamos que 
+     * Verificamos si una orden ya ha sido modificada.
      * @param msj
      * @return 
      */

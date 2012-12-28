@@ -74,8 +74,7 @@ exports.getGrafica= function(socket){
 //esto para evitar tener graficas que no existen.
 exports.closeGrafica= function(socket){
 
-    for(i=0; i<Graficas.length; i++){
-						
+    for(i=0; i<Graficas.length; i++){				
         if (Graficas[i].getSocket().name === socket.name){
             Graficas.splice(i,1);
         }		

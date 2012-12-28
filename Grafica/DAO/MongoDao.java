@@ -5,6 +5,7 @@ import com.mongodb.util.JSON;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.Grafica.Settings;
 import oms.util.fixToJson;
 import quickfix.fix42.ExecutionReport;
 
@@ -176,7 +177,7 @@ public class MongoDao {
         DBCollection coll = getCollection("operaciones");
         BasicDBObject query = new BasicDBObject();
         query.put("Status", 1);
-        query.put("Symbol", symbol);
+        query.put("Symbol", Settings.Slash(symbol));
         res = coll.find(query);
         return res.count();
     }

@@ -30,7 +30,7 @@ block content
             if graficas.length==0
               h1 No hay graficas conectadas :(
             else 
-              .tabbable.tabs-below
+              .tabbable.tabs-below(id="charts-tabs")
                 .tab-content
                   -for(var i=0;i<graficas.length;i++){
                     -var temp = graficas[i];
@@ -57,7 +57,7 @@ block content
                                             input(type="checkbox", name="", value="") 
                                             span Activo
                                   .graf-header
-                                    i.icon-bookmark
+                                    i.icon-certificate(id="trades")
                                     span #{chart.symbol} #{chart.Periodo}                           
                                 hr
                                 #chart-div
@@ -71,7 +71,9 @@ block content
                     -var symbol = graficas[i][0];
                     -var title = "#"+symbol.toLowerCase();
                     li
-                      a(href=title,data-toggle="tab") #{symbol}
+                      a(href=title,data-toggle="tab")
+                        i.icon-bookmark
+                        span #{symbol}
                   -}                     
     #terminal
       .well.sidebar-nav(id="terminal-wrap")

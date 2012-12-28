@@ -94,7 +94,6 @@ public class MessageHandler {
            case '0':
                if(msj.getOrdType().getValue() == 'C'){
                    temp_msj = "Procesando petición " + msj.getSymbol().getValue() + "...";
-                   System.out.println(temp_msj);
                    Console.msg(temp_msj);
                }else if(msj.getOrdType().getValue() == 'W'){
                    //si regresa true quiere decir que la entrante es una modificación.
@@ -141,7 +140,7 @@ public class MessageHandler {
                        OrderHandler.closeFromOco(msj.getClOrdID().getValue());
                    }
                }else{
-                   //Si no existe pues notificamos de orden nueva.
+                   //Si la orden fué propianmente aceptada, entoncés procedemos a notificarla.
                    OrderHandler.orderNotify(msj);
                }
                break;

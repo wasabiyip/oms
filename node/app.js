@@ -31,7 +31,7 @@ app.on('connection', function(client) {
 
     client.on('error', function(error){
         console.log('Colapso: ', error);
-        if (error.search('This socket is closed'));
+        //if (error.search('This socket is closed'));
 			
     });
 });
@@ -53,7 +53,6 @@ function evaluar(msj, socket){
     //convertimos la cadena entrante a JSON
     try{
         var income = JSON.parse(msj);
-       
         switch (income.type){
             //Un cliente conectado
             case 'login':
@@ -117,7 +116,10 @@ function evaluar(msj, socket){
                         type: 'journal',
                         label: 'error'                     
                     }
-                if(server_precios === socket){
+                if(app === socket){
+                    console.log('app desconectada...');
+                    app = null;
+                }else if(server_precios === socket){
                     serverPrecios = null;
                     temp.msj = 'El horror -> ¡El streaming de precios se desconecto!';                    
                     webServer.journal(temp);

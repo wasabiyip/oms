@@ -17,6 +17,8 @@ switch(document.title){
 	default:
 		console.log('El horror!');
 }
+
+$("#charts-tabs ul:first-child").addClass('active');
 //
 function getDate(){
   var date = new Date();

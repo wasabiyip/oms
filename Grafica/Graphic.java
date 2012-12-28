@@ -353,7 +353,7 @@ public class Graphic extends Thread {
     
     /**
      * Añadimos una orden al array list para que cada gráfica sepa cuales son sus 
-     * ordenés.
+     * ordenés y guardamos la orden en Mongo.
      * @param orden 
      */
     public void newOrder(ExecutionReport orden){

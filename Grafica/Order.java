@@ -2,6 +2,9 @@ package oms.Grafica;
 
 import com.mongodb.DBObject;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import oms.CustomException.TradeContextBusy;
 import oms.deliverer.GraficaHandler;
 import oms.deliverer.OrderHandler;
 import oms.util.idGenerator;
@@ -47,8 +50,12 @@ public class Order {
         nworder.set(new OrderQty(10000));
         nworder.set(new OrdType('C'));
         nworder.set(new Price(price));
-        //enviamos orden
-        OrderHandler.sendOrder(nworder, id, tipo);
+        try {
+            //enviamos orden
+            OrderHandler.sendOrder(nworder, id, tipo);
+        } catch (TradeContextBusy ex) {
+            Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     /**
