@@ -5,6 +5,7 @@ import com.mongodb.DBCollection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.deliverer.OrderHandler;
+import oms.util.Console;
 import quickfix.FieldNotFound;
 import quickfix.fix42.ExecutionReport;
 
@@ -107,6 +108,9 @@ public abstract class Jedi {
      * @param type 
      */
     public void orderSend(Double price, char type){
+        String msj = type=='1'? "Procesando compra...": "Procesando Venta...";
+        Console.msg(msj);
+        System.err.println(msj);
         order.Open(price, type);
     }
     /**

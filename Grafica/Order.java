@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import oms.CustomException.TradeContextBusy;
 import oms.deliverer.GraficaHandler;
 import oms.deliverer.OrderHandler;
+import oms.util.Console;
 import oms.util.idGenerator;
 import quickfix.SessionNotFound;
 import quickfix.field.*;
@@ -54,7 +55,8 @@ public class Order {
             //enviamos orden
             OrderHandler.sendOrder(nworder, id, tipo);
         } catch (TradeContextBusy ex) {
-            Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ex);
+            Console.msg(ex);
         }
     }
     

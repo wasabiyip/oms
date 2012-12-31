@@ -24,23 +24,37 @@ var closeGrafica = function(grafica){
 	}
 };
 /*
-*ordenamos la grafica entrante de acuerdo a su tipo de moneda y período.
+*ordenamos la grafica entrante de acuerdo a su tipo de moneda y período, 
+*esto lo hacemos en pares para tener una correcta presentacion en la vista.
 */
 var sortChart = function(chart){
 	
 	var temp = [];
-	//Si el symbol no existe el index lo añadimos
+	//Si el symbol no existe, lo añadimos
 	if(!exists(chart.setts.symbol)){
 		temp.push(chart.setts.symbol);
-		temp.push(chart);
+		temp.push([chart]);
 		graf_arr.push(temp);
+		
+	//Si ya existe, vamos añadiendo arrays que alamacenan gráficas de dos en dos.
 	}else{
 		for(var i=0; i<graf_arr.length; i++){
 			if(graf_arr[i][0] == chart.setts.symbol){
-				graf_arr[i].push(chart);
+				//Si el último array del array tiene menos de 2 elementos
+				//Entonces añadimos la grafica
+				
+				if(graf_arr[i][(graf_arr[i].length-1)].length<2){
+					graf_arr[i][(graf_arr[i].length-1)].push(chart);
+
+				//si tiene mas de 2 elementos entonces, añadimos un nuevo array.
+				}else{
+					graf_arr[i].push(temp);
+					graf_arr[i][(graf_arr[i].length-1)].push(chart);
+				}
 			}
 		}
 	}
+	console.log(graf_arr);
 }
 function exists(symbol){
 	for (var i=0; i< graf_arr.length;i++){

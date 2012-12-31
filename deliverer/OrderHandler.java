@@ -140,7 +140,6 @@ public class OrderHandler {
         for(int i=0;i<contextBusy.size();i++){
             if(contextBusy.get(i).equals(msj.getSymbol().getValue())){
                 contextBusy.remove(i);
-                System.out.println("liberando... " + contextBusy);
             }
         }
     }

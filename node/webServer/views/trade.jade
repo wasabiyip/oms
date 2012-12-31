@@ -26,7 +26,6 @@ block content
       .span9
         #estrategias.well    
           -var temps = []
-          -console.log(graficas);
             if graficas.length==0
               h1 No hay graficas conectadas :(
             else 
@@ -36,44 +35,56 @@ block content
                     -var temp = graficas[i];
                     -var title = graficas[i][0].toLowerCase();
                     .tab-pane(id=title)
-                      -for(var j=1; j<temp.length; j++){
-                        -var chart = temp[j].setts
-                        .span6
-                          div(id= chart.ID, class="grafica")
-                            .content-graf
-                                .graf-head
-                                  .btn-group.pull-right(id="opciones")
-                                    a.btn-small.btn.btn-primary.dropdown-toggle(data-toggle='dropdown',href='#') Opciones 
-                                      i(id="active")
-                                      span.caret
-                                    ul.dropdown-menu
-                                      li(data-filter-camera-type='all')
-                                        a(id="inputs",rel="popover") 
-                                          i.icon-list 
-                                          span Inputs
-                                      li(data-filter-camera-type='all')
-                                        a
-                                          form  
-                                            input(type="checkbox", name="", value="") 
-                                            span Activo
-                                  .graf-header
-                                    i.icon-certificate(id="trades")
-                                    span #{chart.symbol} #{chart.Periodo}                           
-                                hr
-                                #chart-div
-                                  -var id = chart.ID +'-chart'
-                                  .chart(id=id)
-                      -}
+                      .carousel.tab
+                        -for(var j=1; j<temp.length; j++){
+                          -var row = temp[j]
+
+                          .row-fluid
+                            -for(var k=0; k<row.length;k++){
+                              -var chart = row[k].setts                              
+                              .span6
+                                div(id= chart.ID, class="grafica")
+                                  .content-graf
+                                      .graf-head
+                                        .btn-group.pull-right(id="opciones")
+                                          a.btn-small.btn.btn-primary.dropdown-toggle(data-toggle='dropdown',href='#') Opciones 
+                                            i(id="active")
+                                            span.caret
+                                          ul.dropdown-menu
+                                            li(data-filter-camera-type='all')
+                                              a(id="inputs",rel="popover") 
+                                                i.icon-list 
+                                                span Inputs
+                                            li(data-filter-camera-type='all')
+                                              a
+                                                form  
+                                                  input(type="checkbox", name="", value="") 
+                                                  span Activo
+                                        .graf-header
+                                          i.icon-certificate(id="trades")
+                                          span #{chart.symbol} #{chart.Periodo}                           
+                                      hr
+                                      #chart-div
+                                        -var id = chart.ID +'-chart'
+                                        .chart(id=id)
+                            -}                          
+                        -}
                   -}
                                   
                 ul.nav.nav-tabs(id="charts-tab")
                   -for(var i=0;i<graficas.length;i++){
                     -var symbol = graficas[i][0];
+                    -var temp = graficas[i]
+                    -var length=0;
+                    -for(var j=1;j<temp.length;j++){
+                      -length = length +temp[j].length
+                    -}
+                    
                     -var title = "#"+symbol.toLowerCase();
                     li
                       a(href=title,data-toggle="tab")
                         i.icon-bookmark
-                        span #{symbol}
+                        span #{symbol}(#{length})
                   -}                     
     #terminal
       .well.sidebar-nav(id="terminal-wrap")

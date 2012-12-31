@@ -152,7 +152,7 @@ $(document).ready(function(){
    var ord = data.ordid;
    getGrafica(id).onOrderOpen(data);
    
-   $("#trade .log").prepend('<tr class="info" id='+ord+'></tr>');
+   $("#trade .log").prepend('<tr class="success" id='+ord+'></tr>');
    $.each(data, function(key,val){
   		if(key == 'id')	{
 				//para que no ponga el id de la grafica en la tabla

@@ -2,10 +2,7 @@ module.exports = function(app, models){
 	//Index
 	app.get('/', function(req, res){
 		var grafs = models.graf_modl.getCharts();
-		for(var i=0; i< grafs.length;i++){
-			console.log(grafs[i].length);
-		}
-
+		
 		res.render('trade', 
 			{ 
 				title: 'Trade', 
