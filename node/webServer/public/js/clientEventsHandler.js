@@ -13,6 +13,7 @@ var grafica = function(id){
 google.load("visualization", "1", {packages:["corechart"]});
 
 $(document).ready(function(){
+
   var socket = io.connect(document.location.host);
   $("#charts-tab .tab-content:first-child").addClass('active');
   //Todo lo que tenga socket.on quiere decir que es el server nos
@@ -140,7 +141,6 @@ $(document).ready(function(){
   });
   //cada que hay un precio de apertura de minuto.
   socket.on('grafica-open', function(data){
-    console.log('open ' +data);
     var id = unSlash(data.values.id);    
     var temp = getGrafica(id);
     temp.onOpen(data.values.precio);
@@ -190,11 +190,13 @@ $(document).ready(function(){
   });
 
   socket.on('journal-msj',function(data){ 
+    $('#terminal-journal-title').css('color','red');
    	$('#journal .log').prepend('<tr class='+ data.label +'>'+
     '<td class="time">'+ new Date().toUTCString()+'</td><td>'+ data.msj 
     +'</td></tr>');
   });
   socket.on('log-msj', function(data){
+    $('#terminal-exp-title').css('color','red');
     $('#experts .log').prepend('<tr class='+ data.label +'>'+
     '<td class="time">'+ new Date().toUTCString()+'</td><td>'+ data.msj 
     +'</td></tr>');        

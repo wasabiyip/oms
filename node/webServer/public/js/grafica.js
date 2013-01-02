@@ -58,8 +58,8 @@ function Grafica(data){
   * Evento de cambio de vela de la gráfica.
   */
   this.onCandle = function(bolls){
-    this.bollUp = redondear(parseFloat(bolls.bollUp) + this.getPropiedad("bollSpecial"));
-    this.bollDn = redondear(parseFloat(bolls.bollDn) - this.getPropiedad("bollSpecial"));
+    this.bollUp = redondear(parseFloat(bolls.bollUp));
+    this.bollDn = redondear(parseFloat(bolls.bollDn));
     this.bollUpS = redondear(parseFloat(bolls.bollUpS));
     this.bollDnS = redondear(parseFloat(bolls.bollDnS));
     console.log(bolls);
@@ -90,7 +90,7 @@ function Grafica(data){
   }
   this.setDataOpen = function(open){
 
-    if(this.data_master.length >40){
+    if(this.data_master.length >15){
       //Si tiene mas de 40 datos, quitamos el 1 para que no se acumulen.
       this.data_master.splice(1,1);
       this.data_master[this.data_master.length] = [
@@ -116,7 +116,8 @@ function Grafica(data){
     }
 
     var options = {
-      title: this.symbol
+      title: this.symbol,
+      pointSize : 3
     };
     this.chart = new google.visualization.LineChart(this.chart_id);
     
