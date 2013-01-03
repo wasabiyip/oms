@@ -140,8 +140,8 @@ exports.addGrafica = function(settings){
     models.graf_modl.addGrafica(str);
 }
 exports.closeGrafica = function(grafica){
-    console.log('webServer '+ grafica);
     models.graf_modl.closeGrafica(grafica); 
+    
 }
 exports.grafInit = function(data){
     

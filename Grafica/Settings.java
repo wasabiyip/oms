@@ -54,7 +54,7 @@ public class Settings {
     public double volVal;
     public double nwTp;
     private Pattern p = Pattern.compile("(USDJPY|EURUSD|GBPUSD|USDCHF|EURGBP)");
-    private final int  CUSTOM_HORA = 0; 
+    private final int  CUSTOM_HORA = 16; 
     public Settings(Properties config) {
         
         Matcher m = p.matcher(config.getProperty("symbol"));

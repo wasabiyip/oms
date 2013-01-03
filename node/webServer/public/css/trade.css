@@ -13,7 +13,7 @@ hr{
 
 #wrap{
     background-color: rgba(249, 249, 249, 0.6);
-    height:100%;
+    height:inherit;
     width: 100%;
     position: absolute;
 }
@@ -27,13 +27,14 @@ h4,h5,p{
 
 #estrategias, .span3{
     margin-top: 10px;
+    margin-bottom: 5px;
+    padding-bottom: 0px;
 }
 #estrategias{
     overflow: auto;
 }
 
 .grafica{
-    
     font-weight: bold;
     min-width: 350px;
 }
@@ -121,6 +122,34 @@ h4,h5,p{
 .graf-header{
     margin: 10px;
 }
+#charts-tab{
+    margin-bottom: 5px;
+}
+/* Para que el scroll de las graficas se vea mas freson, solo en chrome.*/
+.tab-content::-webkit-scrollbar {
+    width: 8px;
+}
+ 
+/* Track */
+.tab-content::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+ 
+/* Handle */
+.tab-content::-webkit-scrollbar-thumb {
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    background: rgba(0,0,0,0.8); 
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.6); 
+}
+.tab-content::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(0,0,0,0.4); 
+}
+#tab-notify{
+    color:#FF0000;
+}
 //@Cosas que sobreescriben estilos de bootstrap
 .arrow {
   top: 50%;
@@ -135,7 +164,7 @@ h4,h5,p{
     background-color:#FFF;
 }
 .span6{ 
-    margin-bottom: 10px;
+    margin-bottom: 7px;
     background-color: #FFF;
     -webkit-border-radius:3px;
     -moz-border-radius:3px;
@@ -151,4 +180,12 @@ h4,h5,p{
 }
 i{
     margin: 2px;
+}
+.tab-content{
+    overflow: auto;
+    overflow-y:scroll;
+    height:510px;
+}
+.tab-pane{
+    padding-right: 7px;
 }

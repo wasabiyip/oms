@@ -51,7 +51,8 @@ function unSlash(cadena){
 //Evaluamos todos los mensajes entrantes (JSON);
 function evaluar(msj, socket){
     //convertimos la cadena entrante a JSON
-    try{
+    
+    //try{
         var income = JSON.parse(msj);
         switch (income.type){
             //Un cliente conectado
@@ -65,7 +66,6 @@ function evaluar(msj, socket){
                     console.log('app conectada');
                 }else if(income.name === 'SERVIDOR_PRECIOS'){
                     server_precios = socket;
-                    temp.msj = "Streaming de precios conectado";
                     webServer.journal(temp);
                     console.log('Servidor de precios conectado: ' + server_precios.name);	
                 }else
@@ -182,8 +182,8 @@ function evaluar(msj, socket){
             webServer.log(income);
     }
     //Cachamos cualquier error y lo imprimimos.
-    }catch(error){
+    /*}catch(error){
         console.log(error + msj);
-    }
+    }*/
 }
 //-------------------------------------------------------------------/

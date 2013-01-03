@@ -24,7 +24,7 @@ block content
                     td.bid(id='high') ------
                     td.ask(id='high') ------
       .span9
-        #estrategias.well    
+        #estrategias.well                  
           -var temps = []
             if graficas.length==0
               h1 No hay graficas conectadas :(
@@ -35,10 +35,9 @@ block content
                     -var temp = graficas[i];
                     -var title = graficas[i][0].toLowerCase();
                     .tab-pane(id=title)
-                      .carousel.tab
+                      .tab
                         -for(var j=1; j<temp.length; j++){
                           -var row = temp[j]
-
                           .row-fluid
                             -for(var k=0; k<row.length;k++){
                               -var chart = row[k].setts                              
@@ -69,8 +68,7 @@ block content
                                         .chart(id=id)
                             -}                          
                         -}
-                  -}
-                                  
+                  -}               
                 ul.nav.nav-tabs(id="charts-tab")
                   -for(var i=0;i<graficas.length;i++){
                     -var symbol = graficas[i][0];
@@ -92,15 +90,15 @@ block content
           li.active
             a(href="#trade", data-toggle="tab") 
               i.icon-shopping-cart
-              span Trade
+              span(id="terminal-trade-title") Trade
           li
             a(href="#experts", data-toggle="tab") 
               i.icon-exclamation-sign
-              span Experts  
+              span(id="terminal-exp-title") Experts  
           li
             a(href="#journal", data-toggle="tab") 
               i.icon-info-sign
-              span Journal
+              span(id="terminal-journal-title") Journal
         #terminal-cont.tab-content
           #trade.tab-pane.active
             table.table.table-striped.table-hover.table-condensed.table-bordered

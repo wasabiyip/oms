@@ -1,7 +1,6 @@
 *~
 node/webServer/public/js/lib/*
 node/webServer/public/css/bootstrap/*
-
 /node/lib/socket.io/node_modules/socket.io-client/node_modules/.bin/
 /node/webServer/lib/socket.io/node_modules/socket.io-client/node_modules/.bin/
 /node/webServer/node_modules/socket.io/node_modules/socket.io-client/node_modules/.bin/
