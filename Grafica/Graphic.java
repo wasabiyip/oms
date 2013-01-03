@@ -41,6 +41,7 @@ public class Graphic extends Thread {
     public static MongoDao dao = new MongoDao();
     private Settings setts;
     private int lastOpen = GMTDate.getDate().getMinute();
+    private PrintWriter blackBox;
     
     /**
      * Constructor!
@@ -52,6 +53,21 @@ public class Graphic extends Thread {
     public Graphic(Properties log_file) {
         setts = new Settings(log_file);
         expert = new Expert(setts);
+        String path = "/home/omar/OMS/log/"+setts.symbol;
+        try {
+            blackBox = new PrintWriter(path+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
+         //Si no se encuentra la carpeta de log para esta moneda, la creamos y volvemos a
+         // crear el archivo.
+        } catch (IOException ex) {
+            System.err.println("creando directorio de log para "+setts.symbol+"...");
+            new File(path).mkdir();
+            try {
+                blackBox = new PrintWriter(path+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
+            } catch (Exception ex1) {
+                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex1);
+            } 
+        }
+        this.writeBlackBoxFile("iniciada sesión propiamente...");
         this.id = expert.getID();
         dif = GMTDate.getDate().getMinute() % setts.periodo;
         this.symbol = setts.symbol;
@@ -212,6 +228,13 @@ public class Graphic extends Thread {
             switch ((String) json.get("type")) {
                 case "open":
                     this.onOpen((double) json.get("precio"));
+                    //Si el expert puede operar
+                    if(expert.isActive()){
+                        this.writeBlackBoxFile(
+                                (this.expert.getAvgBoll(this.expert.bollDn()) +" "+ (this.expert.getAvgOpen()+setts.boll_special))
+                                +" "+(this.expert.getAvgBoll(this.expert.bollUp()) +" "+ (this.expert.getAvgOpen()-setts.boll_special))
+                                );
+                    }
                     break;
                 case "close":
                     //TODO hacer algo con este precio de cierre
@@ -246,7 +269,15 @@ public class Graphic extends Thread {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
+    /**
+     * Escrimos un archivo de log para la grafica en donde almacenaremos, información
+     * relacionada con el comportamiento de la grafica, un tipo de caja negra.
+     */
+    private void writeBlackBoxFile(Object log){
+        
+        this.blackBox.println(GMTDate.getDate()+" -> "+log);
+        this.blackBox.flush();
+    }
     /**
      * Método que envia mensajes a node
      *

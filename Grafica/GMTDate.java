@@ -9,7 +9,7 @@ public class GMTDate {
 
     public static Date getDate() {
 
-        SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyyMMdd-HH:mm:ss");
+        SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyyMMdd-HH:mm");
         gmtDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         date = new Date();
 

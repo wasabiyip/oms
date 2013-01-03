@@ -52,7 +52,7 @@ function unSlash(cadena){
 function evaluar(msj, socket){
     //convertimos la cadena entrante a JSON
     
-    //try{
+    try{
         var income = JSON.parse(msj);
         switch (income.type){
             //Un cliente conectado
@@ -182,8 +182,8 @@ function evaluar(msj, socket){
             webServer.log(income);
     }
     //Cachamos cualquier error y lo imprimimos.
-    /*}catch(error){
+    }catch(error){
         console.log(error + msj);
-    }*/
+    }
 }
 //-------------------------------------------------------------------/

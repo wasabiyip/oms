@@ -202,8 +202,10 @@ public abstract class Jedi {
         Date date = new oms.Grafica.Date();
         boolean temp=false;
         double hora = date.getHour() + (date.getMinute()*0.01);
-        if(hora < setts.horaFin && hora >= setts.horaIni && !this.grafic_lock && this.open_min>0)
-            temp=true;
+        if(hora < setts.horaFin && hora >= setts.horaIni && !this.grafic_lock && this.open_min>0){
+            
+           temp=true; 
+        }
         return temp;
     }
     /*

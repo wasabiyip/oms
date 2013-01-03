@@ -97,7 +97,7 @@ public class Settings {
         //Hacemos esto por que las variables booleanas esperan leer desde el archivo
         // un true o un false y nosotros tenemos un 0 o un 1, y por eso debemos
         // leerlo como un entero y despues asiganar el valor true o false.
-        //I <3 Ternario
+        // Ternario -> <3
         //this.salidaVelas = (velasS == 0) ? false : true;
         this.salidaBollinger = (new Integer(config.getProperty("Salida")) == 0) ? false : true;
         this.salidaMin = (new Integer(config.getProperty("SalidaHora")) == 0) ? false : true;
