@@ -138,10 +138,15 @@ public class MessageHandler {
                        System.out.println(temp_msj);
                        Console.msg(temp_msj);
                        OrderHandler.closeFromOco(msj.getClOrdID().getValue());
+                       OrderHandler.shutDown(msj.getClOrdID().getValue(), msj.getAvgPx().getValue());
                    }
-               }else{
+               }else if(msj.getExecType().getValue() == 0){
                    //Si la orden fué propianmente aceptada, entoncés procedemos a notificarla.
                    OrderHandler.orderNotify(msj);
+               }else{
+                   System.err.println("<***-------------------------------------------------**>");
+                   System.err.println("No sé que paso, esta orden no debió ser ->" + msj );
+                   System.err.println("<***-------------------------------------------------**>");
                }
                break;
            case '3':

@@ -31,6 +31,7 @@ app.on('connection', function(client) {
 
     client.on('error', function(error){
         console.log('Colapso: ', error);
+        console.log(handler.getGrafica(client).settings.ID);
         //if (error.search('This socket is closed'));
 			
     });

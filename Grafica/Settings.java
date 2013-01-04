@@ -1,6 +1,7 @@
 package oms.Grafica;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -54,7 +55,7 @@ public class Settings {
     public double volVal;
     public double nwTp;
     private Pattern p = Pattern.compile("(USDJPY|EURUSD|GBPUSD|USDCHF|EURGBP)");
-    private final int  CUSTOM_HORA = 16; 
+    private final int  CUSTOM_HORA = 0; 
     public Settings(Properties config) {
         
         Matcher m = p.matcher(config.getProperty("symbol"));
@@ -108,8 +109,14 @@ public class Settings {
         this.id = config.getProperty("grafid");
         //Si el archivo log no cuenta con un orden id generamos uno para el.
         if(this.id ==null){
-            this.id = genId(symbol);
-            config.setProperty("grafid", id);
+            try {
+                this.id = genId(symbol);
+                config.setProperty("grafid", id);
+                String path = config.getProperty("path");
+                config.store(new FileOutputStream(path),null);
+            } catch (IOException ex) {
+                Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
+            } 
         }
         horaIni = horaIni>24? horaIni-24:horaIni;
         horaFin = horaFin>24? horaFin-24:horaFin;

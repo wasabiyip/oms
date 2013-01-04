@@ -332,7 +332,6 @@ public class OrderHandler {
      * @throws Exception 
      */
     public static boolean Exists(quickfix.fix42.ExecutionReport msj) throws Exception {
-        
         String id = msj.getClOrdID().getValue();
         Double price = msj.getAvgPx().getValue();
         DBCollection coll = mongo.getCollection("operaciones");

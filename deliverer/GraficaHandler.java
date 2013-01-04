@@ -193,6 +193,8 @@ public class GraficaHandler {
             try {
                 Properties prop_temp = new Properties();
                 prop_temp.load(new FileInputStream(file.getPath()));
+                prop_temp.setProperty("path", file.getPath());
+                prop_temp.store(new FileOutputStream(file.getPath()), null);
                 temp.add(prop_temp);
             } catch (IOException ex) {
                 Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
