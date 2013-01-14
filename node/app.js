@@ -45,7 +45,7 @@ function formatStr(string){
     str = str.substring(n,str.length);
     return str;
 }
-app.listen(8080);
+app.listen(880);
 function unSlash(cadena){
   return cadena.replace("/","");
 }

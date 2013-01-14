@@ -140,14 +140,14 @@ public class MessageHandler {
                        OrderHandler.closeFromOco(msj.getClOrdID().getValue());
                        OrderHandler.shutDown(msj.getClOrdID().getValue(), msj.getAvgPx().getValue());
                    }
-               }else if(msj.getExecType().getValue() == 0){
+               }else {
                    //Si la orden fué propianmente aceptada, entoncés procedemos a notificarla.
                    OrderHandler.orderNotify(msj);
-               }else{
+               }/*else{
                    System.err.println("<***-------------------------------------------------**>");
                    System.err.println("No sé que paso, esta orden no debió ser ->" + msj );
                    System.err.println("<***-------------------------------------------------**>");
-               }
+               }*/
                break;
            case '3':
                temp_msj = "Done for a day " + msj.getClOrdID().getValue() + " favor de revisar currenex...";

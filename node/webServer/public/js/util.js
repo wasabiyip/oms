@@ -53,3 +53,4 @@ function Slash(cadena){
 function redondear( precio){       
 	return Math.round(precio*100000)/100000;
 }
+

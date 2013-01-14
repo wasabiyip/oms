@@ -13,6 +13,7 @@ import quickfix.DoubleField;
 import quickfix.FieldNotFound;
 import quickfix.fix42.ExecutionReport;
 import java.util.Properties;
+import oms.CustomException.GraficaNotFound;
 
 
 /**
@@ -99,26 +100,46 @@ public class GraficaHandler {
      * @param orden 
      */
     public static void orderAccept(String id, ExecutionReport orden) {
-        getGraf(id).newOrder(orden);
+        try {
+            getGraf(id).newOrder(orden);
+        } catch (GraficaNotFound ex) {
+            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     /**
      * Notificamos a una grafica que su peticion de cierre fue aceptada.
      */
     public static void orderClose(String grafid, String id){
-        getGraf(grafid).onOrderClose(id);        
+        try {
+            getGraf(grafid).onOrderClose(id);
+        } catch (GraficaNotFound ex) {
+            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
         
     /*
      * Obtenemos el ask de una determinada grafica.
      */
     public static Double getAsk(String idgraf) {
-        return getGraf(idgraf).getAsk();
+        Double temp=null;
+        try {
+            temp = getGraf(idgraf).getAsk();
+        } catch (GraficaNotFound ex) {
+            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return temp;
     }
     /*
      * Obtenemos el ask de una determinada grafica.
      */
     public static Double getBid(String idgraf) {
-        return getGraf(idgraf).getBid();
+        Double temp=null;
+        try {
+            temp = getGraf(idgraf).getBid();
+        } catch (GraficaNotFound ex) {
+            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return temp;
     }
     /**
      * obtenemos el Tp de una grafica determinada.
@@ -126,7 +147,13 @@ public class GraficaHandler {
      * @return 
      */
     public static Double getTp(String idgraf){
-        return getGraf(idgraf).getTP();
+        Double temp=null;
+        try {
+            temp = getGraf(idgraf).getTP();
+        } catch (GraficaNotFound ex) {
+            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return temp;
     }
     /**
      * obtenemos el SL de una graica determinada.
@@ -134,7 +161,13 @@ public class GraficaHandler {
      * @return 
      */
     public static Double getSl(String idgraf){
-        return getGraf(idgraf).getSL();
+        Double temp=null;
+        try {
+            temp = getGraf(idgraf).getSL();
+        } catch (GraficaNotFound ex) {
+            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return temp;
     }
     /**
      * Cuando entra la OCO de una orden noificamos a su grafica correspondiente que 
@@ -145,7 +178,11 @@ public class GraficaHandler {
      * @param tp 
      */
     public static void setStop(String id, String ordid,double sl, double tp){
-         getGraf(id).setStops(ordid, sl, tp);
+        try {
+            getGraf(id).setStops(ordid, sl, tp);
+        } catch (GraficaNotFound ex) {
+            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     /**
      * Notificamos que entro una modificación.
@@ -158,6 +195,8 @@ public class GraficaHandler {
             getGraf(OrderHandler.getGrafId(order.getClOrdID().getValue())).orderModify(order.getClOrdID().getValue(), order.getField(new DoubleField(7540)).getValue());
         } catch (FieldNotFound ex) {
             Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }catch(GraficaNotFound ex){
+            System.err.println(ex);
         }
     }
     /**
@@ -165,13 +204,16 @@ public class GraficaHandler {
      * @param id
      * @return 
      */
-    public static Graphic getGraf(String id) {
+    public static Graphic getGraf(String id) throws GraficaNotFound{
         Graphic temp = null;
         for (int i = 0; i < graficas.size(); i++) {
             if (graficas.get(i).getID().equals(id)) {
                 temp = graficas.get(i);
                 break;
             }
+        }
+        if(temp==null){
+            throw new GraficaNotFound(id);
         }
         return temp;
     }

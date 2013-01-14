@@ -199,14 +199,19 @@ public abstract class Jedi {
      * @return 
      */
     public boolean isActive(){
-        Date date = new oms.Grafica.Date();
+        
         boolean temp=false;
-        double hora = date.getHour() + (date.getMinute()*0.01);
-        if(hora < setts.horaFin && hora >= setts.horaIni && !this.grafic_lock && this.open_min>0){
+        
+        if( this.hora() && !this.grafic_lock && this.open_min>0 && ask>0 && bid>0){
             
            temp=true; 
         }
         return temp;
+    }
+    public boolean hora(){
+        Date date = new oms.Grafica.Date();
+        double hora = date.getHour() + (date.getMinute()*0.01);
+        return hora < setts.horaFin && hora >= setts.horaIni;
     }
     /*
      * verificamos que nos encontremos en horas de salida de operaciones.

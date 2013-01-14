@@ -30,7 +30,7 @@ var closeGrafica = function(grafica){
 //Revisamos si al borrar las graficas el graf_arr queda completamente vacío
 var clearGraficas = function(grafica){
 	var empty= true;
-	for(var i=0; i<graf_arr.length; i++){
+	/*for(var i=0; i<graf_arr.length; i++){
 		for( var j=1;j<graf_arr[i].length;j++){
 			if(graf_arr[i][j].length>0){
 				empty = false;
@@ -40,7 +40,8 @@ var clearGraficas = function(grafica){
 	if(empty){
 		//si esta completamente lo redefinimos.
 		graf_arr = [];
-	}
+	}*/
+	graf_arr = [];
 }
 /*
 *ordenamos la grafica entrante de acuerdo a su tipo de moneda y período, 

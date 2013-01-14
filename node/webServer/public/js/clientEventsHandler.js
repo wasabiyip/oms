@@ -13,6 +13,7 @@ var grafica = function(id){
 google.load("visualization", "1", {packages:["corechart"]});
 
 $(document).ready(function(){
+  //drawSemaforo();
 
   var socket = io.connect(document.location.host);
   $("#charts-tab .tab-content:first-child").addClass('active');
@@ -69,13 +70,8 @@ $(document).ready(function(){
   socket.on('grafica-candle', function(data){
     var id = unSlash(data.values.id);
     getGrafica(id).onCandle(data.values.vars);
-    if(data.values.vars.Active==false)
-      $('#'+id+' .content-graf #active').addClass('icon-thumbs-down icon-white');
-    else 
-      $('#'+id+' .content-graf #active').addClass('icon-thumbs-up icon-white');
-    /*$.each(data.values.vars, function(key, val){
-      $('#'+id+' .content-graf .promedios ul #' + key + ' #val').empty().append(val);
-    });*/
+    //Actualizamos los íconos
+    updateIcons(data);
   });
   //Datos del tick.
   socket.on('grafica-tick', function(data){
@@ -127,17 +123,11 @@ $(document).ready(function(){
   socket.on('expert-state', function(data){
     id= unSlash(data.values.id);
     var temp = getGrafica(id);
-    temp.initState(data.values.vars);
-    $("#"+id+' .content-graf .promedios ul').empty();
 
-    if(!data.values.vars.Active)
-      $('#'+id+' .content-graf #active').addClass('icon-thumbs-down icon-white');
-    else 
-      $('#'+id+' .content-graf #active').addClass('icon-thumbs-up icon-white');
-      
-    $.each(data.values.vars, function(key, val){
-      $("#"+id+' .content-graf .promedios ul').append('<li id='+key + '>' + key +' : <span class="text-info" id="val"> '+ val + '</span> > <span class="text-error"  id="resta"></span></li>');
-    });
+    temp.initState(data.values.vars);
+    //Actualizamos los iconos en la seccion de vars.
+    updateIcons(data);
+    
   });
   //cada que hay un precio de apertura de minuto.
   socket.on('grafica-open', function(data){
@@ -275,7 +265,31 @@ function hardSorting(id, up, dn, upS, dnS){
     }     
   }
 }
+function updateIcons(data){
+  
+  //Cambiamos los iconos en la parte de vars.
+  if(data.values.vars.limite)
+    $('#'+id+' .limite-cruce .var-ico').removeClass().addClass('icon-ok');
+  else
+    $('#'+id+' .limite-cruce .var-ico').removeClass().addClass('icon-remove');
 
+  if(data.values.vars.hora)
+    $('#'+id+' .hora .var-ico').removeClass().addClass('icon-ok');
+  else
+    $('#'+id+' .hora .var-ico').removeClass().addClass('icon-remove');
+
+  if(data.values.vars.bollX)
+    $('#'+id+' .bollx .var-ico').removeClass().addClass('icon-ok');
+  else
+    $('#'+id+' .bollx .var-ico').removeClass().addClass('icon-remove');
+  /**
+  **/
+  //Añadimos el icono de el pulgar en el menu de opciones si la grafica esta activa o no.
+  /*if(!data.values.vars.Active)
+      $('#'+id+' .content-graf #active').removeClass().addClass('icon-thumbs-down icon-white');
+    else 
+      $('#'+id+' .content-graf #active').removeClass().addClass('icon-thumbs-up icon-white');*/
+}
 function playOrder() {
 
  $('#sound_order').html(

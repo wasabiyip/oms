@@ -81,17 +81,30 @@ public class Expert extends Jedi{
         //descansan por lo menfos un día de la semana...
         
         if (this.isActive()) { 
-            //System.out.println("dn:" + this.getAvgBoll(this.bollDn()) + " open:"+this.getAvgOpen() + " up:"+ this.getAvgBoll(this.bollUp()));
+            if(limiteCruce() && (this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())){
+                System.err.println("Deberiamos de meter Compras!! -> " + this.setts.symbol + " - " + this.setts.MAGICMA);
+                System.err.println("Spread "+(ask - bid <= setts.spread));
+                System.err.println("bollX " + (this.bollingerDif() < this.setts.bollxUp && 
+                    this.bollingerDif()> setts.bollxDn));               
+                System.err.println("Lock: "+ lock_op); 
+            }else if (limiteCruce() && this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp())){
+                System.err.println("Deberiamos de meter ventas!! -> "+ this.setts.symbol + " - " + this.setts.MAGICMA);
+                System.err.println("Spread "+(ask - bid <= setts.spread));
+                System.err.println("bollX " + (this.bollingerDif() < this.setts.bollxUp && 
+                    this.bollingerDif()> setts.bollxDn));                
+                System.err.println("Lock: "+ lock_op);                
+            }
+            
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
-            if (ask - bid <= setts.spread * setts.Point && lock_op){
-                //entrada de operacionsues.
-                if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())
-                        && this.bollingerDif() < this.setts.bollxUp && this.bollingerDif()> setts.bollxDn && limiteCruce()) {
+            if (ask - bid <= setts.spread * setts.Point && lock_op && 
+                    this.bollingerDif() < this.setts.bollxUp && 
+                    this.bollingerDif()> setts.bollxDn && limiteCruce()){
+                //entrada de operaciones.
+                if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())) {
                     //Compra
                     orderSend(this.bid, '1');
                     
-                } else if (this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp()) 
-                        && this.bollingerDif() < this.setts.bollxUp && this.bollingerDif()> setts.bollxDn && limiteCruce()) {
+                } else if (this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp())) {
                     //Venta
                     orderSend(this.ask, '2');
                 }
@@ -239,8 +252,11 @@ public class Expert extends Jedi{
             temp.append("\"bollUpS\":"+redondear(this.getAvgBoll(this.bollUpS())) + ",");
             temp.append("\"bollDnS\":"+redondear(this.getAvgBoll(this.bollDnS()))+ ",");
             temp.append("\"Velas\":"+this.contVelas + ",");
-            temp.append("\"Active\":"+this.isActive() + ",");
-            temp.append("\"Hora\" :"+this.setts.horaIniS);
+            temp.append("\"limite\":"+this.limiteCruce() + ",");
+            temp.append("\"hora\":"+this.hora()+ ",");
+            temp.append("\"bollX\":"+(this.bollingerDif() < this.setts.bollxUp && 
+                    this.bollingerDif()> setts.bollxDn)+ ",");
+            temp.append("\"Active\":"+this.isActive());
         temp.append("}");
         return temp.toString();
     }

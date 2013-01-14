@@ -111,8 +111,8 @@ h4,h5,p{
     font-weight: bold;
 }
 .chart{
-    margin: 5px;
-    width: 400px;
+    margin-left: 70px;
+    width: 380px;
     height: 200px;
 }
 .promedios ul li{
@@ -125,6 +125,13 @@ h4,h5,p{
 #charts-tab{
     margin-bottom: 5px;
 }
+.vars{
+    padding: 3px 0 3px 3px; 
+    margin: 7px 0 0 2px;
+    width: 65px;
+    float: left;
+}
+
 /* Para que el scroll de las graficas se vea mas freson, solo en chrome.*/
 .tab-content::-webkit-scrollbar {
     width: 8px;
@@ -149,6 +156,10 @@ h4,h5,p{
 }
 #tab-notify{
     color:#FF0000;
+}
+.vars span abbr h6 i{
+    float: right;
+    margin: 3px 4px 0 0;
 }
 //@Cosas que sobreescriben estilos de bootstrap
 .arrow {
@@ -175,6 +186,7 @@ h4,h5,p{
     color : #343643;
     font-family: ‘Courier New’, Courier, monospace;
 }
+
 .sidebar-nav{
     padding: 5px 2px 0px 2px;
 }
@@ -188,4 +200,7 @@ i{
 }
 .tab-pane{
     padding-right: 7px;
+}
+#chart-div h6{
+    margin: 5px 0 0 0;
 }

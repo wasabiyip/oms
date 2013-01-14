@@ -55,7 +55,7 @@ public class Settings {
     public double volVal;
     public double nwTp;
     private Pattern p = Pattern.compile("(USDJPY|EURUSD|GBPUSD|USDCHF|EURGBP)");
-    private final int  CUSTOM_HORA = 0; 
+    private final int  CUSTOM_HORA = 16; 
     public Settings(Properties config) {
         
         Matcher m = p.matcher(config.getProperty("symbol"));
@@ -66,7 +66,7 @@ public class Settings {
          * Todas las monedas tienen el mismo Point excepto el Yen.
          */
         if(symbol.equals("USDJPY"))
-            this.Point = 0.0001;
+            this.Point = 0.001;
         else this.Point = 0.00001;
                   
         this.periodo = new Integer(config.getProperty("period"));
@@ -118,8 +118,11 @@ public class Settings {
                 Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
             } 
         }
-        horaIni = horaIni>24? horaIni-24:horaIni;
-        horaFin = horaFin>24? horaFin-24:horaFin;
+        /*horaIni = horaIni>24? horaIni-24:horaIni;
+        horaFin = horaFin>24? horaFin-24:horaFin;*/
+        horaIni = 0.0;
+        horaFin =24.0;
+        
     }
     
     /**

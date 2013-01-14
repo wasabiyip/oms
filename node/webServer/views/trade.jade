@@ -47,7 +47,7 @@ block content
                                       .graf-head
                                         .btn-group.pull-right(id="opciones")
                                           a.btn-small.btn.btn-primary.dropdown-toggle(data-toggle='dropdown',href='#') Opciones 
-                                            i(id="active")
+                                            i(id="active").icon-thumbs-up.icon-white
                                             span.caret
                                           ul.dropdown-menu
                                             li(data-filter-camera-type='all')
@@ -61,9 +61,24 @@ block content
                                                   span Activo
                                         .graf-header
                                           i.icon-certificate(id="trades")
-                                          span #{chart.symbol} #{chart.Periodo}                           
+                                          span #{chart.symbol} M#{chart.Periodo}-#{chart.Magicma}                           
                                       hr
                                       #chart-div
+                                        .vars.well
+                                          span.limite-cruce
+                                            abbr(title="Limite de operaciones para este cruce") 
+                                              h6 Limite
+                                                i.icon-minus-sign.var-ico
+                                          hr
+                                          span.hora
+                                            abbr(title="Rangos de hora para esta grafica") 
+                                              h6 Hora
+                                                i.icon-minus-sign.var-ico
+                                          hr
+                                          span.bollx
+                                            abbr(title="Bollinger de apertura (rango)") 
+                                              h6 BollX
+                                                i.icon-minus-sign.var-ico
                                         -var id = chart.ID +'-chart'
                                         .chart(id=id)
                             -}                          
