@@ -12,9 +12,9 @@ html
             a.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
             a.brand OMS
             .nav-collapse.collapse
-              p.navbar-text.pull-right
-                | Logged in as 
-                a.navbar-link(href='') Omar
+              p.navbar-text.pull-right(id='perfil')
+                | Paquete-
+                strong #{profile}
               ul.nav
                 li(id="trading")
                   a(href='./') Trading

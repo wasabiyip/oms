@@ -68,6 +68,10 @@ public class GraficaHandler {
         }   
        
     }
+    public String getProfile(){
+        return this.last_profile;
+    }
+    
     void runProfile(){
         for(Properties file : this.chart_files){
             System.err.println("Grafica "+file.getProperty("symbol") +" de " + file.getProperty("period") + " minutos cargada correctamente");

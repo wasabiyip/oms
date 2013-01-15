@@ -5,7 +5,9 @@ module.exports = function (app, express){
 	app.configure(function(){
 		app.set('views', __dirname + '/views');
 		app.set('view engine', 'jade');
-		app.set('view options',{layout:false});
+		app.set('view options',{
+			layout:false, 
+			pretty: true});
 		app.use(app.router);
 		app.use(express.static(__dirname + '/public'));
 	});

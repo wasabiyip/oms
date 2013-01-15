@@ -13,6 +13,7 @@ var handler =  require('../Handler');
 //Configuration.
 var config = new obj_Config(app, express);
 models.graf_modl = require('./models/graficaModel');
+models.master_modl = require('./models/masterModel');
 //Routes
 require('./routes')(app, models);
 
@@ -145,6 +146,10 @@ exports.closeGrafica = function(grafica){
 }
 exports.grafInit = function(data){
     
+}
+//Estado inicial de app master de graficas.
+exports.masterInit = function(data){
+    models.master_modl.setProfile(data.profile);
 }
 /*
 al recibir algun evento mandamos llamar a este método

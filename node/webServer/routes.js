@@ -6,6 +6,7 @@ module.exports = function(app, models){
 		res.render('trade', 
 			{ 
 				title: 'Trade', 
+				profile : models.master_modl.getProfile(),
 				graficas: models.graf_modl.getCharts(),
 				monedas : models.graf_modl.monedas_arr
 			});

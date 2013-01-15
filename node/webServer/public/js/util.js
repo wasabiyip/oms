@@ -54,3 +54,21 @@ function redondear( precio){
 	return Math.round(precio*100000)/100000;
 }
 
+function notificator(moneda,type){
+  var val = parseInt($('#'+moneda+'-notif').html());
+    if(isNaN(val)){
+      val=0;
+    }
+  if(type == '1'){
+    $('#'+moneda+'-notif').html(val+1);
+  }else if(type == '0'){
+    if((val-1)==0){
+      $('#'+moneda+'-notif').html('');
+    }else{
+      $('#'+moneda+'-notif').html(val-1);
+    }
+    
+  }
+
+}
+

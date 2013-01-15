@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.CustomException.GraficaNotFound;
 import oms.CustomException.TradeContextBusy;
 import oms.Grafica.Graphic;
 import oms.Grafica.Order;
@@ -151,6 +152,8 @@ public class OrderHandler {
             double precio =  msj.getField(new DoubleField(7542)).getValue()-GraficaHandler.getGraf(getGrafId(ordid)).getSL();
             
             SendOCO(msj.getSymbol().getValue(),tipo, ordid,(int)msj.getOrderQty().getValue(),precio,'N');
+        } catch (GraficaNotFound ex) {
+            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
         } catch (FieldNotFound ex) {
             Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -166,55 +169,59 @@ public class OrderHandler {
      * @param status 
      */
     public synchronized static void SendOCO(String symbol,Character type, String ordid, int qty, double precio, Character mov) {
-        quickfix.fix42.NewOrderSingle oco = new quickfix.fix42.NewOrderSingle();
-        Character tipo = type =='1'?'2':'1';
-        oco.set(new ClOrdID(ordid));
-        oco.set(new HandlInst('1'));
-        oco.set(new Currency(symbol.substring(0,3)));
-        oco.set(new Symbol(symbol));
-        oco.set(new TransactTime());
-        oco.set(new OrderQty(qty));
-        oco.set(new OrdType('W'));
-        oco.set(new Side(tipo));
-        
-        oco.setField(new CharField(7541,'3'));
-        oco.setField(new CharField(7553,tipo));
-        double sl = GraficaHandler.getGraf(getGrafId(ordid)) .getSL();
-        double tp = 0;
-        oco.setField(new CharField(7543,type));
-        //Si es una modificacion de OCO
-        if(mov.equals('M')){
-            oco.set(new Text("Mod"));
-            tp = GraficaHandler.getGraf(getGrafId(ordid)).getNwTp();
-            
-        }else if(mov.equals('N')){//Si es una nueva OCO.
-            oco.set(new Text("New"));
-            tp = GraficaHandler.getGraf(getGrafId(ordid)).getTP();
-        }
-        if (type.equals('1')) {
-            try{
-                oco.setField(new DoubleField(7542, redondear(symbol, precio - sl)));
-                oco.setField(new DoubleField(7540, redondear(symbol, precio + tp)));
-            }catch (NullPointerException ex){
-                //En caso de que recibamos un NullPointer al obtener el ask, 
-                //Esperamos 5 millis y hacemos una llamada recursiva a el método con los
-                //mismos valores que recibimos en primera instancia.
-                try {
-                    Thread.sleep(5);
-                    SendOCO(symbol,type, ordid, qty, precio,mov);
-                } catch (InterruptedException ex1) {
-                    Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
-            
-        }else if(type.equals('2')){
-            oco.setField(new DoubleField(7542, redondear(symbol,precio + sl)));
-            oco.setField(new DoubleField(7540, redondear(symbol,precio - tp)));
-        }
         try{
-            Session.sendToTarget(oco,SenderApp.sessionID);
-        }catch (SessionNotFound ex){
-            System.err.println("El horror! No se pudo enviar OCO " + ex );
+            quickfix.fix42.NewOrderSingle oco = new quickfix.fix42.NewOrderSingle();
+            Character tipo = type =='1'?'2':'1';
+            oco.set(new ClOrdID(ordid));
+            oco.set(new HandlInst('1'));
+            oco.set(new Currency(symbol.substring(0,3)));
+            oco.set(new Symbol(symbol));
+            oco.set(new TransactTime());
+            oco.set(new OrderQty(qty));
+            oco.set(new OrdType('W'));
+            oco.set(new Side(tipo));
+            
+            oco.setField(new CharField(7541,'3'));
+            oco.setField(new CharField(7553,tipo));
+            double sl = GraficaHandler.getGraf(getGrafId(ordid)) .getSL();
+            double tp = 0;
+            oco.setField(new CharField(7543,type));
+            //Si es una modificacion de OCO
+            if(mov.equals('M')){
+                oco.set(new Text("Mod"));
+                tp = GraficaHandler.getGraf(getGrafId(ordid)).getNwTp();
+                
+            }else if(mov.equals('N')){//Si es una nueva OCO.
+                oco.set(new Text("New"));
+                tp = GraficaHandler.getGraf(getGrafId(ordid)).getTP();
+            }
+            if (type.equals('1')) {
+                try{
+                    oco.setField(new DoubleField(7542, redondear(symbol, precio - sl)));
+                    oco.setField(new DoubleField(7540, redondear(symbol, precio + tp)));
+                }catch (NullPointerException ex){
+                    //En caso de que recibamos un NullPointer al obtener el ask, 
+                    //Esperamos 5 millis y hacemos una llamada recursiva a el método con los
+                    //mismos valores que recibimos en primera instancia.
+                    try {
+                        Thread.sleep(5);
+                        SendOCO(symbol,type, ordid, qty, precio,mov);
+                    } catch (InterruptedException ex1) {
+                        Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex1);
+                    }
+                }
+                
+            }else if(type.equals('2')){
+                oco.setField(new DoubleField(7542, redondear(symbol,precio + sl)));
+                oco.setField(new DoubleField(7540, redondear(symbol,precio - tp)));
+            }
+            try{
+                Session.sendToTarget(oco,SenderApp.sessionID);
+            }catch (SessionNotFound ex){
+                System.err.println("El horror! No se pudo enviar OCO " + ex );
+            }
+        }catch (GraficaNotFound ex){
+            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

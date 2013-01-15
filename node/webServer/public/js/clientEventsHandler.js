@@ -16,7 +16,7 @@ $(document).ready(function(){
   //drawSemaforo();
 
   var socket = io.connect(document.location.host);
-  $("#charts-tab .tab-content:first-child").addClass('active');
+  $('.promedios').tooltip({animation:true,html:true});
   //Todo lo que tenga socket.on quiere decir que es el server nos
   //esta notificando algún evento.
 
@@ -189,9 +189,9 @@ $(document).ready(function(){
     $('#terminal-exp-title').css('color','red');
     $('#experts .log').prepend('<tr class='+ data.label +'>'+
     '<td class="time">'+ new Date().toUTCString()+'</td><td>'+ data.msj 
-    +'</td></tr>');        
-});	
-
+    +'</td></tr>');      
+  });	
+  
 //Cerramos una orden desde el cliente web.
 closeOrder= function(grafica,orden){ 
   var ask = confirm("¿Estas seguro que quieres cerrar la orden "+orden+"?");

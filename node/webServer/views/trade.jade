@@ -79,6 +79,11 @@ block content
                                             abbr(title="Bollinger de apertura (rango)") 
                                               h6 BollX
                                                 i.icon-minus-sign.var-ico
+                                          span
+                                            -var prom = chart.ID + '-prom'
+                                            a.promedios(id=prom,href="#", rel="tooltip", data-placement="bottom", data-original-title="?")
+                                              i.icon-plus
+                                              
                                         -var id = chart.ID +'-chart'
                                         .chart(id=id)
                             -}                          
@@ -95,9 +100,11 @@ block content
                     
                     -var title = "#"+symbol.toLowerCase();
                     li
-                      a(href=title,data-toggle="tab")
+                      a(href=title,data-toggle="tab") 
                         i.icon-bookmark
                         span #{symbol}(#{length})
+                        -var notif = symbol+'-notif' 
+                          .notif(id=notif)
                   -}                     
     #terminal
       .well.sidebar-nav(id="terminal-wrap")

@@ -62,7 +62,7 @@ function Grafica(data){
     this.bollDn = redondear(parseFloat(bolls.bollDn));
     this.bollUpS = redondear(parseFloat(bolls.bollUpS));
     this.bollDnS = redondear(parseFloat(bolls.bollDnS));
-    console.log(bolls);
+    $('#'+this.id+'-prom').attr('data-original-title',"+"+this.bollUp +" -"+this.bollDn); 
     velasS = parseInt(bolls.velas);
   }
   //Ponemos el valor inicial a los bollingers.
@@ -72,6 +72,7 @@ function Grafica(data){
     this.bollDn = vars.bollDn;
     this.bollUpS = vars.bollUpS;
     this.bollDnS = vars.bollDnS;
+    $('#'+this.id+'-prom').attr('data-original-title',"+"+this.bollUp +" -"+this.bollDn);
     this.chart_id = document.getElementById(this.data.ID+'-chart');
   }
   /*
@@ -80,6 +81,7 @@ function Grafica(data){
   this.onOrderOpen = function(orden){
     this.order = orden;
     this.drawChart();
+    notificator(this.symbol,'1');
   }
   /*
   *Evento de cierre de operación
@@ -87,6 +89,7 @@ function Grafica(data){
   this.onOrderClose = function(){
      this.order = false;
      this.drawChart();
+     notificator(this.symbol,'0');
   }
   this.setDataOpen = function(open){
 

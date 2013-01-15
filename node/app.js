@@ -45,7 +45,7 @@ function formatStr(string){
     str = str.substring(n,str.length);
     return str;
 }
-app.listen(880);
+app.listen(8080);
 function unSlash(cadena){
   return cadena.replace("/","");
 }
@@ -64,7 +64,8 @@ function evaluar(msj, socket){
                         type: 'journal',
                         label: 'error'                     
                     }
-                    console.log('app conectada');
+                    console.log('app conectada perfil:'+income.profile);
+                    webServer.masterInit(income);
                 }else if(income.name === 'SERVIDOR_PRECIOS'){
                     server_precios = socket;
                     webServer.journal(temp);

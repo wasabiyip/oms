@@ -92,6 +92,9 @@ public class Settings {
         bollx3 = new Integer(config.getProperty("XBoll3"));
         bollxUp = new Double(config.getProperty("BollxUp"));
         bollxDn = new Double(config.getProperty("BollxDn"));
+        //Arreglar esta charrada
+        bollxUp = 1000;
+        bollxDn =0;
         volVal = new Double(config.getProperty("volatibidad"))* this.Point;
         velasS = new Integer (config.getProperty("num_velas_salida"));
         nwTp = new Double(config.getProperty("nwTP"))*this.Point;
@@ -118,10 +121,10 @@ public class Settings {
                 Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
             } 
         }
-        /*horaIni = horaIni>24? horaIni-24:horaIni;
-        horaFin = horaFin>24? horaFin-24:horaFin;*/
-        horaIni = 0.0;
-        horaFin =24.0;
+        horaIni = horaIni>24? horaIni-24:horaIni;
+        horaFin = horaFin>24? horaFin-24:horaFin;
+        /*horaIni = 0.0;
+        horaFin =24.0;*/
         
     }
     

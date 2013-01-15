@@ -43,9 +43,6 @@ public class SenderApp extends MessageCracker implements Application{
         try {
             socket = new Socket("127.0.0.1", 8080);
             outNode = new DataOutputStream(this.socket.getOutputStream());
-            outNode.writeUTF("{\"type\": \"login\", "
-                    + "\"name\":\"app\" "
-                    + "}");
         } catch (UnknownHostException ex) {
             Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -86,6 +83,11 @@ public class SenderApp extends MessageCracker implements Application{
         //Para que los threads no se dupliquen cuando el servidor nos desconecta.
         if(!lock){
             this.graficaHandler.runProfile();
+            
+            writeNode("{\"type\": \"login\", "
+                    + "\"name\":\"app\", "
+                    + "\"profile\":\""+this.graficaHandler.getProfile()+"\""
+                    + "}");
             lock = true;
         }
     }
