@@ -17,7 +17,7 @@ models.master_modl = require('./models/masterModel');
 //Routes
 require('./routes')(app, models);
 
-app.listen(3000, function(){
+app.listen(8000, function(){
   console.log("WebServer listening on port %d in %s mode", app.address().port, app.settings.env);
 });
 

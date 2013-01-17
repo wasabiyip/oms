@@ -12,15 +12,22 @@ html
             a.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
             a.brand OMS
             .nav-collapse.collapse
-              p.navbar-text.pull-right(id='perfil')
-                | Paquete-
-                strong #{profile}
-              ul.nav
-                li(id="trading")
-                  a(href='./') Trading
-                li(id="monitor")
-                  a(href='./monitor') Monitoreo
-
+              p.navbar-text
+                ul.nav
+                  li(id="trading")
+                    a(href='#') Trading
+                  li(id="monitor")
+                    a(href='#') Operaciones
+              .btn-group.pull-right(id='perfil')
+                  btn-small.btn.btn-warning.dropdown-toggle(data-toggle='dropdown',href='#') #{profile} 
+                    span.caret 
+                  ul.dropdown-menu
+                    li
+                      a(href="#") MAGICMA
+                    li
+                      a(href="#") Hora
+                    li
+                      a(href="#") Activas 
       block content
       #sound_order
     script(src='http://code.jquery.com/jquery-latest.min.js')

@@ -3,6 +3,7 @@ package oms.Grafica.DAO;
 import com.mongodb.Mongo;
 import com.mongodb.DB;
 import com.mongodb.MongoException;
+import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
 public class MongoConnection {
 
     private static MongoConnection INSTANCE;
-    public static Mongo m = null;
+    public static Mongo m;
     DB db;
 
     /**
@@ -38,8 +39,15 @@ public class MongoConnection {
      */
     public synchronized static MongoConnection getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new MongoConnection();
-
+            try {
+                m = new Mongo("localhost", 27017);
+                INSTANCE = new MongoConnection();
+                
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(MongoConnection.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (MongoException ex) {
+                Logger.getLogger(MongoConnection.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return INSTANCE;
     }
@@ -51,13 +59,7 @@ public class MongoConnection {
      */
     public static void connect() throws Exception {
 
-        try {
-
-            MongoConnection.m = new Mongo("localhost", 27017);
-
-        } catch (MongoException.Network e) {
-            throw new Exception("No se pudo conectar a MongoDB");
-        }
+       
     }
 
     /**

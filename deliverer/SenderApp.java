@@ -82,12 +82,12 @@ public class SenderApp extends MessageCracker implements Application{
         SenderApp.sessionID = id;
         //Para que los threads no se dupliquen cuando el servidor nos desconecta.
         if(!lock){
-            this.graficaHandler.runProfile();
-            
+            System.out.println(this.graficaHandler.getProfile());
             writeNode("{\"type\": \"login\", "
                     + "\"name\":\"app\", "
                     + "\"profile\":\""+this.graficaHandler.getProfile()+"\""
                     + "}");
+            this.graficaHandler.runProfile();
             lock = true;
         }
     }

@@ -78,6 +78,7 @@ public class Settings {
         bollS2 = new Integer(config.getProperty("periodoBollsalida2"));
         bollS3 = new Integer(config.getProperty("periodoBollsalida3"));
         boll_special = new Double(config.getProperty("bollspecial"));
+        System.out.println(MAGICMA);
         spread = new Double(config.getProperty("spread"));
         lots = new Double(config.getProperty("Lots"));
         tp = new Integer(config.getProperty("tp")) * this.Point;

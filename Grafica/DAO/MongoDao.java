@@ -34,11 +34,7 @@ public class MongoDao {
     public MongoDao() {
 
         mongo = MongoConnection.getInstance();
-        try {
-            mongo.connect();
-        } catch (Exception ex) {
-            Logger.getLogger(MongoDao.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
     }
 
     public DBCursor query(int ini, int fin) {
