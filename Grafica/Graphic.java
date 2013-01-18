@@ -86,7 +86,7 @@ public class Graphic extends Thread {
             String inputLine;
             String modifiedSentence;
             System.out.println("Conectando con Node");
-            this.socket = new Socket("127.0.0.1", 8080);
+            this.socket = new Socket("127.0.0.1", 8000);
             this.outNode = new DataOutputStream(this.socket.getOutputStream());
 
             //al iniciar enviamos a Node los settings de el expert.

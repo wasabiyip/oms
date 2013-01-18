@@ -41,7 +41,7 @@ public class SenderApp extends MessageCracker implements Application{
      */
     public SenderApp(){
         try {
-            socket = new Socket("127.0.0.1", 8080);
+            socket = new Socket("127.0.0.1", 8000);
             outNode = new DataOutputStream(this.socket.getOutputStream());
         } catch (UnknownHostException ex) {
             Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
