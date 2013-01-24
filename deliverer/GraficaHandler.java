@@ -71,7 +71,9 @@ public class GraficaHandler {
     public String getProfile(){
         return this.last_profile;
     }
-    
+    public static void main(String[] args) {
+        new GraficaHandler().runProfile();
+    }
     void runProfile(){
         for(Properties file : this.chart_files){
             System.err.println("Grafica "+file.getProperty("symbol") +" de " + file.getProperty("period") + " minutos cargada correctamente");
@@ -87,7 +89,7 @@ public class GraficaHandler {
     void addGrafica(Properties log_file) {
         //Podriamos poner aquí algunas opciones mas como pasar el archivo log.
         graficas.add(new Graphic(log_file));
-        Console.log("Grafica "+log_file.getProperty("symbol") +" de " + log_file.getProperty("period") + " minutos cargada correctamente");
+//        Console.log("Grafica "+log_file.getProperty("symbol") +" de " + log_file.getProperty("period") + " minutos cargada correctamente");
         runGrafica(graficas.size() - 1);
     }
     /**

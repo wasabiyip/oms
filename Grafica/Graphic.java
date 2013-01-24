@@ -28,7 +28,8 @@ public class Graphic extends Thread {
     private Socket socket;
     private BufferedReader inFromNode;
     private DataOutputStream outNode;
-    private Expert expert;
+    //private Expert expert;
+    private ExpertMoc expert;
     private Candle candle;
     private String symbol;
     private int periodo;
@@ -52,7 +53,12 @@ public class Graphic extends Thread {
      */
     public Graphic(Properties log_file) {
         setts = new Settings(log_file);
-        expert = new Expert(setts);
+        //Estos es para expert alternativo
+        expert = new ExpertMoc();
+         expert.absInit(setts.symbol, setts.periodo, setts);
+        expert.Init();
+        //expert = new Expert(setts);
+        
         String path = "/home/omar/OMS/log/"+setts.symbol;
         try {
             blackBox = new PrintWriter(path+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
@@ -68,11 +74,11 @@ public class Graphic extends Thread {
             } 
         }
         this.writeBlackBoxFile("iniciada sesión propiamente...");
-        this.id = expert.getID();
+        this.id = setts.id;
         dif = GMTDate.getDate().getMinute() % setts.periodo;
         this.symbol = setts.symbol;
         this.periodo = setts.periodo;
-        this.candle = new Candle(setts.periodo, this.getHistorial(dif));
+//        this.candle = new Candle(setts.periodo, this.getHistorial(dif));
         cont = dif;
     }
 
@@ -94,10 +100,10 @@ public class Graphic extends Thread {
                     + "\"name\":\"CLIENT_TCP\", "
                     + "\"symbol\":\"" + this.symbol + "\","
                     + this.expert.getExpertInfo() +","
-                    + this.expert.getExpertState() 
+                    + this.getExpertState() 
                     + "}");
             try {
-                Thread.sleep(1);
+                Thread.sleep(3);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -106,7 +112,7 @@ public class Graphic extends Thread {
             msjout.append("{");
             msjout.append("\"type\": \"onCandle\",");
 
-            msjout.append(expert.getExpertState());
+            msjout.append(this.getExpertState());
             msjout.append("}\n");
             this.writeNode(msjout.toString());
             //Leemos mensajes de node
@@ -142,18 +148,12 @@ public class Graphic extends Thread {
         int dif = GMTDate.getDate().getMinute() - lastOpen;
         //System.out.println(GMTDate.getDate() +" - "+ lastOpen + " " +dif);
         if(dif > 1){
-            System.err.println("Desfase: "+ this.symbol + " " +dao.getCloseAnterior(this.symbol));
-            for(int i=1; i<=dif;i++){
-                System.out.println("Descolapsando...");
-                //Si 
-                expert.onOpen(dao.getCloseAnterior(this.symbol));
-                this.cont++;
-            }
+           //TODO Hacer algo para reconstruir las los indicadores si hay un desfase.
         }
         
-        candle.onTick(price);
-        expert.onOpen(price);
-                
+        //candle.onTick(price);
+        //expert.onTick(price);
+        expert.open_min = price;
         if (this.cont >= this.periodo) {
             this.onCandle(price);
             cont = 0;
@@ -162,7 +162,7 @@ public class Graphic extends Thread {
         msj.append("{");
         msj.append("\"type\": \"onOpen\",");
         msj.append("\"precio\": " + (expert.getAvgOpen()));
-//        msj.append(expert.getRemain());
+        //msj.append(expert.getRemain());
         msj.append("}");
         this.writeNode(msj.toString());
         this.lastOpen = GMTDate.getDate().getMinute();
@@ -172,11 +172,11 @@ public class Graphic extends Thread {
      * Cada vez que que tenemos una vela nueva detonamos este método.
      */
     public void onCandle(double openCandle) {
-        this.expert.onCandle(openCandle);
+        //this.expert.indicatorDataIn(openCandle);
         StringBuffer msj = new StringBuffer();
         msj.append("{");
         msj.append("\"type\": \"onCandle\",");
-        msj.append(expert.getExpertState());
+        msj.append(this.getExpertState());
         msj.append("}");
         this.writeNode(msj.toString());
     }
@@ -194,7 +194,7 @@ public class Graphic extends Thread {
         ArrayList data = new ArrayList();
         //Utilizamos unSlash para quitar el / ya que en la base de datos tenemos las monedas
         //sin este.
-        ArrayList temp = dao.getCandleData(symbol, cant);
+        ArrayList temp = (ArrayList) dao.getCandleData(symbol, cant).toArray();
         return temp;
     }
 
@@ -244,18 +244,18 @@ public class Graphic extends Thread {
                     txt.append("{");
                     txt.append("\"type\": \"expert-state\",");
                     txt.append("\"id\":\"" + setts.id + "\",");
-                    txt.append(expert.getExpertState());
+                    txt.append(this.getExpertState());
                     txt.append("}");
                     this.writeNode(txt.toString());
                     this.ordersInit();
                     break;
                 case "ask":
-                    this.ask = (double) json.get("precio");
-                    expert.setAsk((double) json.get("precio"));
+                    //expert.setAsk((double) json.get("precio"));
+                    expert.Ask = ((double) json.get("precio"));
                     break;
                 case "bid":
-                    this.bid = (double) json.get("precio");
-                    expert.onTick((double) json.get("precio"));
+                    //expert.onTick((double) json.get("precio"));
+                    expert.Bid = ((double) json.get("precio"));
                     break;
                 case "close-order":
                     expert.order.Close(this.id, dao.getOrder((String)json.get("value")));
@@ -407,6 +407,29 @@ public class Graphic extends Thread {
                 temp.append("}"); 
             temp.append("}");
             this.writeNode(temp.toString());
+    }
+    /**
+     * Método usaddo para informar sobre el estado actual del expert, regresa los
+     * valores de promedios, de velas, etc. Todos los valores que influyen en el
+     * comportamiento actual o futuro del expert.
+     * @return estado de los valoes.
+     */
+    public String getExpertState(){
+        
+        StringBuffer temp = new StringBuffer();
+        temp.append("\"variables\":{");
+            temp.append("\"bollUp\":"+ expert.getAvgBoll(expert.bollUp())+ ",");
+            temp.append("\"bollDn\":"+ expert.getAvgBoll(expert.bollDn())+ ",");
+            temp.append("\"bollUpS\":"+ expert.getAvgBoll(expert.bollUpS()) + ",");
+            temp.append("\"bollDnS\":"+ expert.getAvgBoll(expert.bollDnS())+ ",");
+            temp.append("\"Velas\":"+expert.contVelas + ",");
+            temp.append("\"limite\":"+expert.limiteCruce() + ",");
+            temp.append("\"hora\":"+expert.hora()+ ",");
+            temp.append("\"bollX\":"+(expert.bollingerDif() < this.setts.bollxUp && 
+                    expert.bollingerDif()> setts.bollxDn)+ ",");
+            temp.append("\"Active\":"+expert.isActive());
+        temp.append("}");
+        return temp.toString();
     }
     /**
      * Asignamos los Stops a la orden debida.

@@ -52,7 +52,7 @@ public class MongoDao {
     }
 
     public DBCollection getCollection(String coll) {
-        return this.db.getCollection(coll);
+        return this.mongo.db.getCollection(coll);
     }
 
     public void setDB(String db) {
@@ -98,21 +98,21 @@ public class MongoDao {
         return doble;
     }
     
-    public ArrayList getCandleData(String symbol, int periodo) {
+    public DBCursor getCandleData(String symbol, int periodo) {
         ArrayList precios = new ArrayList();
         this.setDB("history");
         this.setCollection(symbol);
         DBCursor cursor;
         //System.out.println(periodo);
         if (periodo > 0) {
+            //Obtenemos la cantidad de datos necesarios para formar velas de ciertos
+            //periodos
             cursor = this.coll.find().sort(new BasicDBObject("$natural", -1)).limit(periodo);
-            while (cursor.hasNext()) {
-                precios.add(cursor.next().get("Open"));
-            }
+            
         } else {
-            precios.add(null);
+            return null;
         }
-        return precios;
+        return cursor;
     }
     
     public void recordOrden(String id,ExecutionReport orden, int magicma){

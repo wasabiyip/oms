@@ -20,6 +20,7 @@ public class Indicador {
     private String symbol;
     private int periodoGrafica;
     private int dif;
+    private ArrayList<BollingerBands> bolls_arr = new ArrayList();
 
     /**
      * El constructor!
@@ -36,26 +37,61 @@ public class Indicador {
     /**
      * Solo se pueden crear bollinger através de este método.
      * @param periodo
-     * @return el bollinger
+     * @return el bollinger regresamos el bollinger creado para que sea referenciado.
      */
     public BollingerBands createBollinger(int periodo) {
         ArrayList data = new ArrayList();
         MongoDao dao = new MongoDao();
         int cont =0;
-        ArrayList temp = dao.getCandleData(this.symbol, (periodo * periodoGrafica) + this.dif);
-        for (int i = 1; i < dif; i++) {
-            temp.remove(0);
-        }
-        for (int i = 0; i < temp.size(); i++) {
-            if (i == 0 || i % periodoGrafica == 0) {
-                if(cont < periodo){
-                    data.add(temp.get(i));
-                    cont++;
-                }
-            }
-        }
+        DBCursor cursor = dao.getCandleData(this.symbol, (periodo * periodoGrafica) + this.dif);
+        int last_hora=0;
+        Double last_close=0.0;
+        int resta;
         
-        BollingerBands tempBoll = new BollingerBands(periodo, data);
-        return tempBoll;
+        while(cursor.hasNext() && data.size()< periodo) {
+            DBObject temp = cursor.next();
+            Double open = (Double)temp.get("Open");
+            Integer hora=0;
+            hora = (Integer)temp.get("hour");
+            resta = last_hora - hora;   
+            
+            if((hora/100)%this.periodoGrafica == 0){
+                data.add(open);
+                /**
+                 * Si la hora no es del mod de la grafica, pero hay una diferencia
+                 *entre las horas debemos de revisar que dentro de esa diferencia no
+                 * haya una apertura de vela
+                */ 
+            }else if(resta>100 && !(resta >= 4100)){
+                
+                for(int i=last_hora-100;i> hora;i=i-100){
+                    /**
+                     * si en i debería de haber una apertura de grafica, guardamos
+                     * el último close 
+                     */
+                    if((i/100)%this.periodoGrafica==0 && data.size()<periodo){
+                        data.add(last_close);
+                    }
+                }
+            }else if((resta - 4100)>100){
+                //Si hay un lag al cambiar de hora.
+            }
+            cont++;
+            last_hora = hora;
+            last_close = (Double)temp.get("Close");
+        }
+        bolls_arr.add(new BollingerBands(periodo, data));
+        return bolls_arr.get(bolls_arr.size()-1);
+    }
+    
+    /**
+     * alimentamos los bollingers con un nuevo valor, normalmente todos los indicadores
+     * se deberan de actualizar con este precio.
+     * @param precio 
+     */
+    public void appendBollsData(Double precio){
+        for(int i=0; i<bolls_arr.size();i++){
+            bolls_arr.get(i).setPrice(precio);
+        }
     }
 }

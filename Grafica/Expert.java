@@ -81,18 +81,17 @@ public class Expert extends Jedi{
         //descansan por lo menfos un día de la semana...
         
         if (this.isActive()) { 
-            if(limiteCruce() && (this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())){
+            if(lock_op && limiteCruce() && (this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())){
                 System.err.println("Deberiamos de meter Compras!! -> " + this.setts.symbol + " - " + this.setts.MAGICMA);
                 System.err.println("Spread "+(ask - bid <= setts.spread));
                 System.err.println("bollX " + (this.bollingerDif() < this.setts.bollxUp && 
                     this.bollingerDif()> setts.bollxDn));               
-                System.err.println("Lock: "+ lock_op); 
-            }else if (limiteCruce() && this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp())){
+                
+            }else if (lock_op && limiteCruce() && this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp())){
                 System.err.println("Deberiamos de meter ventas!! -> "+ this.setts.symbol + " - " + this.setts.MAGICMA);
                 System.err.println("Spread "+(ask - bid <= setts.spread));
                 System.err.println("bollX " + (this.bollingerDif() < this.setts.bollxUp && 
-                    this.bollingerDif()> setts.bollxDn));                
-                System.err.println("Lock: "+ lock_op);                
+                    this.bollingerDif()> setts.bollxDn));
             }
             
             //Revisamos que los precios se encuentren dentro de el rango de entrada.

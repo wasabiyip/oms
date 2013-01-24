@@ -93,7 +93,7 @@ function Grafica(data){
   }
   this.setDataOpen = function(open){
 
-    if(this.data_master.length >15){
+    if(this.data_master.length >10){
       //Si tiene mas de 40 datos, quitamos el 1 para que no se acumulen.
       this.data_master.splice(1,1);
       this.data_master[this.data_master.length] = [

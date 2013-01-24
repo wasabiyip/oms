@@ -19,6 +19,9 @@ exports.notify = function (type,moneda, precio){
         if(Graficas[i].getSymbol() === moneda){  
             //Es muy importante enviar '\n' ya que java espera un fin de 
             //linea: readLine();
+            try{
+
+            }
             Graficas[i].getSocket().write(msj + '\n');
         }
     }
@@ -73,12 +76,13 @@ exports.getGrafica= function(socket){
 //Borramos a una grafica de el array por que se perdio conexion con ella,
 //esto para evitar tener graficas que no existen.
 exports.closeGrafica= function(socket){
-
+    /*-
     for(i=0; i<Graficas.length; i++){				
         if (Graficas[i].getSocket().name === socket.name){
             Graficas.splice(i,1);
         }		
-    }
+    }*/
+    Graaficas = [];
 }
 //regresamos los datos de experts conectados.
 exports.getSetts= function(){

@@ -81,10 +81,10 @@ public abstract class Jedi {
      */
     public boolean limiteCruce(){
         boolean temp = false;
-        int count = Graphic.dao.getTotalCruce(setts.symbol);
+        /*int count = Graphic.dao.getTotalCruce(setts.symbol);
         if(count<setts.limiteCruce)
-            temp = true;
-        return temp;
+            temp = true;*/
+        return true;
     }
     /**
      * 
