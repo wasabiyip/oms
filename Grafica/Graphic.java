@@ -1,7 +1,6 @@
 package oms.Grafica;
 
 import com.mongodb.DBObject;
-import oms.Grafica.DAO.MongoDao;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -9,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.Grafica.DAO.MongoDao;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -43,6 +43,8 @@ public class Graphic extends Thread {
     private Settings setts;
     private int lastOpen = GMTDate.getDate().getMinute();
     private PrintWriter blackBox;
+    private StateFeed stateFeed;
+    private SendMessage sendMessage;
     
     /**
      * Constructor!
@@ -57,6 +59,8 @@ public class Graphic extends Thread {
         expert = new ExpertMoc();
          expert.absInit(setts.symbol, setts.periodo, setts);
         expert.Init();
+        stateFeed = new StateFeed(expert);
+        
         //expert = new Expert(setts);
         
         String path = "/home/omar/OMS/log/"+setts.symbol;
@@ -94,31 +98,19 @@ public class Graphic extends Thread {
             System.out.println("Conectando con Node");
             this.socket = new Socket("127.0.0.1", 8000);
             this.outNode = new DataOutputStream(this.socket.getOutputStream());
-
+            sendMessage = new SendMessage(outNode, stateFeed);
             //al iniciar enviamos a Node los settings de el expert.
-            outNode.writeUTF("{\"type\": \"login\", "
-                    + "\"name\":\"CLIENT_TCP\", "
-                    + "\"symbol\":\"" + this.symbol + "\","
-                    + this.expert.getExpertInfo() +","
-                    + this.getExpertState() 
-                    + "}");
+            
             try {
                 Thread.sleep(3);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
             }
-            StringBuffer msjout = new StringBuffer();
-            StringBuffer msjin = new StringBuffer();
-            msjout.append("{");
-            msjout.append("\"type\": \"onCandle\",");
-
-            msjout.append(this.getExpertState());
-            msjout.append("}\n");
-            this.writeNode(msjout.toString());
+            this.sendMessage.Candle();
             //Leemos mensajes de node
             BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
             InputStreamReader isr = new InputStreamReader(bis, "US-ASCII");
-            
+            StringBuffer msjin = new StringBuffer();
             int c;
             while (isr.read() > 0) {
                 while ((c = isr.read()) != 10) {
@@ -158,13 +150,7 @@ public class Graphic extends Thread {
             this.onCandle(price);
             cont = 0;
         }
-        StringBuffer msj = new StringBuffer();
-        msj.append("{");
-        msj.append("\"type\": \"onOpen\",");
-        msj.append("\"precio\": " + (expert.getAvgOpen()));
-        //msj.append(expert.getRemain());
-        msj.append("}");
-        this.writeNode(msj.toString());
+        this.sendMessage.Open();
         this.lastOpen = GMTDate.getDate().getMinute();
     }
 
@@ -172,13 +158,7 @@ public class Graphic extends Thread {
      * Cada vez que que tenemos una vela nueva detonamos este método.
      */
     public void onCandle(double openCandle) {
-        //this.expert.indicatorDataIn(openCandle);
-        StringBuffer msj = new StringBuffer();
-        msj.append("{");
-        msj.append("\"type\": \"onCandle\",");
-        msj.append(this.getExpertState());
-        msj.append("}");
-        this.writeNode(msj.toString());
+        this.sendMessage.Candle();
     }
 
     /**
@@ -230,23 +210,14 @@ public class Graphic extends Thread {
                     this.onOpen((double) json.get("precio"));
                     //Si el expert puede operar
                     if(expert.isActive()){
-                        this.writeBlackBoxFile(
-                                (this.expert.getAvgBoll(this.expert.bollDn()) +" "+ (this.expert.getAvgOpen()+setts.boll_special))
-                                +" "+(this.expert.getAvgBoll(this.expert.bollUp()) +" "+ (this.expert.getAvgOpen()-setts.boll_special))
-                                );
+                        this.writeBlackBoxFile(stateFeed.getExpertState());
                     }
                     break;
                 case "close":
                     //TODO hacer algo con este precio de cierre
                     break;
                 case "get-state":
-                    StringBuffer txt = new StringBuffer();
-                    txt.append("{");
-                    txt.append("\"type\": \"expert-state\",");
-                    txt.append("\"id\":\"" + setts.id + "\",");
-                    txt.append(this.getExpertState());
-                    txt.append("}");
-                    this.writeNode(txt.toString());
+                    this.sendMessage.ExpertState();
                     this.ordersInit();
                     break;
                 case "ask":
@@ -278,50 +249,18 @@ public class Graphic extends Thread {
         this.blackBox.println(GMTDate.getDate()+" -> "+log);
         this.blackBox.flush();
     }
-    /**
-     * Método que envia mensajes a node
-     *
-     * @param msj
-     */
-    private void writeNode(String msj) {
-        try {
-            this.outNode.writeUTF(msj + "\n");
-        } catch (IOException ex) {
-            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    
     /**
      * notificamos a node que una nueva entro.
      * @param orden 
      */
     private void onOrder(ArrayList orden){
-        try {
-            
-            ExecutionReport report = (ExecutionReport)orden.get(0);
-            expert.openNotify(report);
-            double sl = (double)orden.get(1);
-            double tp = (double)orden.get(2); 
-            StringBuffer nworden = new StringBuffer();
-            nworden.append("{");        
-                nworden.append("\"type\":\"onOrder\",");
-                nworden.append("\"data\":");
-                    nworden.append("{");        
-                        nworden.append("\"id\":\""+this.id+"\",");
-                        nworden.append("\"ordid\":\""+report.getClOrdID().getValue()+"\",");
-                        nworden.append("\"tipo\":\""+report.getSide().getValue()+"\","); //tipo de operacion
-                        nworden.append("\"lotes\":\""+(report.getOrderQty().getValue()/100000)+"\","); 
-                        nworden.append("\"symbol\":\""+report.getSymbol().getValue()+"\",");
-                        nworden.append("\"precio\":\""+report.getAvgPx().getValue()+"\",");                
-                        nworden.append("\"sl\":\""+sl+"\",");                
-                        nworden.append("\"tp\":\""+tp+"\"");                
-                    nworden.append("}");
-            nworden.append("}");
-            this.writeNode(nworden.toString());
-            nworden = null;
-            
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+        ExecutionReport report = (ExecutionReport)orden.get(0);
+        double sl = (double)orden.get(1);
+        double tp = (double)orden.get(2);
+        expert.openNotify(report);
+        sendMessage.nwOrden(report, sl, tp); 
     }
     /**
      * Notificamos que una orden fué cerrada exitosamente.
@@ -330,15 +269,7 @@ public class Graphic extends Thread {
     public void onOrderClose(String id){
         expert.closeNotify();
         System.out.println("Order Close");
-        StringBuffer temp = new StringBuffer();
-            temp.append("{");        
-                temp.append("\"type\":\"onOrderClose\",");
-                temp.append("\"data\":");
-                temp.append("{"); 
-                    temp.append("\"id\":\""+id+"\"");
-                temp.append("}"); 
-            temp.append("}");
-            this.writeNode(temp.toString());
+        sendMessage.clOrden(id);
             //Sí entro el cierre de una operacion entonce borramos esa operación 
             //entonces borramos esa operacion de nuestro array de operaciones.
             for(int i=0; i<operaciones.size();i++){
@@ -356,30 +287,7 @@ public class Graphic extends Thread {
      * Enviamos ordenes actuales de la grafica.
      */
     private void ordersInit(){
-         ArrayList<DBObject>temp=dao.getTotalGraf(this.id);
-         StringBuffer nworden = new StringBuffer();
-         for(int i=0; i<temp.size();i++){
-            nworden.append("{");        
-                nworden.append("\"type\":\"onOrderInit\",");
-                nworden.append("\"data\":");
-                    nworden.append("{");        
-                        nworden.append("\"id\":\""+this.id+"\",");
-                        nworden.append("\"ordid\":\""+temp.get(i).get("OrderID") +"\",");
-                        nworden.append("\"tipo\":\""+temp.get(i).get("Type")+"\","); //tipo de operacion
-                        nworden.append("\"lotes\":\""+((Double)temp.get(i).get("Size")/100000)+"\","); 
-                        nworden.append("\"symbol\":\""+temp.get(i).get("Symbol")+"\",");
-                        nworden.append("\"precio\":\""+temp.get(i).get("Price")+"\",");   
-                        nworden.append("\"sl\":\""+temp.get(i).get("StopL") +"\",");                
-                        nworden.append("\"tp\":\""+temp.get(i).get("TakeP")+"\"");
-                    nworden.append("}");
-            nworden.append("}\n");
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            this.writeNode(nworden.toString());
-         }
+         sendMessage.ordersInit(dao.getTotalGraf(this.id),this.id);
     }
     
     /**
@@ -397,40 +305,9 @@ public class Graphic extends Thread {
     
     public void orderModify(String ordid, Double precio){
         expert.modNotify();
-        StringBuffer temp = new StringBuffer();
-            temp.append("{");        
-                temp.append("\"type\":\"orderModify\",");
-                temp.append("\"data\":");
-                temp.append("{"); 
-                    temp.append("\"id\":\""+ordid+"\",");
-                    temp.append("\"nwTp\":\""+precio+"\"");
-                temp.append("}"); 
-            temp.append("}");
-            this.writeNode(temp.toString());
+        this.sendMessage.modOrden(ordid,precio);
     }
-    /**
-     * Método usaddo para informar sobre el estado actual del expert, regresa los
-     * valores de promedios, de velas, etc. Todos los valores que influyen en el
-     * comportamiento actual o futuro del expert.
-     * @return estado de los valoes.
-     */
-    public String getExpertState(){
-        
-        StringBuffer temp = new StringBuffer();
-        temp.append("\"variables\":{");
-            temp.append("\"bollUp\":"+ expert.getAvgBoll(expert.bollUp())+ ",");
-            temp.append("\"bollDn\":"+ expert.getAvgBoll(expert.bollDn())+ ",");
-            temp.append("\"bollUpS\":"+ expert.getAvgBoll(expert.bollUpS()) + ",");
-            temp.append("\"bollDnS\":"+ expert.getAvgBoll(expert.bollDnS())+ ",");
-            temp.append("\"Velas\":"+expert.contVelas + ",");
-            temp.append("\"limite\":"+expert.limiteCruce() + ",");
-            temp.append("\"hora\":"+expert.hora()+ ",");
-            temp.append("\"bollX\":"+(expert.bollingerDif() < this.setts.bollxUp && 
-                    expert.bollingerDif()> setts.bollxDn)+ ",");
-            temp.append("\"Active\":"+expert.isActive());
-        temp.append("}");
-        return temp.toString();
-    }
+    
     /**
      * Asignamos los Stops a la orden debida.
      * @param ordid

@@ -86,34 +86,7 @@ public abstract class AbstractExpert {
         this.contVelas = 0;
         this.modify = false;
     }
-    public StringBuffer getExpertInfo() {
-
-        StringBuffer init = new StringBuffer();
-        
-        init.append("\"settings\" : {");
-            init.append("\"symbol\" : \"" + setts.symbol+"\",");
-            init.append("\"ID\" : \"" + setts.id + "\",");
-            init.append("\"Magicma\" : " + setts.MAGICMA + ",");
-            init.append("\"Lotes\" : " + setts.lots + ",");
-            init.append("\"Boll1\" : " + setts.boll1 + ",");
-            init.append("\"Boll2\" : " + setts.boll2 + ",");
-            init.append("\"Boll3\" : " + setts.boll3 + ",");
-            init.append("\"BollS1\" : " + setts.bollS1 + ",");
-            init.append("\"BollS2\" : " + setts.bollS2 + ",");
-            init.append("\"BollS3\" : " + setts.bollS3 + ",");
-            init.append("\"TP\" : " + setts.tp + ",");
-            init.append("\"SL\" : " + setts.sl + ",");
-            init.append("\"VelasSalida\": " + setts.velasS + ",");
-            init.append("\"horaInicial\":" + setts.horaIni + ",");
-            init.append("\"horaFinal\" :" + setts.horaFin +",");
-            init.append("\"horaSalida\" :" + setts.horaIniS+",");
-            init.append("\"Periodo\" :" + setts.periodo + ",");
-            init.append("\"bollSpecial\" :" + setts.boll_special+",");
-            init.append("\"spreadAsk\" :" + setts.spreadAsk + ",");
-            init.append("\"limiteCruce\" :" + setts.limiteCruce);
-            init.append("}");
-        return init;
-    }
+    
     
     public void indicatorDataIn(Double precio){
         this.indicator.appendBollsData(precio);

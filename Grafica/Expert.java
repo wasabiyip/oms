@@ -195,7 +195,7 @@ public class Expert extends Jedi{
      * Obtenemos el promedio de bollinger de entrada (UP).
      * @return 
      */
-    public double bollUp() {
+    double bollUp() {
         return (bollBand1.getUpperBand() + bollBand2.getUpperBand() + 
                             bollBand3.getUpperBand())/3;
         
@@ -205,7 +205,7 @@ public class Expert extends Jedi{
      * Obtenemos el promedio de bollinger de salida (UP).
      * @return 
      */
-    private double bollUpS() {
+    double bollUpS() {
         return (bollBandS1.getUpperBand() + bollBandS2.getUpperBand() + 
                             bollBandS3.getUpperBand()) / 3;
     }
@@ -214,7 +214,7 @@ public class Expert extends Jedi{
      * Obtenemos el promedio de bollinger de entrada (Down).
      * @return 
      */
-    public double bollDn() {
+    double bollDn() {
 
         return (bollBand1.getLowerBand() + bollBand2.getLowerBand() + 
                             bollBand3.getLowerBand()) / 3;
@@ -224,13 +224,13 @@ public class Expert extends Jedi{
      * Obtenemos el promedio de bollinger de salida (Down).
      * @return 
      */
-    private double bollDnS() {
+    double bollDnS() {
 
         return (bollBandS1.getLowerBand() + bollBandS2.getLowerBand() + 
                             bollBandS3.getLowerBand()) / 3;
     }
     
-    private double bollingerDif(){
+    double bollingerDif(){
         double tempUp = (bollBandx1.getUpperBand() + bollBandx2.getUpperBand() + bollBand3.getUpperBand())/3 ;
         double tempDn = (bollBandx1.getLowerBand() + bollBandx2.getLowerBand() + bollBand3.getLowerBand())/3;
         double temp = tempUp - tempDn;
@@ -242,7 +242,7 @@ public class Expert extends Jedi{
      * comportamiento actual o futuro del expert.
      * @return estado de los valoes.
      */
-    public String getExpertState(){
+    String getExpertState(){
         
         StringBuffer temp = new StringBuffer();
         temp.append("\"variables\":{");
