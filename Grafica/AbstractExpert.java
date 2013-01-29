@@ -86,8 +86,7 @@ public abstract class AbstractExpert {
         this.contVelas = 0;
         this.modify = false;
     }
-    
-    
+        
     public void indicatorDataIn(Double precio){
         this.indicator.appendBollsData(precio);
     }

@@ -3,6 +3,8 @@ package oms.Grafica;
 import com.mongodb.DBObject;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,10 +19,11 @@ public class SendMessage {
 
     private static DataOutputStream outNode;
     private StateFeed stateFeed;
-
-    public SendMessage(DataOutputStream outNode, StateFeed stateFeed) {
+    
+    public SendMessage(DataOutputStream outNode, StateFeed stateFeed) {    
         this.outNode = outNode;
         this.stateFeed = stateFeed;
+        
     }
 
     public void logIn() {
@@ -118,15 +121,16 @@ public class SendMessage {
                         +"\"sl\":\""+data.get(i).get("StopL") +"\","
                         +"\"tp\":\""+data.get(i).get("TakeP")+"\""
                     +"}"
-            +"}\n");
+            +"}");
          }
     }
     /**
      * Método que envia mensajes a node.
      * @param msj
      */
-    private static synchronized void writeNode(String msj) {
+    private  void writeNode(String msj) {
         try {
+            
             outNode.writeUTF(msj + "\n");
             //Esperamos para que los mensajes no se traslapen.
             Thread.sleep(1);

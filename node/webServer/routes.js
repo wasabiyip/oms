@@ -1,8 +1,7 @@
 module.exports = function(app, models){
 	//Index
 	app.get('/', function(req, res){
-		var grafs = models.graf_modl.getCharts();
-		console.log(req.query['username']);				
+		var grafs = models.graf_modl.getCharts();			
 		res.render('trade', 
 			{ 
 				title: 'Trade', 

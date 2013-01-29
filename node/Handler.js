@@ -4,7 +4,7 @@ var clients = [];
 var Graficas = [];
 //Creamos una grafica y la añadimos a Graficas[]. 
 exports.createGrafica = function(symbol, socket, settings){
-
+    
     Graficas.push(new Grafica(symbol, socket, settings));
 }
 //Notificamos a cada grafica conectada con el precio entrante.
@@ -19,16 +19,17 @@ exports.notify = function (type,moneda, precio){
         if(Graficas[i].getSymbol() === moneda){  
             //Es muy importante enviar '\n' ya que java espera un fin de 
             //linea: readLine();
-            try{
-
-            }
             Graficas[i].getSocket().write(msj + '\n');
         }
     }
 }
-
+exports.resetStuff = function(){
+    clients = [];
+    Grafica = [];
+}
 exports.expertState = function(txt){
     id= txt.id;
+    console.log('obteniando estado '+ id);
     msj = JSON.stringify({
         "msj" :{
             "type":"get-state",
@@ -82,7 +83,7 @@ exports.closeGrafica= function(socket){
             Graficas.splice(i,1);
         }		
     }*/
-    Graaficas = [];
+    Graficas = [];
 }
 //regresamos los datos de experts conectados.
 exports.getSetts= function(){

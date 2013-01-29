@@ -96,16 +96,11 @@ public class Graphic extends Thread {
             String inputLine;
             String modifiedSentence;
             System.out.println("Conectando con Node");
-            this.socket = new Socket("127.0.0.1", 8000);
+            this.socket = new Socket("127.0.0.1", 3000);
             this.outNode = new DataOutputStream(this.socket.getOutputStream());
             sendMessage = new SendMessage(outNode, stateFeed);
             //al iniciar enviamos a Node los settings de el expert.
-            
-            try {
-                Thread.sleep(3);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            sendMessage.logIn();
             this.sendMessage.Candle();
             //Leemos mensajes de node
             BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
@@ -118,6 +113,7 @@ public class Graphic extends Thread {
                 }
                 //Evaluamos cada cadena recibida.
                 handler(msjin.toString());
+                System.out.println(msjin.toString());
                 //borramos el contenido pa' que no se acumule...
                 msjin.delete(0, msjin.length());
             }

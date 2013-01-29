@@ -2,7 +2,7 @@
 **/
 //Dependencias
 var net = require('net');
-var webServer = require('./webServer/webServer');
+var webServer = require('./webServer/webServer.js');
 var app = net.createServer();
 var handler = require('./Handler'); 
 //Iniciamos el servidor TCP.
@@ -15,7 +15,6 @@ app.on('connection', function(client) {
     //Método que se ejecuta cuando se recibe un precio desde java	
     client.on('data', function(data) {
         //Emitimos el precio.
-        //console.log(''+data);
         evaluar(formatStr(data), client);
     });
 	
@@ -33,7 +32,6 @@ app.on('connection', function(client) {
         console.log('Colapso: ', error);
         console.log(handler.getGrafica(client).settings.ID);
         //if (error.search('This socket is closed'));
-			
     });
 });
 
@@ -45,7 +43,7 @@ function formatStr(string){
     str = str.substring(n,str.length);
     return str;
 }
-app.listen(8000);
+app.listen(3000);
 function unSlash(cadena){
   return cadena.replace("/","");
 }
@@ -83,6 +81,7 @@ function evaluar(msj, socket){
                     //el socket desde el cual recibimos conexion y los settings del expert que controla
                     //esa grafica.
                     handler.createGrafica(income.symbol, socket, income.settings);
+                    console.log("app: Añadiendo grafica...");
                     webServer.addGrafica(income.settings);
                     if (!server_precios){
                         console.log('Servidor de precios desconectado');
@@ -95,7 +94,6 @@ function evaluar(msj, socket){
                
                 handler.notify('open',unSlash(income.data.Moneda), income.data.Open);
                 break;
-                
             //Cada que se recibe un precio.	
             case 'tick':
                 msj = 
@@ -121,6 +119,7 @@ function evaluar(msj, socket){
                 if(app === socket){
                     console.log('app desconectada...');
                     app = null;
+                    handler.resetStuff();
                 }else if(server_precios === socket){
                     serverPrecios = null;
                     temp.msj = 'El horror -> ¡El streaming de precios se desconecto!';                    
@@ -156,7 +155,7 @@ function evaluar(msj, socket){
             webServer.onCandle(msj);
             break;
         case 'expert-state':
-            //handler.state(income.variables);
+            handler.state(income.variables);
             msj = {
                 "values":{
                     "id":income.id, 
@@ -185,7 +184,9 @@ function evaluar(msj, socket){
     }
     //Cachamos cualquier error y lo imprimimos.
     }catch(error){
-        console.log(error + msj);
+        if(error == 'SyntaxError'){
+            console.log('error de envio esperado!');
+        }
     }
 }
 //-------------------------------------------------------------------/

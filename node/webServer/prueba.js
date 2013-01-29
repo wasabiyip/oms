@@ -1,80 +1,55 @@
-/**
- * Module dependencies.
- */
- var express = require('express')
+var express = require('express')
   , routes = require('routes')
   , http = require('http')
   , path = require('path');
 
-  var app = express();
+var app = express();
 var server = http.createServer(app);
 var io = require('socket.io').listen(server);
-
-var models = {};
 var obj_Config = require('./config.js');
+var models = {}
 var webClients = [];
-var handler =  require('../Handler');
-
 //Configuration.
 var config = new obj_Config(app, express);
 models.graf_modl = require('./models/graficaModel');
 models.master_modl = require('./models/masterModel');
 //Routes
 require('./routes')(app, models);
-//Inicializando
+
 server.listen(8000);
 
-io.sockets.on('connection', function (client){ 
-//Todo lo que esta aqui adentro maneja mensajes recibidos desde 
-//el navegador conectado.    
-    client.on('disconnect', function () {
-		
-     });
+io.sockets.on('connection', function(client) {
 
-    client.on('handshake', function(msj){
-        //client.send(handler.get)
-        if(msj.id == 'oms'){
-            var setts = handler.getSetts();
-            webClients.push(client);
-            checkClientsActivos();
-            for(i=0;i<setts.length;i++){
-                client.emit('grafica-ini',{
-                    setts : setts[i]
-                    });
-                waitState = client;
-                waitOps = client;
-            }
-        }
-        if(msj.id == 'data'){
-            console.log('cliente data');
-            webClients.push(client);
-            checkClientsActivos();
-        }
+    client.name = client.remotePort;
+    //Método que se ejecuta cuando se recibe un precio desde java 
+    client.on('data', function(data) {
+        //Emitimos el precio.
+        //console.log(''+data);
+        evaluar(formatStr(data), client);
     });
-    
-    client.on('grafica-state', function(msj){
-        handler.expertState(msj);
+  
+    //Cuando se cierra la conexion con algun cliente.
+    client.on('end', function(end){
+        var str = '{ "type" : "close"}';
+        evaluar(formatStr(str), client);
     });
-    
-    client.on('order-close', function(msj){
-        
-        handler.closeOrder(msj);
+    //Se pierde conexcion con el cliente.
+    client.on('timeout', function(timeout){
+        console.log('Tiempo de conexion expirado');
     });
-    
-    client.on('ops-history', function(){
-        db.operaciones.find({Status:0}, function(err,operaciones){
-           if(err || !operaciones)
-               console.log('Da Fuck!');
-           else
-               operaciones.forEach(function (op){
-                   client.emit('orders',op);
-               });
-        });
-    });
-    client.on('ops-grafic', function(){
-        
+
+    client.on('error', function(error){
+        console.log('Colapso: ', error);
+        console.log(handler.getGrafica(client).settings.ID);
+        //if (error.search('This socket is closed'));
+      
     });
 });
+
+server.listen(app.get('port'), function(){
+  console.log("Express server listening on port " + app.get('port'));
+});
+
 exports.log = function(data){
     notify('log-msj', data);
 }
@@ -139,7 +114,6 @@ exports.addGrafica = function(settings){
     var str = {
         setts : settings
     }
-    console.log('webServer: añadiendo grafica...');
     models.graf_modl.addGrafica(str);
 }
 exports.closeGrafica = function(grafica){
