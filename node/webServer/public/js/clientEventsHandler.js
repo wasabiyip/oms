@@ -30,6 +30,7 @@ $(document).ready(function(){
   socket.on('grafica-ini', function(data){
     var temp="";
     ids.push(data.setts.ID);
+    console.log(data.setts);
     //pedimos el esta de la grafica hasta este momento.     
     socket.emit('grafica-state',{
         id: data.setts.ID
@@ -69,12 +70,14 @@ $(document).ready(function(){
   //Datos de cambio de vela.
   socket.on('grafica-candle', function(data){
     var id = unSlash(data.values.id);
+    console.log('grafica-cndl: '+data.values.vars.id);
     getGrafica(id).onCandle(data.values.vars);
     //Actualizamos los íconos
     updateIcons(data);
   });
   //Datos del tick.
   socket.on('grafica-tick', function(data){
+
     var date = new Date();
     var symbol = unSlash(data.values.symbol);
     var selector;                
@@ -121,9 +124,9 @@ $(document).ready(function(){
   });
   //Estado actual de la grafica/expert
   socket.on('expert-state', function(data){
+
     id= unSlash(data.values.id);
     var temp = getGrafica(id);
-
     temp.initState(data.values.vars);
     //Actualizamos los iconos en la seccion de vars.
     updateIcons(data);
@@ -134,6 +137,7 @@ $(document).ready(function(){
     var id = unSlash(data.values.id);    
     var temp = getGrafica(id);
     temp.onOpen(data.values.precio);
+    console.log(data.values);
   });
   //Entro una orden.
   socket.on('grafica-order', function(data){

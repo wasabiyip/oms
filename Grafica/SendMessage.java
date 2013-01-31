@@ -27,7 +27,7 @@ public class SendMessage {
     }
 
     public void logIn() {
-
+        
         this.writeNode("{\"type\": \"login\", "
                 + "\"name\":\"CLIENT_TCP\", "
                 + "\"symbol\":\"" + this.stateFeed.getSymbol() + "\","
@@ -37,6 +37,7 @@ public class SendMessage {
 
     }
     public void ExpertState(){
+        
         this.writeNode("{"
             + "\"type\": \"expert-state\","
             + "\"id\":\"" + this.stateFeed.getId() + "\","
@@ -47,6 +48,7 @@ public class SendMessage {
      * Cuando una vela enviamos el estado del expert.
      */
     public void Candle(){
+        
         this.writeNode("{"
         + "\"type\": \"onCandle\","
         + this.stateFeed.getExpertState()
@@ -56,6 +58,7 @@ public class SendMessage {
      * Enviamos evento de Open.
      */
     public void Open(){
+        
         this.writeNode("{"
         +"\"type\": \"onOpen\","
         +"\"precio\": " + this.stateFeed.getAvgOpen()

@@ -8,13 +8,20 @@ var handler = require('./Handler');
 //Iniciamos el servidor TCP.
 var Graficas = [];
 var server_precios, server_op, app;
+//Stream de precios.
+/*var dealear = net.connect({port:7000}, function(){
+    console.log('conectando');
+    delear.write({"type" : "login","name" : "SERVIDOR_PRECIOS" });
+});*/
 
+//Mensage de la aplicaciones.
 app.on('connection', function(client) {
 
     client.name = client.remotePort;
     //Método que se ejecuta cuando se recibe un precio desde java	
     client.on('data', function(data) {
         //Emitimos el precio.
+ 
         evaluar(formatStr(data), client);
     });
 	
@@ -120,16 +127,18 @@ function evaluar(msj, socket){
                     console.log('app desconectada...');
                     app = null;
                     handler.resetStuff();
+                    webServer.resetStuff();
+                    console.log('Tenemos ' + handler.graficasLength() + ' graficas');
                 }else if(server_precios === socket){
                     serverPrecios = null;
                     temp.msj = 'El horror -> ¡El streaming de precios se desconecto!';                    
                     webServer.journal(temp);
-                }else{
+                }/*else{
                     temp.msj = 'Grafica ' + handler.getGrafica(socket).settings.ID+' fue desconectada :|';
                     webServer.closeGrafica(handler.getGrafica(socket).settings.ID);
                     handler.closeGrafica(socket);
                     webServer.journal(temp);
-                }
+                }*/
                 break;	
             //al recibir un evento onTick de un cliente conectado.
             case 'onOpen':
@@ -155,7 +164,7 @@ function evaluar(msj, socket){
             webServer.onCandle(msj);
             break;
         case 'expert-state':
-            handler.state(income.variables);
+            handler.expertState(income.variables);
             msj = {
                 "values":{
                     "id":income.id, 

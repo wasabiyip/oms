@@ -106,7 +106,7 @@ exports.onOpen= function(data){
 
 exports.expertState = function(data){
     var contState;
-    console.log('State vueta');
+    
     if(waitState !== null){
         waitState.emit('expert-state',data);
         if(contState>=handler.graficasLength){
@@ -142,9 +142,9 @@ exports.addGrafica = function(settings){
     console.log('webServer: añadiendo grafica...');
     models.graf_modl.addGrafica(str);
 }
-exports.closeGrafica = function(grafica){
-    models.graf_modl.closeGrafica(grafica); 
-    
+
+exports.resetStuff = function (){
+    models.graf_modl.resetStuff();
 }
 exports.grafInit = function(data){
     

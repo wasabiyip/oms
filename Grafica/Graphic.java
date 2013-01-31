@@ -77,7 +77,7 @@ public class Graphic extends Thread {
                 Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex1);
             } 
         }
-        this.writeBlackBoxFile("iniciada sesión propiamente...");
+        this.writeBlackBoxFile("sesión iniciada...");
         this.id = setts.id;
         dif = GMTDate.getDate().getMinute() % setts.periodo;
         this.symbol = setts.symbol;
@@ -95,13 +95,12 @@ public class Graphic extends Thread {
         try {
             String inputLine;
             String modifiedSentence;
-            System.out.println("Conectando con Node");
             this.socket = new Socket("127.0.0.1", 3000);
             this.outNode = new DataOutputStream(this.socket.getOutputStream());
             sendMessage = new SendMessage(outNode, stateFeed);
             //al iniciar enviamos a Node los settings de el expert.
-            sendMessage.logIn();
-            this.sendMessage.Candle();
+            this.sendMessage.logIn();
+            this.sendMessage.ExpertState();
             //Leemos mensajes de node
             BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
             InputStreamReader isr = new InputStreamReader(bis, "US-ASCII");
@@ -113,7 +112,6 @@ public class Graphic extends Thread {
                 }
                 //Evaluamos cada cadena recibida.
                 handler(msjin.toString());
-                System.out.println(msjin.toString());
                 //borramos el contenido pa' que no se acumule...
                 msjin.delete(0, msjin.length());
             }
@@ -140,10 +138,13 @@ public class Graphic extends Thread {
         }
         
         //candle.onTick(price);
-        //expert.onTick(price);
         expert.open_min = price;
+        //En la vida real un tick es cada cambio del Bid, aunque nosotros lo adaptamos
+        //a cada minuto para ahorrar recursos a la hora de hacer calculos.
+        expert.onTick();
         if (this.cont >= this.periodo) {
             this.onCandle(price);
+            this.expert.indicator.appendBollsData(price);
             cont = 0;
         }
         this.sendMessage.Open();
@@ -264,7 +265,6 @@ public class Graphic extends Thread {
      */
     public void onOrderClose(String id){
         expert.closeNotify();
-        System.out.println("Order Close");
         sendMessage.clOrden(id);
             //Sí entro el cierre de una operacion entonce borramos esa operación 
             //entonces borramos esa operacion de nuestro array de operaciones.
@@ -336,14 +336,14 @@ public class Graphic extends Thread {
      * @return ultimo precio de compra.
      */
     public Double getBid()throws NullPointerException{
-        return this.bid;
+        return expert.Bid;
     }
     
     /**
      * @return Ultimo precio de venta.
      */
     public Double getAsk() throws NullPointerException{
-        return this.ask;
+        return expert.Ask;
     }
     
     /**

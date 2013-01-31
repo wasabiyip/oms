@@ -15,42 +15,18 @@ var addGrafica = function(grafica){
 //Si el socket de la grafica se cerró entonces debemos borrarlo,
 //ademas si todas las graficas de una moneda ya fueron cerradas
 //Borramos ese elemento de el primer nivel de graf_arr
-var closeGrafica = function(grafica){
-	
-	for(var i=0; i<graf_arr.length; i++){
-		for( var j=1;j<graf_arr[i].length;j++){
-			for(var k=0;k<graf_arr[i][j].length;k++){
-				if(graf_arr[i][j][k].setts.ID == grafica){
-					graf_arr[i][j].splice(k,1);
-				}
-			} 
-		}
-	}
-	clearGraficas(grafica);
-};
-//Revisamos si al borrar las graficas el graf_arr queda completamente vacío
-var clearGraficas = function(grafica){
-	var empty= true;
-	/*for(var i=0; i<graf_arr.length; i++){
-		for( var j=1;j<graf_arr[i].length;j++){
-			if(graf_arr[i][j].length>0){
-				empty = false;
-			}
-		}
-	}
-	if(empty){
-		//si esta completamente lo redefinimos.
-		graf_arr = [];
-	}*/
+var resetStuff = function(){
+	console.log('reseteando ...');
 	graf_arr = [];
 	sorted_arr = [['EURUSD',[]],['GBPUSD',[]],['USDCHF',[]],['USDJPY',[]], ['EURGBP',[]]];
-}
+};
+
 /*
 *ordenamos la grafica entrante de acuerdo a su tipo de moneda y período, 
 *esto lo hacemos en pares para tener una correcta presentacion en la vista.
 */
 var estructurarChart = function(chart){
-	console.log(chart.setts.symbol);
+	
 	var hora_actual = new Date().getHours();
 	var temp = [];
 	var last_chart;
@@ -114,7 +90,7 @@ var getCharts = function(){
 module.exports.monedas_arr = monedas_arr;
 module.exports.getCharts = getCharts;
 module.exports.addGrafica = addGrafica;
-module.exports.closeGrafica = closeGrafica;
+module.exports.resetStuff = resetStuff;
 function unSlash(cadena){
     return cadena.replace("/","");
 }

@@ -88,6 +88,7 @@ public class Settings {
         horaIniS = new Double(config.getProperty("timesalidainicial"));
         horaFinS = new Double(config.getProperty("timesalidafinal"));
         limiteCruce = new Integer(config.getProperty("limiteCruce"));
+        limiteMagic = new Integer(config.getProperty("limite_por_magic"));
         bollx1 = new Integer(config.getProperty("XBoll"));
         bollx2 = new Integer(config.getProperty("XBoll2"));
         bollx3 = new Integer(config.getProperty("XBoll3"));

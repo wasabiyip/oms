@@ -7,6 +7,7 @@ exports.createGrafica = function(symbol, socket, settings){
     
     Graficas.push(new Grafica(symbol, socket, settings));
 }
+
 //Notificamos a cada grafica conectada con el precio entrante.
 exports.notify = function (type,moneda, precio){
     msj = JSON.stringify({
@@ -25,7 +26,7 @@ exports.notify = function (type,moneda, precio){
 }
 exports.resetStuff = function(){
     clients = [];
-    Grafica = [];
+    Graficas = [];
 }
 exports.expertState = function(txt){
     id= txt.id;

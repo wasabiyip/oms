@@ -21,11 +21,13 @@ public class ExpertMoc extends AbstractExpert{
     private BollingerBands bollBandx1;
     private BollingerBands bollBandx2;
     private BollingerBands bollBandx3;
-    
+    private double volB;
+    private double volS;
     
     
     @Override
     public void Init() {
+        
         bollBand1 = indicator.createBollinger(setts.boll1);
         bollBand2 = indicator.createBollinger(setts.boll2);
         bollBand3 = indicator.createBollinger(setts.boll3);
@@ -38,10 +40,109 @@ public class ExpertMoc extends AbstractExpert{
         bollBandx2 = indicator.createBollinger(setts.bollx2);
         bollBandx3 = indicator.createBollinger(setts.bollx3);
     }
-
+    /**
+     * Se llama cuando un se recibe un bid.
+     * **NOTA:
+     * Este método es muy importante ya que es el que trata la apertura y cierre
+     * de operaciones, así que: ¡tratalo con RESPETO!
+     * @param price precio de apertura del minuto!
+     */
     @Override
     public void onTick() {
-       
+        //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
+        //descansan por lo menfos un día de la semana...
+         
+        if (this.isActive()) { 
+            
+            if(lock_op && limiteCruce() < this.setts.limiteCruce && (this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())){
+                System.err.println("Deberiamos de meter Compras!! -> " + this.setts.symbol + " - " + this.setts.MAGICMA);
+                System.err.println("Spread "+(this.Ask - this.Bid <= setts.spread));
+                System.err.println("bollX " + (this.bollingerDif() < this.setts.bollxUp && 
+                    this.bollingerDif()> setts.bollxDn));               
+                
+            }else if (lock_op && limiteCruce() < this.setts.limiteCruce && this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp())){
+                System.err.println("Deberiamos de meter ventas!! -> "+ this.setts.symbol + " - " + this.setts.MAGICMA);
+                System.err.println("Spread "+(this.Ask - this.Bid <= setts.spread));
+                System.err.println("bollX " + (this.bollingerDif() < this.setts.bollxUp && 
+                    this.bollingerDif()> setts.bollxDn));
+            }
+            
+            //Revisamos que los precios se encuentren dentro de el rango de entrada.
+            if (this.Ask - this.Bid <= setts.spread * Point  && TotalMagic()< this.setts.limiteMagic &&
+                    this.bollingerDif() < this.setts.bollxUp && 
+                    this.bollingerDif()> setts.bollxDn && limiteCruce() < this.setts.limiteCruce){
+                //entrada de operaciones.
+                if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())) {
+                    //Compra
+                    orderSend(this.Bid, '1');
+                    
+                } else if (this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp())) {
+                    //Venta
+                    orderSend(this.Ask, '2');
+                }
+            //Revisamos que haya entrado alguna operación y que los precios se 
+            //encuentren dentro de el rango de salida.    
+            }
+            //System.out.println(!lock+" "+ (ask - bid) +" "+ (setts.spreadSalida * setts.Point));
+            if(TotalMagic()>0 && (this.Ask - this.Bid <= setts.spreadSalida * setts.Point)) {
+                if (setts.salidaBollinger) {
+                    //Cierre de compras por promedios bollinger.
+                    if (this.currentOrder == '1') {
+                        //si el promedio de el precio de apertura supera a el promedio de salida
+                        //entonces debemos cerrar todas las compras
+                        if (this.getAvgOpen() >= this.getAvgBoll(this.bollUpS())) {
+                            System.out.println("Cerrado orden por bollinger");
+                            orderClose(this.Bid,'1');
+                        }
+                    } else if (this.currentOrder == '2') {
+                        //si el precio de apertura es inferior a el promedio de salida
+                        //entonces debemos cerrar todas las ventas.
+                        //esta salida es especifica de la version 1.8 velas entrada y salida cierre minuto spread SV.
+                        if ( ((this.getAvgOpen())) <= (this.getAvgBoll(this.bollDnS()))) {
+                            System.out.println("Cerrado orden por bollinger");
+                            orderClose(this.Ask,'2');
+                            //Cerramos las ordenes...
+                        }
+                    } else if (this.currentOrder == '0') {
+                        System.err.println("Fuckin fuck - Nunca debimos entrar aqui Salida Boll");
+                    }
+                } 
+                /**
+                 * si el numero de velas que van desde que entro la operación es igual
+                 * a las velas de salida (velasS) tenemos que cerrar las operaciones
+                 */
+               
+               if (contVelas == setts.velasS || this.rangeSalida()) {
+                    if (this.currentOrder == '1') {
+                        System.out.println("Cerrando orden por velas");
+                        order.Close(this.Bid,'1');
+                    }else if (this.currentOrder == '2') {
+                        System.out.println("Cerrando orden por velas");
+                        order.Close(this.Ask,'2');
+                        
+                    }else if (this.currentOrder == '0') {
+                        System.err.println("Fuckin fuck - Nunca debimos entrar aqui Salida Variada");
+                    }
+                }
+            //Fin Salidas
+            }
+            /**
+             * Volatilidad: Si al haber entrado una orden regresa al punto de entrada movemos 
+             * el tp.
+             */
+            if(!this.lock_op && !modify && this.setts.volatilidad){
+                this.volB = this.lastOrderPrice - setts.volVal;
+                this.volS = this.lastOrderPrice + setts.volVal;
+                if(this.currentOrder == '1' && this.Bid <= volB){
+                    orderModify();
+
+                }else if(this.currentOrder == '2' && this.Ask >= volS){
+                    orderModify();
+                }
+            }
+        //Fin isActive
+        }
+    //Fin onTick
     }
     /*
      * Método que promedia un Promedio de bollingers con la variable spreadAask.
@@ -102,6 +203,17 @@ public class ExpertMoc extends AbstractExpert{
         double tempUp = (bollBandx1.getUpperBand() + bollBandx2.getUpperBand() + bollBand3.getUpperBand())/3 ;
         double tempDn = (bollBandx1.getLowerBand() + bollBandx2.getLowerBand() + bollBand3.getLowerBand())/3;
         double temp = tempUp - tempDn;
+        return temp;
+    }
+    /*
+     * verificamos que nos encontremos en horas de salida de operaciones.
+     */
+    boolean rangeSalida(){
+        Date date = new oms.Grafica.Date();  
+        double hora = date.getHour() + (date.getMinute()*0.01);
+        boolean temp=false;
+        if(hora < setts.horaFinS && hora >= setts.horaIniS)
+            temp=true;
         return temp;
     }
 }

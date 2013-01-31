@@ -38,7 +38,7 @@ public class StateFeed {
             temp.append("\"bollUpS\":"+ expert.getAvgBoll(expert.bollUpS()) + ",");
             temp.append("\"bollDnS\":"+ expert.getAvgBoll(expert.bollDnS())+ ",");
             temp.append("\"Velas\":"+expert.contVelas + ",");
-            temp.append("\"limite\":"+expert.limiteCruce() + ",");
+            temp.append("\"limite\":"+(expert.limiteCruce()<expert.setts.limiteCruce?true:false) + ",");
             temp.append("\"hora\":"+expert.hora()+ ",");
             temp.append("\"bollX\":"+(expert.bollingerDif() < expert.setts.bollxUp && 
                     expert.bollingerDif()> expert.setts.bollxDn)+ ",");
@@ -71,7 +71,8 @@ public class StateFeed {
             init.append("\"Periodo\" :" + setts.periodo + ",");
             init.append("\"bollSpecial\" :" + setts.boll_special+",");
             init.append("\"spreadAsk\" :" + setts.spreadAsk + ",");
-            init.append("\"limiteCruce\" :" + setts.limiteCruce);
+            init.append("\"limiteCruce\" :" + setts.limiteCruce + ",");
+            init.append("\"limiteMagic\" :" + setts.limiteMagic);
             init.append("}");
         return init;
     }

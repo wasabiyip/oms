@@ -79,7 +79,7 @@ public class Expert extends Jedi{
         this.bid = bid;
         //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
         //descansan por lo menfos un día de la semana...
-        
+       
         if (this.isActive()) { 
             if(lock_op && limiteCruce() && (this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())){
                 System.err.println("Deberiamos de meter Compras!! -> " + this.setts.symbol + " - " + this.setts.MAGICMA);

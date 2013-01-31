@@ -159,8 +159,27 @@ public class MongoDao {
         res = coll.find(query);
         while(res.hasNext()){
             temp.add(res.next());
-    }
+        }
         return temp;
+    }
+    /**
+     * Obtenemos el número total de ordenés por Magic number.
+     *
+     * @return
+     * @throws Exception
+     */
+    public int getTotalMagic(Integer magic) {
+        ArrayList <DBObject> temp = new ArrayList();
+        DBCursor res;
+        DBCollection coll = getCollection("operaciones");
+        BasicDBObject query = new BasicDBObject();
+        query.put("Status", 1);
+        query.put("MAGICMA", magic);
+        res = coll.find(query);
+        while(res.hasNext()){
+            temp.add(res.next());
+        }
+        return temp.size();
     }
     /**
      * Obtenemos el número todatal de ordenes de un cruce determinado.
