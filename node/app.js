@@ -143,7 +143,7 @@ function evaluar(msj, socket){
             //al recibir un evento onTick de un cliente conectado.
             case 'onOpen':
                 id = handler.getGrafica(socket).settings.ID;
-
+                console.log(id+' Open: '+ income.precio);
                 msj = {
                     "values":{
                         "id":id , 

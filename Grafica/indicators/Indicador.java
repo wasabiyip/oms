@@ -4,7 +4,6 @@ import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 import oms.Grafica.DAO.MongoDao;
 import oms.Grafica.GMTDate;
-import oms.Grafica.indicators.BollingerBands;
 import java.util.ArrayList;
 
 /**
@@ -90,6 +89,7 @@ public class Indicador {
      * @param precio 
      */
     public void appendBollsData(Double precio){
+        System.out.println("Pushando "+precio);
         for(int i=0; i<bolls_arr.size();i++){
             bolls_arr.get(i).setPrice(precio);
         }

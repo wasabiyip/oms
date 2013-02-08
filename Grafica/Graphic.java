@@ -33,8 +33,6 @@ public class Graphic extends Thread {
     private Candle candle;
     private String symbol;
     private int periodo;
-    private int cont;
-    private int dif;
     private String id;
     private Double bid, ask;
     //Guardamos las ordenes de que entran en cada gráfica.
@@ -55,12 +53,14 @@ public class Graphic extends Thread {
      */
     public Graphic(Properties log_file) {
         setts = new Settings(log_file);
+        this.symbol = setts.symbol;
+        this.periodo = setts.periodo; 
         //Estos es para expert alternativo
         expert = new ExpertMoc();
-         expert.absInit(setts.symbol, setts.periodo, setts);
+        expert.absInit(setts.symbol, setts.periodo, setts);
         expert.Init();
         stateFeed = new StateFeed(expert);
-        
+        this.candle = new Candle(this.periodo);
         //expert = new Expert(setts);
         
         String path = "/home/omar/OMS/log/"+setts.symbol;
@@ -78,12 +78,7 @@ public class Graphic extends Thread {
             } 
         }
         this.writeBlackBoxFile("sesión iniciada...");
-        this.id = setts.id;
-        dif = GMTDate.getDate().getMinute() % setts.periodo;
-        this.symbol = setts.symbol;
-        this.periodo = setts.periodo;
-//        this.candle = new Candle(setts.periodo, this.getHistorial(dif));
-        cont = dif;
+        this.id = setts.id;       
     }
 
     /**
@@ -120,35 +115,6 @@ public class Graphic extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    /**
-     * Cada que se recibe un precio de apertura se envia un mensaje a Node con
-     * el precio recibido, y se alimenta a Candle y Expert de este suceso.
-     *
-     * @param price
-     */
-    public void onOpen(Double price) {
-        this.cont++;
-        //Restamos el minuto actual 
-        int dif = GMTDate.getDate().getMinute() - lastOpen;
-        //System.out.println(GMTDate.getDate() +" - "+ lastOpen + " " +dif);
-        if(dif > 1){
-           //TODO Hacer algo para reconstruir las los indicadores si hay un desfase.
-        }
-        
-        //candle.onTick(price);
-        expert.open_min = price;
-        //En la vida real un tick es cada cambio del Bid, aunque nosotros lo adaptamos
-        //a cada minuto para ahorrar recursos a la hora de hacer calculos.
-        expert.onTick();
-        if (this.cont >= this.periodo) {
-            this.onCandle(price);
-            this.expert.indicator.appendBollsData(price);
-            cont = 0;
-        }
-        this.sendMessage.Open();
-        this.lastOpen = GMTDate.getDate().getMinute();
     }
 
     /**
@@ -204,14 +170,31 @@ public class Graphic extends Thread {
             
             switch ((String) json.get("type")) {
                 case "open":
-                    this.onOpen((double) json.get("precio"));
+                    double open = (double) json.get("precio");
+                    
+                    
+                    //Este evento puede ser llamado cada tick, auqque mosotros
+                    //lo llamamos cada open para ahorrar recursos.
+                    this.expert.open_min = open;
+                    this.expert.onTick();
+                    //Si es una nueva vel
+                    if (candle.isNewCandle(GMTDate.getTime()) == 1) {
+                        this.expert.indicator.appendBollsData(open);
+                        this.sendMessage.ExpertState();
+                    }
+                    //Tenemos una vela muerta, osea que abrió con precios muertos.
+                    else if(candle.isNewCandle(GMTDate.getTime()) == -1){
+                        
+                    }
                     //Si el expert puede operar
                     if(expert.isActive()){
                         this.writeBlackBoxFile(stateFeed.getExpertState());
                     }
+                    this.sendMessage.Open();
                     break;
                 case "close":
                     //TODO hacer algo con este precio de cierre
+                    System.err.println("Close: "+msj+ "!");
                     break;
                 case "get-state":
                     this.sendMessage.ExpertState();

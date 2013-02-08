@@ -19,27 +19,24 @@ import quickfix.fix42.ExecutionReport;
  * @author omar
  */
 public abstract class AbstractExpert {
-
-    private boolean grafic_lock = false;
     Indicador indicator;
     String Symbol;
-    int Period;
+    int Periodo;
     Settings setts;
     Order order;
     ExecutionReport lastOrder;
     Double Point;
     char currentOrder = '0';
-    boolean lock_op = true;
     double lastOrderPrice;
     boolean modify = false;
-    public int contVelas = 0;
+    
     public double open_min = 0.0;
     public Double Ask;
     public Double Bid;
 
     public void absInit(String symbol, int periodo, Settings setts) {
         this.Symbol = symbol;
-        this.Period = periodo;
+        this.Periodo = periodo;
         this.setts = setts;
         this.indicator = new Indicador(symbol, periodo);
         order = new Order(setts.symbol, setts.MAGICMA, setts.id);
@@ -56,9 +53,7 @@ public abstract class AbstractExpert {
             this.lastOrder = order;
             currentOrder = order.getSide().getObject();
             System.err.println("Orden abrio");
-            this.lock_op = false;
             lastOrderPrice = order.getLastPx().getValue();
-            contVelas = 0;
         } catch (FieldNotFound ex) {
             Logger.getLogger(Jedi.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -119,7 +114,7 @@ public abstract class AbstractExpert {
     public boolean isActive() {
 
         boolean temp = false;
-        if (this.hora() && !this.grafic_lock && this.open_min > 0 && Ask > 0 && Bid > 0) {
+        if (this.hora() && this.open_min > 0 && Ask > 0 && Bid > 0) {
 
             temp = true;
         }
@@ -131,8 +126,6 @@ public abstract class AbstractExpert {
      */
     public void closeNotify() {
         currentOrder = '0';
-        this.lock_op = true;
-        this.contVelas = 0;
         this.modify = false;
     }
 
@@ -185,5 +178,8 @@ public abstract class AbstractExpert {
     public Integer TotalMagic(){
         Integer temp = Graphic.dao.getTotalMagic(this.setts.MAGICMA);
         return temp;
+    }
+    public Integer TimeCurrent(){
+        return GMTDate.getTime();
     }
 }

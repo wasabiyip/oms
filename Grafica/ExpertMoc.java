@@ -23,8 +23,13 @@ public class ExpertMoc extends AbstractExpert{
     private BollingerBands bollBandx3;
     private double volB;
     private double volS;
-    
-    
+    private double bollUp;
+    private double bollDn;
+    private double bollDif;
+    private double bollUpS;
+    private double bollDnS;
+    private Integer startTime;
+    private int cont_velas;
     @Override
     public void Init() {
         
@@ -39,6 +44,13 @@ public class ExpertMoc extends AbstractExpert{
         bollBandx1 = indicator.createBollinger(setts.bollx1);
         bollBandx2 = indicator.createBollinger(setts.bollx2);
         bollBandx3 = indicator.createBollinger(setts.bollx3);
+        bollUp = this.getAvgBoll(this.bollUp());
+        bollDn = this.getAvgBoll(this.bollDn());
+        bollDif = this.bollingerDif();
+        bollUpS = this.getAvgBoll(this.bollUpS());
+        bollDnS = this.getAvgBoll(this.bollDnS());
+        this.cont_velas = 0;
+        this.startTime = this.TimeCurrent() - (this.TimeCurrent()%this.Periodo);
     }
     /**
      * Se llama cuando un se recibe un bid.
@@ -49,36 +61,52 @@ public class ExpertMoc extends AbstractExpert{
      */
     @Override
     public void onTick() {
-        //Si no es sabado trabajamos, si es sabado no hacemos nada. Sí, hasta los programas
-        //descansan por lo menfos un día de la semana...
-         
+        System.out.println(this.bollDn + " "+ this.bollUp);
+        if(Math.abs(this.startTime - this.TimeCurrent()) >=this.Periodo){
+            this.startTime = this.TimeCurrent();
+            bollUp = this.getAvgBoll(this.bollUp());
+            bollDn = this.getAvgBoll(this.bollDn());
+            bollDif = this.bollingerDif();
+            bollUpS = this.getAvgBoll(this.bollUpS());
+            bollDnS = this.getAvgBoll(this.bollDnS());
+            System.out.println("Nueva vela Expert");
+            this.cont_velas++;
+        }
+        
         if (this.isActive()) { 
             
-            if(lock_op && limiteCruce() < this.setts.limiteCruce && (this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())){
+            /*if(limiteCruce() < this.setts.limiteCruce && (this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())){
                 System.err.println("Deberiamos de meter Compras!! -> " + this.setts.symbol + " - " + this.setts.MAGICMA);
                 System.err.println("Spread "+(this.Ask - this.Bid <= setts.spread));
                 System.err.println("bollX " + (this.bollingerDif() < this.setts.bollxUp && 
                     this.bollingerDif()> setts.bollxDn));               
                 
-            }else if (lock_op && limiteCruce() < this.setts.limiteCruce && this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp())){
+            }else if ( limiteCruce() < this.setts.limiteCruce && this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp())){
                 System.err.println("Deberiamos de meter ventas!! -> "+ this.setts.symbol + " - " + this.setts.MAGICMA);
                 System.err.println("Spread "+(this.Ask - this.Bid <= setts.spread));
                 System.err.println("bollX " + (this.bollingerDif() < this.setts.bollxUp && 
                     this.bollingerDif()> setts.bollxDn));
+            }*/
+            if(this.isActive()){
+                System.out.println("MAGIC "+this.setts.MAGICMA +"\n"+
+                 "Up: "+this.getAvgBoll(this.bollUp()) + "\n"+
+                 "Dn: "+this.getAvgBoll(this.bollDn()));
             }
-            
             //Revisamos que los precios se encuentren dentro de el rango de entrada.
             if (this.Ask - this.Bid <= setts.spread * Point  && TotalMagic()< this.setts.limiteMagic &&
                     this.bollingerDif() < this.setts.bollxUp && 
                     this.bollingerDif()> setts.bollxDn && limiteCruce() < this.setts.limiteCruce){
                 //entrada de operaciones.
-                if ((this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())) {
+                if ((this.getAvgOpen() + this.setts.boll_special) <= bollDn) {
                     //Compra
                     orderSend(this.Bid, '1');
-                    
-                } else if (this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp())) {
+                    //Iniciamos a contar velas
+                    this.cont_velas =0;
+                } else if (this.getAvgOpen() - this.setts.boll_special >= bollUp) {
                     //Venta
                     orderSend(this.Ask, '2');
+                    //Iniciamos a contar velas
+                    this.cont_velas =0;
                 }
             //Revisamos que haya entrado alguna operación y que los precios se 
             //encuentren dentro de el rango de salida.    
@@ -90,7 +118,7 @@ public class ExpertMoc extends AbstractExpert{
                     if (this.currentOrder == '1') {
                         //si el promedio de el precio de apertura supera a el promedio de salida
                         //entonces debemos cerrar todas las compras
-                        if (this.getAvgOpen() >= this.getAvgBoll(this.bollUpS())) {
+                        if (this.getAvgOpen() >= bollUpS) {
                             System.out.println("Cerrado orden por bollinger");
                             orderClose(this.Bid,'1');
                         }
@@ -98,7 +126,7 @@ public class ExpertMoc extends AbstractExpert{
                         //si el precio de apertura es inferior a el promedio de salida
                         //entonces debemos cerrar todas las ventas.
                         //esta salida es especifica de la version 1.8 velas entrada y salida cierre minuto spread SV.
-                        if ( ((this.getAvgOpen())) <= (this.getAvgBoll(this.bollDnS()))) {
+                        if ( ((this.getAvgOpen())) <= bollDnS) {
                             System.out.println("Cerrado orden por bollinger");
                             orderClose(this.Ask,'2');
                             //Cerramos las ordenes...
@@ -112,7 +140,7 @@ public class ExpertMoc extends AbstractExpert{
                  * a las velas de salida (velasS) tenemos que cerrar las operaciones
                  */
                
-               if (contVelas == setts.velasS || this.rangeSalida()) {
+               if (cont_velas == setts.velasS || this.rangeSalida()) {
                     if (this.currentOrder == '1') {
                         System.out.println("Cerrando orden por velas");
                         order.Close(this.Bid,'1');
@@ -130,7 +158,8 @@ public class ExpertMoc extends AbstractExpert{
              * Volatilidad: Si al haber entrado una orden regresa al punto de entrada movemos 
              * el tp.
              */
-            if(!this.lock_op && !modify && this.setts.volatilidad){
+            //TODO quitar esto del Modify
+            if(!modify && this.setts.volatilidad){
                 this.volB = this.lastOrderPrice - setts.volVal;
                 this.volS = this.lastOrderPrice + setts.volVal;
                 if(this.currentOrder == '1' && this.Bid <= volB){
