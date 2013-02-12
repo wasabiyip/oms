@@ -92,28 +92,14 @@ public class MessageHandler {
             * W - M - Por que se modifico una OCO.
             */
            case '0':
-               if(msj.getOrdType().getValue() == 'C'){
-                   temp_msj = "Procesando petición " + msj.getSymbol().getValue() + "...";
-                   Console.msg(temp_msj);
-               }else if(msj.getOrdType().getValue() == 'W'){
-                   //si regresa true quiere decir que la entrante es una modificación.
-                   if(OrderHandler.isModify(msj)){
-                        temp_msj= "Modificando OCO " + msj.getClOrdID().getValue();
-                        System.out.println(temp_msj);
-                        Console.msg(temp_msj);
-                        OrderHandler.ocoModify(msj);
-                    }else{
-                        //Si no pues que entro una OCO nueva.
-                        temp_msj = "Guardando OCO " + msj.getClOrdID().getValue();
-                        System.out.println(temp_msj);
-                        OrderHandler.ocoRecord(msj);
-                    }
-               }
-               break;
+                if(msj.getOrdType().getValue() == 'W'){
+                    OrderHandler.ocoRecord(msj);
+                }
            /**
             * Acualmente no hemos visto que nos llene parcialmente alguna orden, nos mantenemos
             * escépticos.
             */
+            break;
            case '1':
                temp_msj = "**¡Peligro: Partial fill " + msj.getClOrdID().getValue() + " algo fué mal!...";
                System.out.println(temp_msj);
@@ -125,29 +111,29 @@ public class MessageHandler {
             */
            case '2':
                if (OrderHandler.Exists(msj)) {
+                   //C = Forex - Market
                    if (msj.getOrdType().getValue() == 'C') {
-                       //Cerramos la orden en el sistema.
-                       OrderHandler.shutDown(msj.getClOrdID().getValue(), msj.getAvgPx().getValue());
-                       //Enviamos cierre de OCO
-                       temp_msj = "La orden #" + msj.getClOrdID().getValue() + " cerró a: "+ msj.getAvgPx().getValue();
-                       OrderHandler.closeOCO(msj.getOrigClOrdID().getValue(), 'N');
-                       System.err.println(temp_msj);
-                       Console.msg(temp_msj);
+                       if (OrderHandler.isFilled(msj)) {
+                           //Si recibimos una orden y ya fué llenada entonce
+                           //Es un cierre de operacion.
+                           OrderHandler.shutDown(msj.getClOrdID().getValue(), msj.getAvgPx().getValue());
+                           
+                           temp_msj = "La orden #" + msj.getClOrdID().getValue() + " cerró a: " + msj.getAvgPx().getValue();
+                           OrderHandler.closeOCO(msj.getOrigClOrdID().getValue(), 'N');
+                           System.err.println(temp_msj);
+                           Console.msg(temp_msj);
+                       }else{
+                            OrderHandler.orderNotify(msj);
+                       }
                    }else if(msj.getOrdType().getValue() == 'W'){
-                       temp_msj = "La orden #" + msj.getClOrdID().getValue()+ " cerró por Sl o TP";
+                       temp_msj = "La orden cerro por OCO #" + msj.getClOrdID().getValue()+ ".";
                        System.out.println(temp_msj);
                        Console.msg(temp_msj);
-                       OrderHandler.closeFromOco(msj.getClOrdID().getValue());
+                       OrderHandler.closeFromOco(msj);
                        OrderHandler.shutDown(msj.getClOrdID().getValue(), msj.getAvgPx().getValue());
                    }
-               }else {
-                   //Si la orden fué propianmente aceptada, entoncés procedemos a notificarla.
-                   OrderHandler.orderNotify(msj);
-               }/*else{
-                   System.err.println("<***-------------------------------------------------**>");
-                   System.err.println("No sé que paso, esta orden no debió ser ->" + msj );
-                   System.err.println("<***-------------------------------------------------**>");
-               }*/
+                   
+               }
                break;
            case '3':
                temp_msj = "Done for a day " + msj.getClOrdID().getValue() + " favor de revisar currenex...";

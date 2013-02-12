@@ -71,6 +71,10 @@ public class GraficaHandler {
     public String getProfile(){
         return this.last_profile;
     }
+    /**
+     * Pequeño Main para correr el programa sin necesidad de conectarnos con fix.
+     * @param args 
+     */
     public static void main(String[] args) {
         new GraficaHandler().runProfile();
     }
@@ -107,10 +111,12 @@ public class GraficaHandler {
      */
     public static void orderAccept(String id, ExecutionReport orden) {
         try {
-            getGraf(id).newOrder(orden);
+            getGraf(id).newOrder(OrderHandler.getOrdenById(orden.getClOrdID().getValue()));
         } catch (GraficaNotFound ex) {
             Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch (Exception ex){
+            System.err.println(ex);
+        }            
     }
     /**
      * Notificamos a una grafica que su peticion de cierre fue aceptada.
@@ -152,7 +158,7 @@ public class GraficaHandler {
      * @param idgraf
      * @return 
      */
-    public static Double getTp(String idgraf){
+    /*public static Double getTp(String idgraf){
         Double temp=null;
         try {
             temp = getGraf(idgraf).getTP();
@@ -160,13 +166,13 @@ public class GraficaHandler {
             Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return temp;
-    }
+    }*/
     /**
      * obtenemos el SL de una graica determinada.
      * @param idgraf
      * @return 
      */
-    public static Double getSl(String idgraf){
+    /*public static Double getSl(String idgraf){
         Double temp=null;
         try {
             temp = getGraf(idgraf).getSL();
@@ -174,7 +180,7 @@ public class GraficaHandler {
             Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return temp;
-    }
+    }*/
     /**
      * Cuando entra la OCO de una orden noificamos a su grafica correspondiente que 
      * su orden fue aceptada.
@@ -183,18 +189,18 @@ public class GraficaHandler {
      * @param sl
      * @param tp 
      */
-    public static void setStop(String id, String ordid,double sl, double tp){
+    /*public static void setStop(String id, String ordid,double sl, double tp){
         try {
             getGraf(id).setStops(ordid, sl, tp);
         } catch (GraficaNotFound ex) {
             Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
+    }*/
     /**
      * Notificamos que entro una modificación.
      * @param order 
      */
-    public static void orderModify(ExecutionReport order){
+    /*public static void orderModify(ExecutionReport order){
         
         try {
             //getGraf(order.getClOrdID().getValue()).orderModify(OrderHandler.getGrafId(order.getClOrdID().getValue()),order.getLastPx().getValue());
@@ -204,7 +210,7 @@ public class GraficaHandler {
         }catch(GraficaNotFound ex){
             System.err.println(ex);
         }
-    }
+    }*/
     /**
      * Obtenemos una grafica determinada.
      * @param id

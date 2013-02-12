@@ -9,11 +9,12 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.DAO.MongoDao;
+import oms.deliverer.Orden;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import quickfix.FieldNotFound;
-import quickfix.fix42.ExecutionReport;
+//import quickfix.fix42.ExecutionReport;
 
 /**
  * Esta clase Maneja a todas es el "main" de las gráficas, ya que mantiene
@@ -36,7 +37,7 @@ public class Graphic extends Thread {
     private String id;
     private Double bid, ask;
     //Guardamos las ordenes de que entran en cada gráfica.
-    private ArrayList<ArrayList> operaciones = new ArrayList();
+
     public static MongoDao dao = new MongoDao();
     private Settings setts;
     private int lastOpen = GMTDate.getDate().getMinute();
@@ -209,7 +210,7 @@ public class Graphic extends Thread {
                     expert.Bid = ((double) json.get("precio"));
                     break;
                 case "close-order":
-                    expert.order.Close(this.id, dao.getOrder((String)json.get("value")));
+                    //expert.order.Close(this.id, dao.getOrder((String)json.get("value")));
                     break;
                 default:
                     System.out.println("Mensaje no identificado"+ json.toString());
@@ -234,33 +235,21 @@ public class Graphic extends Thread {
      * notificamos a node que una nueva entro.
      * @param orden 
      */
-    private void onOrder(ArrayList orden){
+    /*private void onOrder(ArrayList orden){
         
         ExecutionReport report = (ExecutionReport)orden.get(0);
         double sl = (double)orden.get(1);
         double tp = (double)orden.get(2);
-        expert.openNotify(report);
+        //expert.openNotify(report);
         sendMessage.nwOrden(report, sl, tp); 
-    }
+    }*/
     /**
      * Notificamos que una orden fué cerrada exitosamente.
      * @param id 
      */
     public void onOrderClose(String id){
-        expert.closeNotify();
+        //expert.closeNotify();
         sendMessage.clOrden(id);
-            //Sí entro el cierre de una operacion entonce borramos esa operación 
-            //entonces borramos esa operacion de nuestro array de operaciones.
-            for(int i=0; i<operaciones.size();i++){
-                try {
-                    ExecutionReport ord = (ExecutionReport)operaciones.get(i).get(0);
-                    if(ord.getClOrdID().getValue().equals(id)){
-                        operaciones.remove(i);
-                    }
-                } catch (FieldNotFound ex) {
-                    Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
     }
     /**
      * Enviamos ordenes actuales de la grafica.
@@ -274,16 +263,12 @@ public class Graphic extends Thread {
      * ordenés y guardamos la orden en Mongo.
      * @param orden 
      */
-    public void newOrder(ExecutionReport orden){
-        
-        ArrayList temp = new ArrayList();
-        temp.add(orden);
-        this.dao.recordOrden(this.id,orden,setts.MAGICMA);
-        this.operaciones.add(temp);
+    public void newOrder(Orden orden){
+        //this.dao.recordOrden(this.id,orden,setts.MAGICMA);
     }
     
     public void orderModify(String ordid, Double precio){
-        expert.modNotify();
+        //expert.modNotify();
         this.sendMessage.modOrden(ordid,precio);
     }
     
@@ -293,11 +278,11 @@ public class Graphic extends Thread {
      * @param type
      * @param value 
      */
-    public void setStops(String ordid,double tp, double sl){
+    /*public void setStops(String ordid,double tp, double sl){
         ExecutionReport temp;
         for (int i = 0; i < operaciones.size(); i++) {
             temp= (ExecutionReport)operaciones.get(i).get(0);
-            try {//¡¡¡Siempre tenemos que comparar cadenas asi por que si no es un dolor de cabeza!!!
+            try {
                 if(temp.getClOrdID().getValue().equals(ordid)){
                     operaciones.get(i).add(tp);
                     operaciones.get(i).add(sl);
@@ -308,13 +293,8 @@ public class Graphic extends Thread {
             }
         }
         
-    }
-    /**
-     * @return ArrayList de las operaciones.
-     */
-    public ArrayList<ArrayList> getOps(){
-        return this.operaciones;
-    }
+    }*/
+    
     /**
      * @return ultimo precio de compra.
      */

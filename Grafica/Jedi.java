@@ -170,8 +170,8 @@ public abstract class Jedi {
             OrderHandler.closeOCO(lastOrder.getClOrdID().getValue(),'M');
             Thread.sleep(5);
             //Enseguida enviamos una orden nueva.
-            OrderHandler.SendOCO(lastOrder.getSymbol().getValue(), lastOrder.getSide().getValue(), lastOrder.getClOrdID().getValue(), 
-                    (int)lastOrder.getOrderQty().getValue(), lastOrder.getLastPx().getValue(),'M');
+            //OrderHandler.SendOCO(lastOrder.getSymbol().getValue(), lastOrder.getSide().getValue(), lastOrder.getClOrdID().getValue(), 
+                   // (int)lastOrder.getOrderQty().getValue(), lastOrder.getLastPx().getValue(),'M');
              
         } catch (InterruptedException ex) {
             Logger.getLogger(Jedi.class.getName()).log(Level.SEVERE, null, ex);

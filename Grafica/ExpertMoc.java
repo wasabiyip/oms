@@ -5,6 +5,7 @@
 package oms.Grafica;
 
 import oms.Grafica.indicators.BollingerBands;
+import oms.deliverer.Orden;
 
 /**
  *
@@ -61,117 +62,107 @@ public class ExpertMoc extends AbstractExpert{
      */
     @Override
     public void onTick() {
-        System.out.println(this.bollDn + " "+ this.bollUp);
-        if(Math.abs(this.startTime - this.TimeCurrent()) >=this.Periodo){
+        if(this.OrdersCount() < 1){
+            orderSend(this.Ask, this.setts.lots, '1', Ask-this.setts.sl, Ask+this.setts.tp);
+        }else if(this.OrdersCount()>0){
+            for (int i = 0; i < OrdersTotal().size(); i++) {
+                Orden currentOrden = OrdersTotal().get(i);
+                if (currentOrden.getSide() == '1') {
+                    currentOrden.close(this.Ask);
+                }else if (currentOrden.getSide() == '2'){
+                    currentOrden.close(this.Bid);
+                }     
+            }
+        }
+        if (Math.abs(this.startTime - this.TimeCurrent()) >= this.Periodo) {
             this.startTime = this.TimeCurrent();
             bollUp = this.getAvgBoll(this.bollUp());
-            bollDn = this.getAvgBoll(this.bollDn());
+             bollDn = this.getAvgBoll(this.bollDn());
+            /*bollUp = this.bollUp();
+            bollDn = this.bollDn();*/
             bollDif = this.bollingerDif();
             bollUpS = this.getAvgBoll(this.bollUpS());
             bollDnS = this.getAvgBoll(this.bollDnS());
-            System.out.println("Nueva vela Expert");
+            /*bollUpS = this.bollUpS();
+            bollDnS = this.bollDnS();*/
             this.cont_velas++;
+            
         }
         
-        if (this.isActive()) { 
-            
-            /*if(limiteCruce() < this.setts.limiteCruce && (this.getAvgOpen() + this.setts.boll_special) <= this.getAvgBoll(this.bollDn())){
-                System.err.println("Deberiamos de meter Compras!! -> " + this.setts.symbol + " - " + this.setts.MAGICMA);
-                System.err.println("Spread "+(this.Ask - this.Bid <= setts.spread));
-                System.err.println("bollX " + (this.bollingerDif() < this.setts.bollxUp && 
-                    this.bollingerDif()> setts.bollxDn));               
-                
-            }else if ( limiteCruce() < this.setts.limiteCruce && this.getAvgOpen() - this.setts.boll_special >= this.getAvgBoll(this.bollUp())){
-                System.err.println("Deberiamos de meter ventas!! -> "+ this.setts.symbol + " - " + this.setts.MAGICMA);
-                System.err.println("Spread "+(this.Ask - this.Bid <= setts.spread));
-                System.err.println("bollX " + (this.bollingerDif() < this.setts.bollxUp && 
-                    this.bollingerDif()> setts.bollxDn));
-            }*/
-            if(this.isActive()){
-                System.out.println("MAGIC "+this.setts.MAGICMA +"\n"+
-                 "Up: "+this.getAvgBoll(this.bollUp()) + "\n"+
-                 "Dn: "+this.getAvgBoll(this.bollDn()));
+        //Revisamos que los precios se encuentren dentro de el rango de entrada.
+        /*if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
+                && (this.OrdersCount() < 1) && (bollDif < this.setts.bollxUp && bollDif > setts.bollxDn)) {
+            //entrada de operaciones.
+            if ((this.open_min+ this.setts.boll_special) <= bollDn) {
+                //Compra
+                orderSend(this.Ask, this.setts.lots, '1', 0.0, 0.0);
+                this.cont_velas = 0;
+            } else if (this.open_min - this.setts.boll_special >= bollUp) {
+                //Venta
+                orderSend(this.Bid, this.setts.lots, '2', 0.0 ,0.0);
+                this.cont_velas = 0;
             }
-            //Revisamos que los precios se encuentren dentro de el rango de entrada.
-            if (this.Ask - this.Bid <= setts.spread * Point  && TotalMagic()< this.setts.limiteMagic &&
-                    this.bollingerDif() < this.setts.bollxUp && 
-                    this.bollingerDif()> setts.bollxDn && limiteCruce() < this.setts.limiteCruce){
-                //entrada de operaciones.
-                if ((this.getAvgOpen() + this.setts.boll_special) <= bollDn) {
-                    //Compra
-                    orderSend(this.Bid, '1');
-                    //Iniciamos a contar velas
-                    this.cont_velas =0;
-                } else if (this.getAvgOpen() - this.setts.boll_special >= bollUp) {
-                    //Venta
-                    orderSend(this.Ask, '2');
-                    //Iniciamos a contar velas
-                    this.cont_velas =0;
-                }
             //Revisamos que haya entrado alguna operación y que los precios se 
             //encuentren dentro de el rango de salida.    
-            }
-            //System.out.println(!lock+" "+ (ask - bid) +" "+ (setts.spreadSalida * setts.Point));
-            if(TotalMagic()>0 && (this.Ask - this.Bid <= setts.spreadSalida * setts.Point)) {
-                if (setts.salidaBollinger) {
-                    //Cierre de compras por promedios bollinger.
-                    if (this.currentOrder == '1') {
-                        //si el promedio de el precio de apertura supera a el promedio de salida
-                        //entonces debemos cerrar todas las compras
-                        if (this.getAvgOpen() >= bollUpS) {
-                            System.out.println("Cerrado orden por bollinger");
-                            orderClose(this.Bid,'1');
-                        }
-                    } else if (this.currentOrder == '2') {
-                        //si el precio de apertura es inferior a el promedio de salida
-                        //entonces debemos cerrar todas las ventas.
-                        //esta salida es especifica de la version 1.8 velas entrada y salida cierre minuto spread SV.
-                        if ( ((this.getAvgOpen())) <= bollDnS) {
-                            System.out.println("Cerrado orden por bollinger");
-                            orderClose(this.Ask,'2');
-                            //Cerramos las ordenes...
-                        }
-                    } else if (this.currentOrder == '0') {
-                        System.err.println("Fuckin fuck - Nunca debimos entrar aqui Salida Boll");
+            
+        }else if (this.OrdersCount() > 0) {
+            //System.out.println(contVelas);
+            for (int i = 0; i < OrdersTotal().size(); i++) {
+                Orden currentOrden = OrdersTotal().get(i);
+                if (currentOrden.getSide() == '1') {
+                    if (setts.salidaBollinger && this.open_min  >= bollUpS) {
+                        //System.out.println("Cerrando orden por bollinger");
+                        orderClose(this.Bid, '1');
+                        break;
+                    } else if (cont_velas == setts.velasS) {
+                        //System.out.println("Cerrando orden por velas");
+                        orderClose(this.Bid, '1');
+                        break;
+                    } else if (this.rangeSalida()) {
+                        //System.out.println("Cerrando orden por minutos");
+                        orderClose(this.Bid, '1');
+                        break;
+                    }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
+                        currentOrden.OrderModify(this.Bid-this.setts.sl, this.Bid+this.setts.tp);
                     }
-                } 
+                } else if (currentOrden.getSide() == '2') {
+                    if (setts.salidaBollinger && this.open_min  <= bollDnS) {
+                        //System.out.println("Cerrando orden por bollinger");
+                        orderClose(this.Ask, '2');
+                        break;
+                        //Cerramos las ordenes...
+                    } else if (cont_velas == setts.velasS) {
+                        //System.out.println("Cerrando orden por velas");
+                        orderClose(this.Ask, '2');
+                        break;
+                    } else if (this.rangeSalida()) {
+                        //System.out.println("Cerrando orden por minutos");
+                        orderClose(this.Ask, '2');
+                        break;
+                    }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
+                        currentOrden.OrderModify(this.Ask+this.setts.sl, this.Ask-this.setts.tp);
+                    }
+                }
                 /**
-                 * si el numero de velas que van desde que entro la operación es igual
-                 * a las velas de salida (velasS) tenemos que cerrar las operaciones
+                 * Volatilidad: Si al haber entrado una orden regresa al punto
+                 * de entrada movemos el tp.
                  */
-               
-               if (cont_velas == setts.velasS || this.rangeSalida()) {
-                    if (this.currentOrder == '1') {
-                        System.out.println("Cerrando orden por velas");
-                        order.Close(this.Bid,'1');
-                    }else if (this.currentOrder == '2') {
-                        System.out.println("Cerrando orden por velas");
-                        order.Close(this.Ask,'2');
+                /*if (this.setts.volatilidad) {
+                    double volB = currentOrden.getOpenPrice() - this.setts.volVal;
+                    double volS = currentOrden.getOpenPrice() + this.setts.volVal;
+                    if(currentOrden.getSide() == '1') {
+                        if(this.Bid <= volB) {
+                            currentOrden.OrderModify(currentOrden.getOpenPrice() + this.setts.nwTp,currentOrden.getSl());
+                        }
+                    } else if(currentOrden.getSide() == '2') {
                         
-                    }else if (this.currentOrder == '0') {
-                        System.err.println("Fuckin fuck - Nunca debimos entrar aqui Salida Variada");
+                        if(this.Ask >= volS) {
+                            currentOrden.OrderModify(currentOrden.getOpenPrice() - this.setts.nwTp, currentOrden.getSl());
+                        }
                     }
                 }
-            //Fin Salidas
             }
-            /**
-             * Volatilidad: Si al haber entrado una orden regresa al punto de entrada movemos 
-             * el tp.
-             */
-            //TODO quitar esto del Modify
-            if(!modify && this.setts.volatilidad){
-                this.volB = this.lastOrderPrice - setts.volVal;
-                this.volS = this.lastOrderPrice + setts.volVal;
-                if(this.currentOrder == '1' && this.Bid <= volB){
-                    orderModify();
-
-                }else if(this.currentOrder == '2' && this.Ask >= volS){
-                    orderModify();
-                }
-            }
-        //Fin isActive
-        }
-    //Fin onTick
+        }*/
     }
     /*
      * Método que promedia un Promedio de bollingers con la variable spreadAask.

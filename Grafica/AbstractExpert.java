@@ -6,9 +6,12 @@ package oms.Grafica;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.CustomException.TradeContextBusy;
 import oms.Grafica.indicators.Indicador;
+import oms.deliverer.Orden;
 import oms.deliverer.OrderHandler;
 import oms.util.Console;
 import quickfix.FieldNotFound;
@@ -23,12 +26,7 @@ public abstract class AbstractExpert {
     String Symbol;
     int Periodo;
     Settings setts;
-    Order order;
-    ExecutionReport lastOrder;
     Double Point;
-    char currentOrder = '0';
-    double lastOrderPrice;
-    boolean modify = false;
     
     public double open_min = 0.0;
     public Double Ask;
@@ -39,72 +37,22 @@ public abstract class AbstractExpert {
         this.Periodo = periodo;
         this.setts = setts;
         this.indicator = new Indicador(symbol, periodo);
-        order = new Order(setts.symbol, setts.MAGICMA, setts.id);
         this.Point = setts.Point;
     }
-
-    /**
-     * Nos avisan si una orden entro
-     *
-     * @param type
-     */
-    public void openNotify(quickfix.fix42.ExecutionReport order) {
+    
+    public void orderSend(Double price,Double lotes, char side,Double sl, Double tp) {
         try {
-            this.lastOrder = order;
-            currentOrder = order.getSide().getObject();
-            System.err.println("Orden abrio");
-            lastOrderPrice = order.getLastPx().getValue();
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(Jedi.class.getName()).log(Level.SEVERE, null, ex);
+            if(sl == 0 && tp == 0){
+                OrderHandler.sendOrder(new Orden(this.setts.id, this.Symbol, lotes, this.setts.MAGICMA, price, side));
+            }
+            else{
+                OrderHandler.sendOrder(new Orden(this.setts.id, this.Symbol, lotes, this.setts.MAGICMA, price, side,sl ,tp));
+            }            
+        } catch (TradeContextBusy ex) {
+            Logger.getLogger(AbstractExpert.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    /**
-     * Nuestra operacion cerró.
-     *
-     * @param price
-     * @param type
-     */
-    public void orderClose(Double price, char type) {
-        order.Close(price, '1');
-        this.lastOrderPrice = price;
-    }
-
-    /**
-     *
-     * @param price
-     * @param type
-     */
-    public void orderSend(Double price, char type) {
-        String msj = type == '1' ? "Procesando compra..." : "Procesando Venta...";
-        Console.msg(msj);
-        this.currentOrder = type;
-        System.err.println(msj);
-        order.Open(price, type);
-    }
-    /**
-     * En realidad lo único que se modifica es el TP y SL de la orden.
-     */
-    public void orderModify(){
-        try {
-            DBCollection coll = OrderHandler.mongo.getCollection("operaciones");
-            BasicDBObject mod = new BasicDBObject();
-            mod.append("$set", new BasicDBObject().append("Modify", "Y"));
-            coll.update(new BasicDBObject().append("OrderID", lastOrder.getOrigClOrdID().getValue()), mod);
-            ///Cuando se quiere modificar un OCO, primero cerramos la orden.
-            OrderHandler.closeOCO(lastOrder.getClOrdID().getValue(),'M');
-            Thread.sleep(5);
-            //Enseguida enviamos una orden nueva.
-            OrderHandler.SendOCO(lastOrder.getSymbol().getValue(), lastOrder.getSide().getValue(), lastOrder.getClOrdID().getValue(), 
-                    (int)lastOrder.getOrderQty().getValue(), lastOrder.getLastPx().getValue(),'M');
-             
-        } catch (InterruptedException ex) {
-            Logger.getLogger(Jedi.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(Jedi.class.getName()).log(Level.SEVERE, null, ex);
-        }        
-        this.modify = true;
-    }
+    
     /**
      * verificamos que nos encontremos en horas de operacion.
      *
@@ -114,41 +62,26 @@ public abstract class AbstractExpert {
     public boolean isActive() {
 
         boolean temp = false;
-        if (this.hora() && this.open_min > 0 && Ask > 0 && Bid > 0) {
+        /*if (this.hora() && this.open_min > 0 && Ask > 0 && Bid > 0) {
 
             temp = true;
-        }
+        }*/
         return temp;
     }
 
-    /**
-     * Nos dicen si una orden cerro.
-     */
-    public void closeNotify() {
-        currentOrder = '0';
-        this.modify = false;
-    }
+    
 
     public void indicatorDataIn(Double precio) {
         this.indicator.appendBollsData(precio);
     }
 
-    /**
-     * Ponemos modify como true para asegurarnos que no se vuelva a modificar
-     * una orden.
-     */
-    public void modNotify() {
-        this.modify = true;
-    }
-
     public abstract void Init();
 
     public abstract void onTick();
-
-    boolean hora() {
+    
+    public Double CurrentHora(){
         Date date = new oms.Grafica.Date();
-        double hora = date.getHour() + (date.getMinute() * 0.01);
-        return hora < setts.horaFin && hora >= setts.horaIni;
+        return (date.getHour() + (date.getMinute() * 0.01));
     }
 
     /**
@@ -174,11 +107,14 @@ public abstract class AbstractExpert {
         Integer temp = Graphic.dao.getTotalCruce(setts.symbol);
         return temp;
     }
-    
-    public Integer TotalMagic(){
-        Integer temp = Graphic.dao.getTotalMagic(this.setts.MAGICMA);
-        return temp;
+    public int OrdersCount(){
+        
+        return OrderHandler.getOrdersActivas().size();
     }
+    public ArrayList<Orden> OrdersTotal(){
+        return OrderHandler.getOrdersActivas();
+    }
+    
     public Integer TimeCurrent(){
         return GMTDate.getTime();
     }

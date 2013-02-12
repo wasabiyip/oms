@@ -39,7 +39,7 @@ public class Order {
      * @throws Exception
      */
     private void Send(double price, char type, String id , boolean tipo) {
-        
+        System.out.println("Enviando orden "+ this.symbol + " $"+price);
         ordid= tipo ? new idGenerator().getID(): id;
         quickfix.fix42.NewOrderSingle nworder = new quickfix.fix42.NewOrderSingle();
         nworder.set(new ClOrdID((ordid)));
@@ -51,13 +51,7 @@ public class Order {
         nworder.set(new OrderQty(10000));
         nworder.set(new OrdType('C'));
         nworder.set(new Price(price));
-        try {
-            //enviamos orden
-            OrderHandler.sendOrder(nworder, id, tipo);
-        } catch (TradeContextBusy ex) {
-            System.err.println(ex);
-            Console.msg(ex);
-        }
+        
     }
     
     /**
@@ -97,13 +91,5 @@ public class Order {
         this.Send(price, type, this.grafid, true);
     }
     
-    /*
-    public ArrayList<DBObject> getTotal(){
-        ArrayList temp = new ArrayList();
-        DBCursor res = dao.getTotalMagic(this.magicma);
-        while(res.hasNext()){
-            temp.add(res.next());
-        }
-        return temp;
-        }*/
+    
 }
