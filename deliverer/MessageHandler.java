@@ -93,7 +93,7 @@ public class MessageHandler {
             */
            case '0':
                 if(msj.getOrdType().getValue() == 'W'){
-                    OrderHandler.ocoRecord(msj);
+                    OrderHandler.ocoEntry(msj);
                 }
            /**
             * Acualmente no hemos visto que nos llene parcialmente alguna orden, nos mantenemos
@@ -110,18 +110,20 @@ public class MessageHandler {
             * relacionada con las ordenés nuevas o ordenes que cierran.
             */
            case '2':
+               Orden tempOrden = OrderHandler.getOrdenById(msj.getClOrdID().getValue());
                if (OrderHandler.Exists(msj)) {
                    //C = Forex - Market
                    if (msj.getOrdType().getValue() == 'C') {
                        if (OrderHandler.isFilled(msj)) {
-                           //Si recibimos una orden y ya fué llenada entonce
+                           //Si recibimos una orden y ya fué llenada entonces
                            //Es un cierre de operacion.
-                           OrderHandler.shutDown(msj.getClOrdID().getValue(), msj.getAvgPx().getValue());
                            
-                           temp_msj = "La orden #" + msj.getClOrdID().getValue() + " cerró a: " + msj.getAvgPx().getValue();
-                           OrderHandler.closeOCO(msj.getOrigClOrdID().getValue(), 'N');
-                           System.err.println(temp_msj);
-                           Console.msg(temp_msj);
+                           //OrderHandler.shutDown(msj.getClOrdID().getValue(), msj.getAvgPx().getValue());
+                           tempOrden.setClose(msj);
+                           OrderHandler.shutDown(tempOrden);
+                           //temp_msj = "La orden #" + msj.getClOrdID().getValue() + " cerró a: " + msj.getAvgPx().getValue();
+                           //Cerramos el OCO
+                           OrderHandler.closeOCO(tempOrden);
                        }else{
                             OrderHandler.orderNotify(msj);
                        }
@@ -130,9 +132,10 @@ public class MessageHandler {
                        System.out.println(temp_msj);
                        Console.msg(temp_msj);
                        OrderHandler.closeFromOco(msj);
-                       OrderHandler.shutDown(msj.getClOrdID().getValue(), msj.getAvgPx().getValue());
+                       OrderHandler.shutDown(tempOrden);
                    }
-                   
+               }else{
+                   System.err.println("El horror: Orden que no existe no se que hacer :\n" + tempOrden);
                }
                break;
            case '3':
@@ -142,7 +145,7 @@ public class MessageHandler {
                break;
            case '4':
                if(msj.getOrdType().getValue() == 'W'){
-                   System.err.println("Cerramos OCO " + msj.getClOrdID().getValue());
+                   //System.err.println("Cerramos OCO " + msj.getClOrdID().getValue());
                }else{
                    System.err.println("El horror! la orden fue cancelada " + msj.getClOrdID().getValue() + " no deberiamos entrar aqui, revisar log!");
                }

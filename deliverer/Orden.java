@@ -3,6 +3,7 @@ package oms.deliverer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.CustomException.TradeContextBusy;
+import oms.Grafica.Graphic;
 import oms.Grafica.Settings;
 import oms.util.idGenerator;
 import quickfix.CharField;
@@ -25,7 +26,7 @@ public class Orden {
     private Double sl = 0.0;
     private Double tp = 0.0;
     private char side;
-    Character contraria;
+    Character averse;
     private double lotes;
     private boolean isActiva;
     private String ordId;
@@ -35,13 +36,14 @@ public class Orden {
     private int hora;
     private String open_time = "----";
     private String close_time = "----";
-    private String ocoId = "null";
+    private String ocoId = null;
     private NewOrderSingle newOrderSingle;
     private NewOrderSingle newOrderOco;
+    private ExecutionReport closeOrderSingle;
     private ExecutionReport executionReport;
-    private boolean modificada = false;
     private boolean esNueva = false;
     private boolean filled = false;
+    private Integer magicma;
     /**
      * Constructor que inicializa con datos de una orden.
      * @param grafId id de la grafica que envia.
@@ -54,9 +56,10 @@ public class Orden {
         this.grafId = grafId;
         this.open_price = price;
         this.side = side;
-        this.contraria = this.side =='1'?'2':'1';
+        this.averse = this.side =='1'?'2':'1';
         this.lotes = lotes*10000;
         this.isActiva = true;
+        this.magicma = magicma;
         this.symbol = Settings.Slash(symbol);
         this.currency = symbol.substring(0,3);
         this.ordId = new idGenerator().getID();
@@ -90,9 +93,10 @@ public class Orden {
         this.grafId = grafId;
         this.open_price = price;
         this.side = side;
-        this.contraria = this.side =='1'?'2':'1';
+        this.averse = this.side =='1'?'2':'1';
         this.lotes = lotes*10000;
         this.isActiva = true;
+        this.magicma = magicma;
         this.symbol = Settings.Slash(symbol);
         this.currency = symbol.substring(0,3);
         this.ordId = new idGenerator().getID();
@@ -117,9 +121,9 @@ public class Orden {
         newOrderOco.set(new TransactTime());
         newOrderOco.set(new OrderQty(this.lotes));
         newOrderOco.set(new OrdType('W'));
-        newOrderOco.set(new Side(contraria));
+        newOrderOco.set(new Side(averse));
         newOrderOco.setField(new CharField(7541,'3'));
-        newOrderOco.setField(new CharField(7553,contraria));
+        newOrderOco.setField(new CharField(7553,averse));
         newOrderOco.setField(new DoubleField(7542, redondear(sl)));
         newOrderOco.setField(new DoubleField(7540, redondear(tp)));
         OrderHandler.SendOCO(this.newOrderOco);
@@ -134,7 +138,7 @@ public class Orden {
         
         this.newOrderSingle.set(new ClOrdID((this.ordId)));
         this.newOrderSingle.set(new HandlInst('1'));
-        this.newOrderSingle.set(new Side(this.contraria));
+        this.newOrderSingle.set(new Side(this.averse));
         this.newOrderSingle.set(new Currency(this.currency));
         this.newOrderSingle.set(new Symbol(this.symbol));
         this.newOrderSingle.set(new TransactTime());
@@ -167,9 +171,9 @@ public class Orden {
         newOrderOco.set(new TransactTime());
         newOrderOco.set(new OrderQty(this.lotes));
         newOrderOco.set(new OrdType('W'));
-        newOrderOco.set(new Side(this.contraria));
+        newOrderOco.set(new Side(this.averse));
         newOrderOco.setField(new CharField(7541,'3'));
-        newOrderOco.setField(new CharField(7553,contraria));
+        newOrderOco.setField(new CharField(7553,averse));
         newOrderOco.setField(new DoubleField(7542, redondear(newSl)));
         newOrderOco.setField(new DoubleField(7540, redondear(newTp)));
         System.out.println("sl: "+ redondear(sl) + " tp:"+redondear(tp));
@@ -311,21 +315,39 @@ public class Orden {
         this.esNueva = false;
         try {
             this.execId = msj.getExecID().getValue();
+            System.err.println("Abrimos posicion: "+this + " correctamente! :)");
         } catch (FieldNotFound ex) {
             Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.err.println("Abrimos posicion: "+this + " correctamente! :)");
+        Graphic.dao.recordOrden(this.grafId,this.executionReport,this.magicma);   
     }
    
     public void setOco(ExecutionReport msj){
+        
         try {
-            this.sl = msj.getDouble(7540);
-            this.tp = msj.getDouble(7542);
+            if(this.sl ==0 && this.tp == 0){
+                this.sl = msj.getDouble(7540);
+                this.tp = msj.getDouble(7542);
+            }else{
+                this.sl = msj.getDouble(7540);
+                this.tp = msj.getDouble(7542);
+                System.err.println("Modificando : "+this + " correctamente! :)");
+            }
+            
             this.ocoId = msj.getOrderID().getValue();
         } catch (FieldNotFound ex) {
             Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.err.println("Modificamos posicion: "+this + " correctamente! :)");
+    }
+    public void setClose(ExecutionReport msj){
+        this.isActiva = false;
+        try {
+            this.closeOrderSingle = msj;
+            this.close_price = msj.getAvgPx().getValue();
+        } catch (FieldNotFound ex) {
+            Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        System.err.println("Cerramos posicion: "+this + " correctamente! :)");
     }
     /**
      * redondeamos un valor a un decimal quirandole todos los valores, después del
@@ -335,6 +357,12 @@ public class Orden {
      */
     private Double redondear(Double val){
         return Math.round(val*Math.pow(10, 4))/Math.pow(10,4);
+    }
+    /**
+     * Salvamos una orden en la BD.
+     */
+    private void redord(){
+        
     }
     /**
      * Autodescripción de la orden.

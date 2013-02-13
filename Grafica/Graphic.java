@@ -264,7 +264,7 @@ public class Graphic extends Thread {
      * @param orden 
      */
     public void newOrder(Orden orden){
-        //this.dao.recordOrden(this.id,orden,setts.MAGICMA);
+       // this.dao.recordOrden(this.id,orden,setts.MAGICMA);
     }
     
     public void orderModify(String ordid, Double precio){

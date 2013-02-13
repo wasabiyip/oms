@@ -27,7 +27,7 @@ public class MongoConnection {
     private MongoConnection() {
         try {
             connect();
-            this.db = MongoConnection.m.getDB("operaciones");
+            this.db = MongoConnection.m.getDB("history");
         } catch (Exception ex) {
             Logger.getLogger(MongoConnection.class.getName()).log(Level.SEVERE, null, ex);
         }

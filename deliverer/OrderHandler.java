@@ -85,16 +85,9 @@ public class OrderHandler {
      */
     public static void orderNotify(ExecutionReport msj) throws Exception {
        
-        for (int i = 0; i < ordersArr.size(); i++) {
-            //Buscamos la orden que entro en ordPool para obtener el ID de la gráfica
-            //que lo envió y así notificar a la respectiva gráfica.
-            Orden temp = ordersArr.get(i);
-            if (temp.getId().equals(msj.getClOrdID().getValue())) {
-                temp.setFilled(msj);
-                GraficaHandler.orderAccept((String) temp.getGrafId(), msj);
-                break;
-            }
-        }
+        Orden temp = getOrdenById(msj.getClOrdID().getValue());
+        temp.setFilled(msj);
+        
         /**
          * liberamos el cruce del context busy.
          */
@@ -103,35 +96,7 @@ public class OrderHandler {
                 contextBusy.remove(i);
             }
         }
-       /** if (msj.getSide().getValue() == '1') {
-            OrderHandler.SendOCO(msj.getSymbol().getValue(), '1', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(), (double) msj.getLastPx().getValue(), 'N');
-            temp = "Se abrió una orden: #" + msj.getClOrdID().getValue() + " Compra " + msj.getOrderQty().getValue() / 10000 + " "
-                    + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue();
-            System.out.println(temp);
-            Console.msg(temp);
-        }else if (msj.getSide().getValue() == '2') {
-            OrderHandler.SendOCO(msj.getSymbol().getValue(), '2', msj.getClOrdID().getValue(), (int) msj.getOrderQty().getValue(), (double) msj.getLastPx().getValue(), 'N');
-            temp = "Se abrió una orden: #" + msj.getClOrdID().getValue() + " Venta " + msj.getOrderQty().getValue() / 10000 + " "
-                    + msj.getSymbol().getValue() + " a: " + msj.getLastPx().getValue();
-            System.out.println(temp);
-            Console.msg(temp);
-        }*/
     }
-    
-   /* public static void ocoResend(quickfix.fix42.ExecutionReport msj){
-        try {
-            String ordid = msj.getClOrdID().getValue();
-            Character tipo = msj.getSide().getValue() =='1'?'2':'1';
-            double precio =  msj.getField(new DoubleField(7542)).getValue()-GraficaHandler.getGraf(getGrafId(ordid)).getSL();
-            
-            SendOCO(msj.getSymbol().getValue(),tipo, ordid,(int)msj.getOrderQty().getValue(),precio,'N');
-        } catch (GraficaNotFound ex) {
-            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }*/
-    
     /**
      * 
      * @param symbol
@@ -158,24 +123,17 @@ public class OrderHandler {
      * @param precio
      * @throws Exception
      */
-    public static void ocoRecord(ExecutionReport msj) throws Exception {
-        
-        /*DBCollection coll = Graphic.dao.getCollection("operaciones");
-        BasicDBObject oco = new BasicDBObject();
-        BasicDBObject sl = new BasicDBObject();
-        BasicDBObject tp = new BasicDBObject();
-        BasicDBObject mod = new BasicDBObject();
-                
-        oco.append("$set", new BasicDBObject().append("OCO", msj.getOrderID().getValue()));
-        sl.append("$set", new BasicDBObject().append("StopL", msj.getField(new DoubleField(7542)).getValue()));
-        tp.append("$set", new BasicDBObject().append("TakeP", msj.getField(new DoubleField(7540)).getValue()));
-        mod.append("$set", new BasicDBObject().append("Modify", "N"));
-        coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), oco);
-        coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), sl);
-        coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), tp);
-        coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), mod);*/
-        getOrdenById(msj.getClOrdID().getValue()).setOco(msj);
-        //GraficaHandler.setStop(getGrafId(msj.getClOrdID().getValue()), msj.getClOrdID().getValue(),msj.getField(new DoubleField(7542)).getValue(), msj.getField(new DoubleField(7540)).getValue());
+    public static void ocoEntry(ExecutionReport msj) throws Exception {
+        Orden temp = getOrdenById(msj.getClOrdID().getValue());
+        //Si es null entonces no tenemos un oco previo asi que solo lo guardamos
+        if(temp.getOco() == null){
+            temp.setOco(msj);
+            GraficaHandler.orderAccept((String) temp.getGrafId(), msj);
+            
+        }else{
+            closeOCO(temp);
+            temp.setOco(msj);
+        }        
     }
 
     /**
@@ -198,37 +156,23 @@ public class OrderHandler {
      * Enviamos el request para borrar la OCO de una orden determinada.
      * @param order 
      */
-    public static void closeOCO(String order, char mov) {
+    public static void closeOCO(Orden orden) {
+                
         
-        /*DBCollection coll = mongo.getCollection("operaciones");
-        BasicDBObject query = new BasicDBObject();
-        DBObject temp;
-        query.put("OrderID", order);
-        DBCursor cur = coll.find(query);
-        DBObject res = cur.next();
-        String id = (String) res.get("OCO");
-        String symbol = (String) res.get("Symbol");
-        char side = ((int)res.get("Type"))==1? '2' : '1'; //Guardamos el valor contrario al tipo de orden que queremos cerrar.
-        */
-        Orden temp = getOrdenById(order);
-        temp.setClose();
         quickfix.fix42.OrderCancelRequest oco = new quickfix.fix42.OrderCancelRequest();
-        oco.set(new ClOrdID(temp.getId()));
-        oco.set(new OrigClOrdID(temp.getId()));
-        oco.set(new Symbol(temp.getSymbol()));
-        oco.set(new OrderID(temp.getOco()));
+        oco.set(new ClOrdID(orden.getId()));
+        oco.set(new OrigClOrdID(orden.getId()));
+        oco.set(new Symbol(orden.getSymbol()));
+        oco.set(new OrderID(orden.getOco()));
         oco.setChar(40, 'W');
-        oco.set(new Side(temp.contraria));
+        oco.set(new Side(orden.averse));
         oco.set(new TransactTime());
         try {
             Session.sendToTarget(oco, SenderApp.sessionID);
         }catch (SessionNotFound ex) {
             Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        //Notificamos a la gráfica que cerró una orden
-        //GraficaHandler.orderClose(getGrafId(order), order);
-        
+        //GraficaHandler.orderClose(getGrafId(orden.id), order);   
     }
     /**
      * Método que notifica acerca del cierre mediante Tp o SL.
@@ -243,7 +187,7 @@ public class OrderHandler {
         }
         
         Orden temp = getOrdenById(ordId);
-        temp.setClose();
+        temp.setClose(msj);
         GraficaHandler.orderClose(temp.getGrafId(), temp.getId());
     }
     
@@ -257,14 +201,18 @@ public class OrderHandler {
      * @param coll
      * @throws Exception
      */
-    public static void shutDown(String id, Double price) throws Exception {
+    public static void shutDown(Orden orden) throws Exception {
         DBCollection coll = mongo.getCollection("operaciones");
         BasicDBObject set = new BasicDBObject().append("$set", new BasicDBObject().append("Status", 0));
-        BasicDBObject push = new BasicDBObject().append("$set", new BasicDBObject().append("Close", price));
+        BasicDBObject push = new BasicDBObject().append("$set", new BasicDBObject().append("Close", orden.getClosePrice()));
         BasicDBObject hora = new BasicDBObject().append("$set", new BasicDBObject().append("horaClose", new Date().toString()));
-        coll.update(new BasicDBObject().append("OrderID", id), set);
-        coll.update(new BasicDBObject().append("OrderID", id), push);
-        coll.update(new BasicDBObject().append("OrderID", id), hora);        
+        BasicDBObject sl = new BasicDBObject().append("$set", new BasicDBObject().append("StopL", orden.getSl()));
+        BasicDBObject tp = new BasicDBObject().append("$set", new BasicDBObject().append("TakeP", orden.getTp()));
+        coll.update(new BasicDBObject().append("OrderID", orden.getId()), set);
+        coll.update(new BasicDBObject().append("OrderID", orden.getId()), push);
+        coll.update(new BasicDBObject().append("OrderID", orden.getId()), hora);        
+        coll.update(new BasicDBObject().append("OrderID", orden.getId()), sl);
+        coll.update(new BasicDBObject().append("OrderID", orden.getId()), tp);
     }
     /**
      * Revisamos si existe una orden.
@@ -300,28 +248,7 @@ public class OrderHandler {
         }
         return temp;
     }
-    /**
-     * Verificamos si una orden ya ha sido modificada.
-     * @param msj
-     * @return 
-     */
-    /*public static boolean isModify(quickfix.fix42.ExecutionReport msj){
-        boolean temp= false;
-        DBCursor res;
-        DBCollection coll = mongo.getCollection("operaciones");
-        BasicDBObject query = new BasicDBObject();
-        try {
-            query.put("OrderID", msj.getClOrdID().getValue());
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        res = coll.find(query);
-        if(res.count()>0 && res.next().get("OCO")!=null) {
-            temp= true;
-        }            
-        return temp;
-    }*/
-    
+        
     public static void ocoModify(quickfix.fix42.ExecutionReport msj){
         DBCollection coll = OrderHandler.mongo.getCollection("operaciones");
         BasicDBObject mod = new BasicDBObject();
@@ -355,51 +282,6 @@ public class OrderHandler {
             Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return temp;
-    }
-
-    /**
-     * Verificamos si la orden existe en Mongo para ver si la que se envio
-     * anteriormente es el cierre de la nueva.
-     *
-     * @param msj
-     * @return
-     * @throws Exception
-     */
-    public static Integer getId() throws Exception {
-        
-        DBCollection coll = mongo.getCollection("operaciones");
-        BasicDBObject query = new BasicDBObject();
-        query.put("Status", 0);
-        DBCursor cur = coll.find(query);
-        return (Integer) cur.next().get("NoOrder");
-    }
-
-    public static String getCl() throws Exception {
-
-        DBCollection coll = mongo.getCollection("operaciones");
-        BasicDBObject query = new BasicDBObject();
-        query.put("Status", 0);
-        DBCursor cur = coll.find(query);
-        return (String) cur.next().get("OrderID");
-    }
-
-    private static String sumLong(String ord, int num) {
-
-        long orden = Long.valueOf(ord).longValue();
-        orden = orden + num;
-        return Long.toString(orden);
-    }
-    /**
-     * redondeamos un double
-     * @param num
-     * @return 
-     */
-    private static Double redondear(String symbol,double num) {
-
-        if(symbol.equals("USD/JPY"))
-            return Math.rint(num * 1000) / 1000;
-        else
-            return num;        
     }
     /**
      * buscamos en ordPool para obtener el id de una grafica dependiendo de que 
