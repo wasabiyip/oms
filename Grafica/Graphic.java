@@ -13,8 +13,6 @@ import oms.deliverer.Orden;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import quickfix.FieldNotFound;
-//import quickfix.fix42.ExecutionReport;
 
 /**
  * Esta clase Maneja a todas es el "main" de las gráficas, ya que mantiene
@@ -83,7 +81,7 @@ public class Graphic extends Thread {
     }
 
     /**
-     * Como cada gráfica es un thread...
+     * Como cada gráfica es un thread entonces...
      */
     @Override
     public void run() {
@@ -124,24 +122,6 @@ public class Graphic extends Thread {
     public void onCandle(double openCandle) {
         this.sendMessage.Candle();
     }
-
-    /**
-     * Obtenemos un historial cuando se inicia la grafica para sincronizar la
-     * grafica con el tiempo actual.
-     *
-     * @param cant número que representa los minutos transcurridos al momento de
-     * iniciar, si son las 10:23 y la grafica es de 5 minutos, entonces este
-     * numero va a ser 3.
-     * @return Un ArrayList con los precios que se pidieron.
-     */
-    private ArrayList getHistorial(int cant) {
-        ArrayList data = new ArrayList();
-        //Utilizamos unSlash para quitar el / ya que en la base de datos tenemos las monedas
-        //sin este.
-        ArrayList temp = (ArrayList) dao.getCandleData(symbol, cant).toArray();
-        return temp;
-    }
-
     /**
      * Metodo que quita el / en un symbol, EUR/USD resulta en EURUSD ya que en
      * mongo los nombres de las monedas se encuentran así.
@@ -155,9 +135,6 @@ public class Graphic extends Thread {
         str.append(symbol.substring(0, 3)).append(symbol.substring(4));
         return str.toString();
     }
-   
-   
-
     /**
      * Cada que recibimos un mensaje de Node lo mandamos aquí para ser evaluado.
      *
@@ -188,9 +165,9 @@ public class Graphic extends Thread {
                         
                     }
                     //Si el expert puede operar
-                    if(expert.isActive()){
+                    /*if(expert.isActive()){
                         this.writeBlackBoxFile(stateFeed.getExpertState());
-                    }
+                    }*/
                     this.sendMessage.Open();
                     break;
                 case "close":
@@ -199,7 +176,6 @@ public class Graphic extends Thread {
                     break;
                 case "get-state":
                     this.sendMessage.ExpertState();
-                    this.ordersInit();
                     break;
                 case "ask":
                     //expert.setAsk((double) json.get("precio"));
@@ -229,72 +205,7 @@ public class Graphic extends Thread {
         
         this.blackBox.println(GMTDate.getDate()+" -> "+log);
         this.blackBox.flush();
-    }
-    
-    /**
-     * notificamos a node que una nueva entro.
-     * @param orden 
-     */
-    /*private void onOrder(ArrayList orden){
-        
-        ExecutionReport report = (ExecutionReport)orden.get(0);
-        double sl = (double)orden.get(1);
-        double tp = (double)orden.get(2);
-        //expert.openNotify(report);
-        sendMessage.nwOrden(report, sl, tp); 
-    }*/
-    /**
-     * Notificamos que una orden fué cerrada exitosamente.
-     * @param id 
-     */
-    public void onOrderClose(String id){
-        //expert.closeNotify();
-        sendMessage.clOrden(id);
-    }
-    /**
-     * Enviamos ordenes actuales de la grafica.
-     */
-    private void ordersInit(){
-         sendMessage.ordersInit(dao.getTotalGraf(this.id),this.id);
-    }
-    
-    /**
-     * Añadimos una orden al array list para que cada gráfica sepa cuales son sus 
-     * ordenés y guardamos la orden en Mongo.
-     * @param orden 
-     */
-    public void newOrder(Orden orden){
-       // this.dao.recordOrden(this.id,orden,setts.MAGICMA);
-    }
-    
-    public void orderModify(String ordid, Double precio){
-        //expert.modNotify();
-        this.sendMessage.modOrden(ordid,precio);
-    }
-    
-    /**
-     * Asignamos los Stops a la orden debida.
-     * @param ordid
-     * @param type
-     * @param value 
-     */
-    /*public void setStops(String ordid,double tp, double sl){
-        ExecutionReport temp;
-        for (int i = 0; i < operaciones.size(); i++) {
-            temp= (ExecutionReport)operaciones.get(i).get(0);
-            try {
-                if(temp.getClOrdID().getValue().equals(ordid)){
-                    operaciones.get(i).add(tp);
-                    operaciones.get(i).add(sl);
-                    this.onOrder(operaciones.get(i));
-                }
-            } catch (FieldNotFound ex) {
-                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        
-    }*/
-    
+    }   
     /**
      * @return ultimo precio de compra.
      */

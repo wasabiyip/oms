@@ -117,8 +117,6 @@ public class MessageHandler {
                        if (OrderHandler.isFilled(msj)) {
                            //Si recibimos una orden y ya fué llenada entonces
                            //Es un cierre de operacion.
-                           
-                           //OrderHandler.shutDown(msj.getClOrdID().getValue(), msj.getAvgPx().getValue());
                            tempOrden.setClose(msj);
                            OrderHandler.shutDown(tempOrden);
                            //temp_msj = "La orden #" + msj.getClOrdID().getValue() + " cerró a: " + msj.getAvgPx().getValue();

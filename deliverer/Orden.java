@@ -15,7 +15,7 @@ import quickfix.fix42.NewOrderSingle;
 
 
 /**
- *
+ * Objecto orden, aqui tenemos la representacion de una orden,
  * @author omar
  */
 public class Orden {
@@ -285,6 +285,12 @@ public class Orden {
         return this.filled;
     }
     /**
+     * @return MagicMa de la orden.
+     */
+    public int getMagic(){
+        return this.magicma;
+    }
+    /**
      * SETTERS! ------------------------>>>>>>>>>>
      */
     /**
@@ -321,7 +327,10 @@ public class Orden {
         }
         Graphic.dao.recordOrden(this.grafId,this.executionReport,this.magicma);   
     }
-   
+    /**
+     * Añadimos el TP/SL de la orden.
+     * @param msj 
+     */
     public void setOco(ExecutionReport msj){
         
         try {
@@ -339,6 +348,10 @@ public class Orden {
             Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    /**
+     * Marcamos esta órden como cerrada.
+     * @param msj 
+     */
     public void setClose(ExecutionReport msj){
         this.isActiva = false;
         try {
@@ -358,12 +371,7 @@ public class Orden {
     private Double redondear(Double val){
         return Math.round(val*Math.pow(10, 4))/Math.pow(10,4);
     }
-    /**
-     * Salvamos una orden en la BD.
-     */
-    private void redord(){
-        
-    }
+   
     /**
      * Autodescripción de la orden.
      * @return 

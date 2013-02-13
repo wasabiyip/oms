@@ -4,8 +4,6 @@
  */
 package oms.Grafica;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,9 +11,7 @@ import oms.CustomException.TradeContextBusy;
 import oms.Grafica.indicators.Indicador;
 import oms.deliverer.Orden;
 import oms.deliverer.OrderHandler;
-import oms.util.Console;
-import quickfix.FieldNotFound;
-import quickfix.fix42.ExecutionReport;
+
 
 /**
  *
@@ -27,11 +23,17 @@ public abstract class AbstractExpert {
     int Periodo;
     Settings setts;
     Double Point;
-    
     public double open_min = 0.0;
     public Double Ask;
     public Double Bid;
-
+    /**
+     * Este funje como constructor de la clase, ya que la clase que hereda no 
+     * tiene constructor por lo tanto no podemos mandar llamar a este constructor,
+     * favor de llamarlo justo despues de un objeto que herede de esta clase.
+     * @param symbol
+     * @param periodo
+     * @param setts 
+     */
     public void absInit(String symbol, int periodo, Settings setts) {
         this.Symbol = symbol;
         this.Periodo = periodo;
@@ -39,7 +41,15 @@ public abstract class AbstractExpert {
         this.indicator = new Indicador(symbol, periodo);
         this.Point = setts.Point;
     }
-    
+    /**
+     * Enviamos una orden. Podemos enviar una órden sin SL/TP si ponemos estos valores
+     * en 0.
+     * @param price
+     * @param lotes
+     * @param side
+     * @param sl
+     * @param tp 
+     */
     public void orderSend(Double price,Double lotes, char side,Double sl, Double tp) {
         try {
             if(sl == 0 && tp == 0){
@@ -52,33 +62,17 @@ public abstract class AbstractExpert {
             Logger.getLogger(AbstractExpert.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
     /**
-     * verificamos que nos encontremos en horas de operacion.
-     *
-     * @param hora
-     * @return
+     * Actualizamos los indicadores que se hayan creado para esta gráfica.
+     * @param precio 
      */
-    public boolean isActive() {
-
-        boolean temp = false;
-        /*if (this.hora() && this.open_min > 0 && Ask > 0 && Bid > 0) {
-
-            temp = true;
-        }*/
-        return temp;
-    }
-
-    
-
     public void indicatorDataIn(Double precio) {
         this.indicator.appendBollsData(precio);
     }
-
-    public abstract void Init();
-
-    public abstract void onTick();
-    
+    /**
+     * hora actual con formato de DB
+     * @return 
+     */
     public Double CurrentHora(){
         Date date = new oms.Grafica.Date();
         return (date.getHour() + (date.getMinute() * 0.01));
@@ -95,27 +89,35 @@ public abstract class AbstractExpert {
         temp = Math.rint(val * 1000000) / 1000000;
         return temp;
     }
-
     /**
-     * regresamos si nos encontramos dentro del limite de operaciones por cruce.
-     * (por cruce significa por el symbol).
-     *
-     * @return
+     * Obetenemos El numero de ordenes que podemos cerrar, cada gráfica esta
+     * restringida a sólo poder cerrar ordenes de su Symbol
+     * @return 
      */
-    public Integer limiteCruce() {
-
-        Integer temp = Graphic.dao.getTotalCruce(setts.symbol);
-        return temp;
-    }
     public int OrdersCount(){
         
-        return OrderHandler.getOrdersActivas().size();
+        return OrderHandler.getOrdersBySymbol(this.Symbol).size();
     }
+    /**
+     * Obetenemos El total de ordenes que podemos cerrar, cada gráfica esta
+     * restringida a sólo poder cerrar ordenes de su Symbol
+     * @return Ordenes en forma de ArrayList
+     */
     public ArrayList<Orden> OrdersTotal(){
-        return OrderHandler.getOrdersActivas();
+        return OrderHandler.getOrdersBySymbol(this.Symbol);
     }
-    
+    /**
+     * Hora acual.
+     * @return 
+     */
     public Integer TimeCurrent(){
         return GMTDate.getTime();
     }
+    /**
+     * Métodos que deben de ser implementados si se quiere heredar de esta clase.
+     */
+    public abstract void Init();
+
+    public abstract void onTick();
+    
 }

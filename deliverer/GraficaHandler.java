@@ -110,13 +110,7 @@ public class GraficaHandler {
      * @param orden 
      */
     public static void orderAccept(String id, ExecutionReport orden) {
-        try {
-            getGraf(id).newOrder(OrderHandler.getOrdenById(orden.getClOrdID().getValue()));
-        } catch (GraficaNotFound ex) {
-            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (Exception ex){
-            System.err.println(ex);
-        }            
+        //TODO CAMBIAR LAS NOTIFICACIONES-           
     }
     /**
      * Notificamos a una grafica que su peticion de cierre fue aceptada.

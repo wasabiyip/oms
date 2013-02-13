@@ -61,36 +61,9 @@ public class ExpertMoc extends AbstractExpert{
      * @param price precio de apertura del minuto!
      */
     @Override
-    public void onTick() {
-        if(this.OrdersCount() < 1){
-            orderSend(this.Ask, this.setts.lots, '1', Ask-this.setts.sl, Ask+this.setts.tp);
-        }else if(this.OrdersCount()>0){
-            for (int i = 0; i < OrdersTotal().size(); i++) {
-                Orden currentOrden = OrdersTotal().get(i);
-                if (currentOrden.getSide() == '1') {
-                    currentOrden.close(this.Ask);
-                }else if (currentOrden.getSide() == '2'){
-                    currentOrden.close(this.Bid);
-                }     
-            }
-        }
-        if (Math.abs(this.startTime - this.TimeCurrent()) >= this.Periodo) {
-            this.startTime = this.TimeCurrent();
-            bollUp = this.getAvgBoll(this.bollUp());
-             bollDn = this.getAvgBoll(this.bollDn());
-            /*bollUp = this.bollUp();
-            bollDn = this.bollDn();*/
-            bollDif = this.bollingerDif();
-            bollUpS = this.getAvgBoll(this.bollUpS());
-            bollDnS = this.getAvgBoll(this.bollDnS());
-            /*bollUpS = this.bollUpS();
-            bollDnS = this.bollDnS();*/
-            this.cont_velas++;
-            
-        }
-        
+    public void onTick() {        
         //Revisamos que los precios se encuentren dentro de el rango de entrada.
-        /*if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
+        if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
                 && (this.OrdersCount() < 1) && (bollDif < this.setts.bollxUp && bollDif > setts.bollxDn)) {
             //entrada de operaciones.
             if ((this.open_min+ this.setts.boll_special) <= bollDn) {
@@ -112,57 +85,39 @@ public class ExpertMoc extends AbstractExpert{
                 if (currentOrden.getSide() == '1') {
                     if (setts.salidaBollinger && this.open_min  >= bollUpS) {
                         //System.out.println("Cerrando orden por bollinger");
-                        orderClose(this.Bid, '1');
+                        currentOrden.close(this.Bid);
                         break;
                     } else if (cont_velas == setts.velasS) {
                         //System.out.println("Cerrando orden por velas");
-                        orderClose(this.Bid, '1');
+                        currentOrden.close(this.Bid);
                         break;
                     } else if (this.rangeSalida()) {
                         //System.out.println("Cerrando orden por minutos");
-                        orderClose(this.Bid, '1');
+                        currentOrden.close(this.Bid);
                         break;
                     }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
-                        currentOrden.OrderModify(this.Bid-this.setts.sl, this.Bid+this.setts.tp);
+                        currentOrden.Modify(this.Bid-this.setts.sl, this.Bid+this.setts.tp);
                     }
                 } else if (currentOrden.getSide() == '2') {
                     if (setts.salidaBollinger && this.open_min  <= bollDnS) {
                         //System.out.println("Cerrando orden por bollinger");
-                        orderClose(this.Ask, '2');
+                        currentOrden.close(this.Ask);
                         break;
                         //Cerramos las ordenes...
                     } else if (cont_velas == setts.velasS) {
                         //System.out.println("Cerrando orden por velas");
-                        orderClose(this.Ask, '2');
+                        currentOrden.close(this.Ask);
                         break;
                     } else if (this.rangeSalida()) {
                         //System.out.println("Cerrando orden por minutos");
-                        orderClose(this.Ask, '2');
+                        currentOrden.close(this.Ask);
                         break;
                     }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
-                        currentOrden.OrderModify(this.Ask+this.setts.sl, this.Ask-this.setts.tp);
-                    }
-                }
-                /**
-                 * Volatilidad: Si al haber entrado una orden regresa al punto
-                 * de entrada movemos el tp.
-                 */
-                /*if (this.setts.volatilidad) {
-                    double volB = currentOrden.getOpenPrice() - this.setts.volVal;
-                    double volS = currentOrden.getOpenPrice() + this.setts.volVal;
-                    if(currentOrden.getSide() == '1') {
-                        if(this.Bid <= volB) {
-                            currentOrden.OrderModify(currentOrden.getOpenPrice() + this.setts.nwTp,currentOrden.getSl());
-                        }
-                    } else if(currentOrden.getSide() == '2') {
-                        
-                        if(this.Ask >= volS) {
-                            currentOrden.OrderModify(currentOrden.getOpenPrice() - this.setts.nwTp, currentOrden.getSl());
-                        }
+                        currentOrden.Modify(this.Ask+this.setts.sl, this.Ask-this.setts.tp);
                     }
                 }
             }
-        }*/
+        }
     }
     /*
      * Método que promedia un Promedio de bollingers con la variable spreadAask.

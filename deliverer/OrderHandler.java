@@ -2,19 +2,13 @@ package oms.deliverer;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import oms.CustomException.GraficaNotFound;
 import oms.CustomException.TradeContextBusy;
-import oms.Grafica.Graphic;
 import oms.Grafica.Order;
 import oms.dao.MongoDao;
-import oms.util.Console;
 import quickfix.*;
 import quickfix.field.*;
 import quickfix.fix42.ExecutionReport;
@@ -137,28 +131,10 @@ public class OrderHandler {
     }
 
     /**
-     * Obtenemos el número total de ordenés activas.
-     *
-     * @return
-     * @throws Exception
-     */
-    public static DBCursor getTotal() {
-        
-        DBCollection coll = mongo.getCollection("log");
-        DBCursor cur = coll.find();
-        BasicDBObject query = new BasicDBObject();
-        query.put("Status", 1);
-        cur = coll.find(query);
-        return cur;
-    }
-
-    /**
      * Enviamos el request para borrar la OCO de una orden determinada.
      * @param order 
      */
     public static void closeOCO(Orden orden) {
-                
-        
         quickfix.fix42.OrderCancelRequest oco = new quickfix.fix42.OrderCancelRequest();
         oco.set(new ClOrdID(orden.getId()));
         oco.set(new OrigClOrdID(orden.getId()));
@@ -247,42 +223,7 @@ public class OrderHandler {
             }            
         }
         return temp;
-    }
-        
-    public static void ocoModify(quickfix.fix42.ExecutionReport msj){
-        DBCollection coll = OrderHandler.mongo.getCollection("operaciones");
-        BasicDBObject mod = new BasicDBObject();
-        String temp;
-        try {
-            mod.append("$set", new BasicDBObject().append("TakeP", msj.getField(new DoubleField(7540)).getValue()));
-            coll.update(new BasicDBObject().append("OrderID", msj.getClOrdID().getValue()), mod);
-            temp = "Modificando : "+ msj.getClOrdID().getValue();
-            System.out.println(temp);
-            Console.msg(temp)            ;
-            //GraficaHandler.orderModify(msj);
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    /**
-     * verificamos si existe una orden con el valor de oco especificado.
-     * @param msj orden a evaluar.
-     * @return 
-     */
-    public static boolean ocoExists(quickfix.fix42.ExecutionReport msj){
-        boolean temp = false;
-        try {
-            DBCollection coll = mongo.getCollection("operaciones");
-            BasicDBObject query = new BasicDBObject();
-            query.put("OCO", msj.getOrderID().getValue());
-            DBCursor cur = coll.find(query);
-            if (cur.count() > 0) 
-                temp = true;
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return temp;
-    }
+    }    
     /**
      * buscamos en ordPool para obtener el id de una grafica dependiendo de que 
      * orden entro
@@ -298,7 +239,8 @@ public class OrderHandler {
         return tmp;
     }
     /**
-     * De el array en donde estan las órdenes extraemos las que esten activas.
+     * De el array en donde estan las órdenes extraemos las que esten activas y sean
+     * de es Symbol.
      * @return 
      */
     public static ArrayList<Orden> getOrdersActivas(){
@@ -310,6 +252,11 @@ public class OrderHandler {
         }
         return temp;
     }
+    /**
+     * Obtenemos El total de ordenes para determinada grafica.
+     * @param grafId Id de la grafica
+     * @return 
+     */
     public static Orden getOrdenByGraf(String grafId){
         Orden temp=null;
         for (int i = 0; i < ordersArr.size(); i++) {
@@ -318,11 +265,30 @@ public class OrderHandler {
         }
         return temp;
     }
+    /**
+     * Obtenemos Una orden por su ordID.
+     * @param id
+     * @return 
+     */
     public static Orden getOrdenById(String id){
         Orden temp=null;
         for (int i = 0; i < ordersArr.size(); i++) {
             if(ordersArr.get(i).getId().equals(id));
                 temp = ordersArr.get(i);
+        }
+        return temp;
+    }
+    /**
+     * Obtenemos El total de ordenes para determinado Symbol
+     * @param symbol
+     * @return 
+     */
+    public static ArrayList<Orden> getOrdersBySymbol(String symbol){
+        ArrayList temp= new ArrayList();
+        for (int i = 0; i < ordersArr.size(); i++) {
+            if(ordersArr.get(i).IsActiva() && ordersArr.get(i).getSymbol().equals(symbol)){
+                temp.add(ordersArr.get(i));
+            }            
         }
         return temp;
     }
