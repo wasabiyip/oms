@@ -38,7 +38,7 @@ public class StateFeed {
             temp.append("\"bollUpS\":"+ expert.getAvgBoll(expert.bollUpS()) + ",");
             temp.append("\"bollDnS\":"+ expert.getAvgBoll(expert.bollDnS())+ ",");
             //temp.append("\"Velas\":"+expert.cont_velas + ",");
-            temp.append("\"limite\":"+(expert.limiteCruce()<expert.setts.limiteCruce?true:false) + ",");
+            temp.append("\"limite\":"+(expert.OrdersCount()<expert.setts.limiteCruce?true:false) + ",");
             //temp.append("\"hora\":"+expert.hora()+ ",");
             temp.append("\"bollX\":"+(expert.bollingerDif() < expert.setts.bollxUp && 
                     expert.bollingerDif()> expert.setts.bollxDn)+ ",");

@@ -24,8 +24,8 @@ public abstract class AbstractExpert {
     Settings setts;
     Double Point;
     public double open_min = 0.0;
-    public Double Ask;
-    public Double Bid;
+    public Double Ask = 0.0;
+    public Double Bid = 0.0 ;
     /**
      * Este funje como constructor de la clase, ya que la clase que hereda no 
      * tiene constructor por lo tanto no podemos mandar llamar a este constructor,
@@ -112,6 +112,14 @@ public abstract class AbstractExpert {
      */
     public Integer TimeCurrent(){
         return GMTDate.getTime();
+    }
+    /**
+     * Evaluamos si esta gráfica esta en condiciones de operar
+     * @return evaluacion.
+     */
+    public boolean isActive(){
+        //TODO Implementar esta función.
+        return true;
     }
     /**
      * Métodos que deben de ser implementados si se quiere heredar de esta clase.

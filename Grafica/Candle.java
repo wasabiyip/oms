@@ -22,7 +22,6 @@ public class Candle {
         this.periodo = periodo;
         //cuantos minutos van en la vela inicial.
         cont_time = GMTDate.getTime() % this.periodo;
-        System.out.println("dif "+cont_time);
     }
     /**
      * Es una nueva vela, si la hora es mod del periodo o 
@@ -35,7 +34,6 @@ public class Candle {
                 cont_time%this.periodo ==0){
             temp = 1;
             cont_time=0;
-            System.out.println("Nueva Candle");
         }        
         cont_time++;
         return temp;

@@ -89,7 +89,6 @@ public class Indicador {
      * @param precio 
      */
     public void appendBollsData(Double precio){
-        System.out.println("Pushando "+precio);
         for(int i=0; i<bolls_arr.size();i++){
             bolls_arr.get(i).setPrice(precio);
         }

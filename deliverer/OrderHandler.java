@@ -121,9 +121,7 @@ public class OrderHandler {
         Orden temp = getOrdenById(msj.getClOrdID().getValue());
         //Si es null entonces no tenemos un oco previo asi que solo lo guardamos
         if(temp.getOco() == null){
-            temp.setOco(msj);
-            GraficaHandler.orderAccept((String) temp.getGrafId(), msj);
-            
+            temp.setOco(msj);            
         }else{
             closeOCO(temp);
             temp.setOco(msj);
@@ -164,7 +162,7 @@ public class OrderHandler {
         
         Orden temp = getOrdenById(ordId);
         temp.setClose(msj);
-        GraficaHandler.orderClose(temp.getGrafId(), temp.getId());
+        //GraficaHandler.orderClose(temp.getGrafId(), temp.getId());
     }
     
     /**

@@ -78,7 +78,9 @@ public class Orden {
         this.esNueva = true;
     }
     /**
-     * Método sobrecargado del constructor para poder enviar ordenes con sl y tp.
+     * Método sobrecargado del constructor para poder enviar ordenes con sl y
+     * tp.
+     *
      * @param grafId
      * @param symbol
      * @param lotes
@@ -86,19 +88,19 @@ public class Orden {
      * @param price
      * @param side
      * @param sl
-     * @param tp 
+     * @param tp
      */
-    public Orden(String grafId, String symbol, Double lotes, Integer magicma, 
-            Double price, char side,Double sl, Double tp){
+    public Orden(String grafId, String symbol, Double lotes, Integer magicma,
+            Double price, char side, Double sl, Double tp) {
         this.grafId = grafId;
         this.open_price = price;
         this.side = side;
-        this.averse = this.side =='1'?'2':'1';
-        this.lotes = lotes*10000;
+        this.averse = this.side == '1' ? '2' : '1';
+        this.lotes = lotes * 10000;
         this.isActiva = true;
         this.magicma = magicma;
         this.symbol = Settings.Slash(symbol);
-        this.currency = symbol.substring(0,3);
+        this.currency = symbol.substring(0, 3);
         this.ordId = new idGenerator().getID();
         //this.open_time = time;
         this.newOrderSingle = new NewOrderSingle();
@@ -112,18 +114,18 @@ public class Orden {
         this.newOrderSingle.set(new OrdType('C'));
         this.newOrderSingle.set(new Price(this.open_price));
         this.esNueva = true;
-        
+
         newOrderOco = new NewOrderSingle();
         newOrderOco.set(new ClOrdID(this.ordId));
         newOrderOco.set(new HandlInst('1'));
-        newOrderOco.set(new Currency(symbol.substring(0,3)));
+        newOrderOco.set(new Currency(symbol.substring(0, 3)));
         newOrderOco.set(new Symbol(this.symbol));
         newOrderOco.set(new TransactTime());
         newOrderOco.set(new OrderQty(this.lotes));
         newOrderOco.set(new OrdType('W'));
         newOrderOco.set(new Side(averse));
-        newOrderOco.setField(new CharField(7541,'3'));
-        newOrderOco.setField(new CharField(7553,averse));
+        newOrderOco.setField(new CharField(7541, '3'));
+        newOrderOco.setField(new CharField(7553, averse));
         newOrderOco.setField(new DoubleField(7542, redondear(sl)));
         newOrderOco.setField(new DoubleField(7540, redondear(tp)));
         OrderHandler.SendOCO(this.newOrderOco);

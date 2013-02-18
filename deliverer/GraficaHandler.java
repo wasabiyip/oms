@@ -2,15 +2,10 @@ package oms.deliverer;
 
 import CustomException.NoProfileFoundException;
 import java.io.*;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Graphic;
-import oms.util.Console;
-import quickfix.DoubleField;
-import quickfix.FieldNotFound;
 import quickfix.fix42.ExecutionReport;
 import java.util.Properties;
 import oms.CustomException.GraficaNotFound;
@@ -103,26 +98,7 @@ public class GraficaHandler {
      */
     private void runGrafica(int index) {
         graficas.get(index).start();
-    }
-    /**
-     * Notificamos a una gráfica que su orden fué aceptada.
-     * @param id identificador de la gráfica.
-     * @param orden 
-     */
-    public static void orderAccept(String id, ExecutionReport orden) {
-        //TODO CAMBIAR LAS NOTIFICACIONES-           
-    }
-    /**
-     * Notificamos a una grafica que su peticion de cierre fue aceptada.
-     */
-    public static void orderClose(String grafid, String id){
-        try {
-            getGraf(grafid).onOrderClose(id);
-        } catch (GraficaNotFound ex) {
-            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-        
+    }        
     /*
      * Obtenemos el ask de una determinada grafica.
      */
@@ -146,65 +122,7 @@ public class GraficaHandler {
             Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return temp;
-    }
-    /**
-     * obtenemos el Tp de una grafica determinada.
-     * @param idgraf
-     * @return 
-     */
-    /*public static Double getTp(String idgraf){
-        Double temp=null;
-        try {
-            temp = getGraf(idgraf).getTP();
-        } catch (GraficaNotFound ex) {
-            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return temp;
-    }*/
-    /**
-     * obtenemos el SL de una graica determinada.
-     * @param idgraf
-     * @return 
-     */
-    /*public static Double getSl(String idgraf){
-        Double temp=null;
-        try {
-            temp = getGraf(idgraf).getSL();
-        } catch (GraficaNotFound ex) {
-            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return temp;
-    }*/
-    /**
-     * Cuando entra la OCO de una orden noificamos a su grafica correspondiente que 
-     * su orden fue aceptada.
-     * @param id
-     * @param ordid
-     * @param sl
-     * @param tp 
-     */
-    /*public static void setStop(String id, String ordid,double sl, double tp){
-        try {
-            getGraf(id).setStops(ordid, sl, tp);
-        } catch (GraficaNotFound ex) {
-            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }*/
-    /**
-     * Notificamos que entro una modificación.
-     * @param order 
-     */
-    /*public static void orderModify(ExecutionReport order){
-        
-        try {
-            //getGraf(order.getClOrdID().getValue()).orderModify(OrderHandler.getGrafId(order.getClOrdID().getValue()),order.getLastPx().getValue());
-            getGraf(OrderHandler.getGrafId(order.getClOrdID().getValue())).orderModify(order.getClOrdID().getValue(), order.getField(new DoubleField(7540)).getValue());
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }catch(GraficaNotFound ex){
-            System.err.println(ex);
-        }
-    }*/
+    } 
     /**
      * Obtenemos una grafica determinada.
      * @param id

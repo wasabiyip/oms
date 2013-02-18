@@ -62,6 +62,20 @@ public class ExpertMoc extends AbstractExpert{
      */
     @Override
     public void onTick() {        
+        if (Math.abs(this.startTime - this.TimeCurrent()) >= this.Periodo) {
+            this.startTime = this.TimeCurrent();
+            /*bollUp = this.getAvgBoll(this.bollUp());
+             bollDn = this.getAvgBoll(this.bollDn());*/
+            bollUp = this.bollUp();
+            bollDn = this.bollDn();
+            bollDif = this.bollingerDif();
+            /*bollUpS = this.getAvgBoll(this.bollUpS());
+             bollDnS = this.getAvgBoll(this.bollDnS());*/
+            bollUpS = this.bollUpS();
+            bollDnS = this.bollDnS();
+            this.cont_velas++;
+            System.out.println("Nueva vela: "+this.TimeCurrent());
+        }
         //Revisamos que los precios se encuentren dentro de el rango de entrada.
         if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
                 && (this.OrdersCount() < 1) && (bollDif < this.setts.bollxUp && bollDif > setts.bollxDn)) {

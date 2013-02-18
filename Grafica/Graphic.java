@@ -1,6 +1,5 @@
 package oms.Grafica;
 
-import com.mongodb.DBObject;
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -9,7 +8,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.DAO.MongoDao;
-import oms.deliverer.Orden;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -35,7 +33,6 @@ public class Graphic extends Thread {
     private String id;
     private Double bid, ask;
     //Guardamos las ordenes de que entran en cada gráfica.
-
     public static MongoDao dao = new MongoDao();
     private Settings setts;
     private int lastOpen = GMTDate.getDate().getMinute();
@@ -148,9 +145,7 @@ public class Graphic extends Thread {
             
             switch ((String) json.get("type")) {
                 case "open":
-                    double open = (double) json.get("precio");
-                    
-                    
+                    double open = (double) json.get("precio");                    
                     //Este evento puede ser llamado cada tick, auqque mosotros
                     //lo llamamos cada open para ahorrar recursos.
                     this.expert.open_min = open;
