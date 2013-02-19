@@ -1,7 +1,6 @@
 package oms.Grafica;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Clase que calcula cuando las velas de un período determinado.
@@ -12,7 +11,6 @@ public class Candle {
 
     private int periodo;
     private int cont_time=0;
-    private int last_hora=0;
 
     /**
      * @param periodo perido de la vela,

@@ -1,14 +1,13 @@
 package oms.deliverer;
 
-import CustomException.NoProfileFoundException;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import oms.Grafica.Graphic;
-import quickfix.fix42.ExecutionReport;
-import java.util.Properties;
 import oms.CustomException.GraficaNotFound;
+import oms.CustomException.NoProfileFound;
+import oms.Grafica.Graphic;
 
 
 /**
@@ -51,11 +50,11 @@ public class GraficaHandler {
             prof_conf.setProperty("last_profile",perfil);
             prof_conf.store(new FileOutputStream("/home/omar/OMS/profiles/profiles.cnf"),"");
             //Si no existe el perfil llamas otra vez al método para usar el default. 
-        } catch (NoProfileFoundException ex) {
+        } catch (NoProfileFound ex) {
             try {
                 
                 this.chart_files = this.getChartFiles(this.last_profile);
-            } catch (NoProfileFoundException ex1) {
+            } catch (NoProfileFound ex1) {
                 Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex1);
             }
         }catch(IOException ex){
@@ -146,12 +145,12 @@ public class GraficaHandler {
      * @param perfil
      * @return 
      */
-    private ArrayList<Properties> getChartFiles(String perfil) throws NoProfileFoundException{
+    private ArrayList<Properties> getChartFiles(String perfil) throws NoProfileFound{
         ArrayList<Properties> temp = new ArrayList();
         File folder = new File("/home/omar/OMS/profiles/" + perfil);
         //Si la carpeta de perfil no existe o esta vacía, lanzamos exceptión.
         if (!folder.exists() || folder.listFiles().length==0){
-            throw new NoProfileFoundException(perfil);
+            throw new NoProfileFound(perfil);
         }
         File[] prof_files = folder.listFiles();
         

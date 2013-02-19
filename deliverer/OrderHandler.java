@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.CustomException.OrdenNotFound;
 import oms.CustomException.TradeContextBusy;
 import oms.Grafica.Order;
 import oms.dao.MongoDao;
@@ -63,7 +64,7 @@ public class OrderHandler {
      * @param symbol cruce a evaluar.
      * @return si es false ademas, marcamos esta moneda en context busy
      */
-    private static boolean isTradeBusy(String symbol){
+    private synchronized static boolean isTradeBusy(String symbol){
         boolean temp = false;
         for(int i=0; i<contextBusy.size();i++){
             if(contextBusy.get(i).equals(symbol)){
@@ -77,7 +78,7 @@ public class OrderHandler {
      * @param orden
      * @throws Exception
      */
-    public static void orderNotify(ExecutionReport msj) throws Exception {
+    public synchronized static void orderNotify(ExecutionReport msj) throws Exception {
        
         Orden temp = getOrdenById(msj.getClOrdID().getValue());
         temp.setFilled(msj);
@@ -90,6 +91,20 @@ public class OrderHandler {
                 contextBusy.remove(i);
             }
         }
+    }
+    /**
+     * Reenviamos un OCO si se el broker cerró/canceló uno existente
+     * @param report 
+     */
+    public synchronized static void resendOCO(ExecutionReport report){
+        try {
+            Orden orden = getOrdenById(report.getClOrdID().getValue());
+            System.out.println("Reenviando OCO de "+orden.getId());
+            SendOCO(orden.getOcoOrden());
+        } catch (FieldNotFound | OrdenNotFound ex) {
+            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
     }
     /**
      * 
@@ -117,7 +132,7 @@ public class OrderHandler {
      * @param precio
      * @throws Exception
      */
-    public static void ocoEntry(ExecutionReport msj) throws Exception {
+    public synchronized static void ocoEntry(ExecutionReport msj) throws Exception {
         Orden temp = getOrdenById(msj.getClOrdID().getValue());
         //Si es null entonces no tenemos un oco previo asi que solo lo guardamos
         if(temp.getOco() == null){
@@ -132,7 +147,7 @@ public class OrderHandler {
      * Enviamos el request para borrar la OCO de una orden determinada.
      * @param order 
      */
-    public static void closeOCO(Orden orden) {
+    public synchronized static void closeOCO(Orden orden) {
         quickfix.fix42.OrderCancelRequest oco = new quickfix.fix42.OrderCancelRequest();
         oco.set(new ClOrdID(orden.getId()));
         oco.set(new OrigClOrdID(orden.getId()));
@@ -152,7 +167,7 @@ public class OrderHandler {
      * Método que notifica acerca del cierre mediante Tp o SL.
      * @param order 
      */
-    public static void closeFromOco(ExecutionReport msj){
+    public synchronized static void closeFromOco(ExecutionReport msj){
         String ordId = "";
         try {
             ordId = msj.getClOrdID().getValue();
@@ -160,8 +175,13 @@ public class OrderHandler {
             Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        Orden temp = getOrdenById(ordId);
-        temp.setClose(msj);
+        Orden temp;
+        try {
+            temp = getOrdenById(ordId);
+            temp.setClose(msj);
+        } catch (OrdenNotFound ex) {
+            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
         //GraficaHandler.orderClose(temp.getGrafId(), temp.getId());
     }
     
@@ -175,7 +195,7 @@ public class OrderHandler {
      * @param coll
      * @throws Exception
      */
-    public static void shutDown(Orden orden) throws Exception {
+    public synchronized static void shutDown(Orden orden) throws Exception {
         DBCollection coll = mongo.getCollection("operaciones");
         BasicDBObject set = new BasicDBObject().append("$set", new BasicDBObject().append("Status", 0));
         BasicDBObject push = new BasicDBObject().append("$set", new BasicDBObject().append("Close", orden.getClosePrice()));
@@ -211,7 +231,7 @@ public class OrderHandler {
      * @return
      * @throws Exception 
      */
-    public static boolean isFilled(quickfix.fix42.ExecutionReport msj) throws Exception {
+    public synchronized static boolean isFilled(quickfix.fix42.ExecutionReport msj) throws Exception {
         String id = msj.getClOrdID().getValue();
         boolean temp=false;
         for (int i = 0; i < getOrdersActivas().size(); i++) {
@@ -223,25 +243,29 @@ public class OrderHandler {
         return temp;
     }    
     /**
-     * buscamos en ordPool para obtener el id de una grafica dependiendo de que 
+     * buscamos en ordersArr para obtener el id de una grafica dependiendo de que 
      * orden entro
      * @param ordid
      * @return 
      */
-    public static String getGrafId(String ordid){
-        String tmp="";
+    public synchronized static String getGrafId(String ordid)throws OrdenNotFound{
+        String temp=null;
         for (int i = 0; i < ordersArr.size(); i++) {
-            if(ordersArr.get(i).getId().equals(ordid))
-                tmp = ordersArr.get(i).getGrafId().toString();
+            if(ordersArr.get(i).getId().equals(ordid)){
+                temp = ordersArr.get(i).getGrafId().toString();
+            }
         }
-        return tmp;
+        if(temp == null){
+            throw new OrdenNotFound(ordid);
+        }
+        return temp;
     }
     /**
      * De el array en donde estan las órdenes extraemos las que esten activas y sean
      * de es Symbol.
      * @return 
      */
-    public static ArrayList<Orden> getOrdersActivas(){
+    public synchronized static ArrayList<Orden> getOrdersActivas(){
         ArrayList temp= new ArrayList();
         for (int i = 0; i < ordersArr.size(); i++) {
             if(ordersArr.get(i).IsActiva()){
@@ -255,11 +279,14 @@ public class OrderHandler {
      * @param grafId Id de la grafica
      * @return 
      */
-    public static Orden getOrdenByGraf(String grafId){
+    public synchronized static Orden getOrdenByGraf(String grafId)throws OrdenNotFound{
         Orden temp=null;
         for (int i = 0; i < ordersArr.size(); i++) {
             if(ordersArr.get(i).getGrafId().equals(grafId));
                 temp = ordersArr.get(i);
+        }
+        if(temp == null){
+            throw new OrdenNotFound(grafId);
         }
         return temp;
     }
@@ -268,11 +295,14 @@ public class OrderHandler {
      * @param id
      * @return 
      */
-    public static Orden getOrdenById(String id){
+    public synchronized static Orden getOrdenById(String id)throws OrdenNotFound{
         Orden temp=null;
         for (int i = 0; i < ordersArr.size(); i++) {
             if(ordersArr.get(i).getId().equals(id));
                 temp = ordersArr.get(i);
+        }
+        if(temp == null){
+            throw new OrdenNotFound(id);
         }
         return temp;
     }
@@ -281,12 +311,16 @@ public class OrderHandler {
      * @param symbol
      * @return 
      */
-    public static ArrayList<Orden> getOrdersBySymbol(String symbol){
-        ArrayList temp= new ArrayList();
+    public synchronized static ArrayList<Orden> getOrdersBySymbol(String symbol)throws OrdenNotFound{
+        ArrayList<Orden> temp= new ArrayList();
+        
         for (int i = 0; i < ordersArr.size(); i++) {
-            if(ordersArr.get(i).IsActiva() && ordersArr.get(i).getSymbol().equals(symbol)){
+            if(ordersArr.get(i).IsActiva() && ordersArr.get(i).getUnSymbol().equals(symbol)){
                 temp.add(ordersArr.get(i));
             }            
+        }
+        if(temp.size()==0){
+            throw new OrdenNotFound(symbol);
         }
         return temp;
     }

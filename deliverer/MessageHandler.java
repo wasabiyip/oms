@@ -142,8 +142,12 @@ public class MessageHandler {
                Console.msg(temp_msj);
                break;
            case '4':
+               /**
+                * Normalmente a las 4 de la tarde el broker nos cierra las Oco's 
+                * asi que cuando esto pasa tenemos que reenviarlas. 
+               */
                if(msj.getOrdType().getValue() == 'W'){
-                   //System.err.println("Cerramos OCO " + msj.getClOrdID().getValue());
+                   System.err.println("Cerramos OCO " + msj.getClOrdID().getValue());
                }else{
                    System.err.println("El horror! la orden fue cancelada " + msj.getClOrdID().getValue() + " no deberiamos entrar aqui, revisar log!");
                }

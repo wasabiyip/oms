@@ -20,6 +20,7 @@ import quickfix.fix42.NewOrderSingle;
  */
 public class Orden {
     private String symbol;
+    private String unSymbol;
     private String currency;
     private Double open_price= -1.0;
     private Double close_price= 0.0;
@@ -60,6 +61,7 @@ public class Orden {
         this.lotes = lotes*10000;
         this.isActiva = true;
         this.magicma = magicma;
+        this.unSymbol = symbol;
         this.symbol = Settings.Slash(symbol);
         this.currency = symbol.substring(0,3);
         this.ordId = new idGenerator().getID();
@@ -99,6 +101,7 @@ public class Orden {
         this.lotes = lotes * 10000;
         this.isActiva = true;
         this.magicma = magicma;
+        this.unSymbol = symbol;
         this.symbol = Settings.Slash(symbol);
         this.currency = symbol.substring(0, 3);
         this.ordId = new idGenerator().getID();
@@ -246,6 +249,9 @@ public class Orden {
     public String getSymbol(){
         return this.symbol;
     }
+    public String getUnSymbol(){
+        return this.unSymbol;
+    }
     /**
      * 
      * @return Mensaje fix de la orden actual.
@@ -293,6 +299,12 @@ public class Orden {
         return this.magicma;
     }
     /**
+     * @return La OCO que previamente creamos. 
+     */
+    public NewOrderSingle getOcoOrden(){
+        return this.newOrderOco;
+    }
+    /**
      * SETTERS! ------------------------>>>>>>>>>>
      */
     /**
@@ -303,15 +315,6 @@ public class Orden {
     public void setDate(int date, int hora){
         this.date = date;
         this.hora = hora;
-    }
-    /**
-     * Cambiamos/añadimos stops de la orden.
-     * @param nwTp
-     * @param nwSl 
-     */
-    public void setStops(Double nwTp, Double nwSl){
-        this.sl = nwSl;
-        this.tp = nwTp;
     }
     /**
      * Marcamos esta orden como aceptada.
@@ -339,6 +342,7 @@ public class Orden {
             if(this.sl ==0 && this.tp == 0){
                 this.sl = msj.getDouble(7540);
                 this.tp = msj.getDouble(7542);
+                System.err.println("Añadimos OCO: "+this + " correctamente! :)");
             }else{
                 this.sl = msj.getDouble(7540);
                 this.tp = msj.getDouble(7542);
@@ -381,7 +385,7 @@ public class Orden {
     @Override
    public String toString(){
         String tipo = this.getSide() == '1' ? "Compra" : "Venta ";
-        return "#"+this.getId() +"  OT:"+this.getOpenTime() + " " + tipo + " OP: " + this.getOpenPrice() + " SL:"+
+        return "#"+this.getId()+" Symbol:"+this.symbol +"  OT:"+this.getOpenTime() + " " + tipo + " OP: " + this.getOpenPrice() + " SL:"+
                     this.getSl() + " TP:"+this.getTp() + " CT:" + this.getcloseTime() +" CP:" + this.getClosePrice();
    }
 }
