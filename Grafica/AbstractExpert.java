@@ -7,6 +7,7 @@ package oms.Grafica;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.CustomException.OrdenNotFound;
 import oms.CustomException.TradeContextBusy;
 import oms.Grafica.indicators.Indicador;
 import oms.deliverer.Orden;
@@ -96,16 +97,29 @@ public abstract class AbstractExpert {
      * @return 
      */
     public int OrdersCount(){
+        Integer temp = null;
+        try {
+            temp = OrderHandler.getOrdersBySymbol(this.Symbol).size();
+        } catch (OrdenNotFound ex) {
+            Logger.getLogger(AbstractExpert.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return temp;
         
-        return OrderHandler.getOrdersBySymbol(this.Symbol).size();
+        
     }
     /**
      * Obetenemos El total de ordenes que podemos cerrar, cada gráfica esta
      * restringida a sólo poder cerrar ordenes de su Symbol
      * @return Ordenes en forma de ArrayList
      */
-    public ArrayList<Orden> OrdersTotal(){
-        return OrderHandler.getOrdersBySymbol(this.Symbol);
+    public ArrayList<Orden> OrdersTotal() {
+        ArrayList<Orden> temp = null;
+        try {
+            temp = OrderHandler.getOrdersBySymbol(this.Symbol);
+        } catch (OrdenNotFound ex) {
+            Logger.getLogger(AbstractExpert.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return temp;
     }
     /**
      * Hora acual.

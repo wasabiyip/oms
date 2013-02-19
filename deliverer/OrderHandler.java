@@ -38,8 +38,6 @@ public class OrderHandler {
      * @param msj
      */
     public synchronized static void sendOrder(Orden orden) throws TradeContextBusy{
-        
-        
         /**
         * Si el trade context esta busy para ese cruce entoncés lanzamos 
         * la excepción, si no enviamos la orden.
@@ -163,27 +161,6 @@ public class OrderHandler {
         }
         //GraficaHandler.orderClose(getGrafId(orden.id), order);   
     }
-    /**
-     * Método que notifica acerca del cierre mediante Tp o SL.
-     * @param order 
-     */
-    public synchronized static void closeFromOco(ExecutionReport msj){
-        String ordId = "";
-        try {
-            ordId = msj.getClOrdID().getValue();
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        Orden temp;
-        try {
-            temp = getOrdenById(ordId);
-            temp.setClose(msj);
-        } catch (OrdenNotFound ex) {
-            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        //GraficaHandler.orderClose(temp.getGrafId(), temp.getId());
-    }
     
     /**
      * Sabiendo que una orden ya existe y que la orden recibida es de cierre,
@@ -208,23 +185,7 @@ public class OrderHandler {
         coll.update(new BasicDBObject().append("OrderID", orden.getId()), sl);
         coll.update(new BasicDBObject().append("OrderID", orden.getId()), tp);
     }
-    /**
-     * Revisamos si existe una orden.
-     * @param msj
-     * @return
-     * @throws Exception 
-     */
-    public static boolean Exists(quickfix.fix42.ExecutionReport msj) throws Exception {
-        String id = msj.getClOrdID().getValue();
-        boolean temp=false;
-        for (int i = 0; i < getOrdersActivas().size(); i++) {
-            Orden current = getOrdersActivas().get(i);
-            if(current.getId().equals(id)){
-                temp = true;
-            }            
-        }
-        return temp;
-    }
+    
     /**
      * 
      * @param msj
@@ -255,7 +216,7 @@ public class OrderHandler {
                 temp = ordersArr.get(i).getGrafId().toString();
             }
         }
-        if(temp == null){
+        if(temp == null && ordersArr.size() != 0){
             throw new OrdenNotFound(ordid);
         }
         return temp;
@@ -285,7 +246,7 @@ public class OrderHandler {
             if(ordersArr.get(i).getGrafId().equals(grafId));
                 temp = ordersArr.get(i);
         }
-        if(temp == null){
+        if(temp == null && ordersArr.size() != 0){
             throw new OrdenNotFound(grafId);
         }
         return temp;
@@ -301,7 +262,7 @@ public class OrderHandler {
             if(ordersArr.get(i).getId().equals(id));
                 temp = ordersArr.get(i);
         }
-        if(temp == null){
+        if(temp == null && ordersArr.size() != 0){
             throw new OrdenNotFound(id);
         }
         return temp;
@@ -319,7 +280,7 @@ public class OrderHandler {
                 temp.add(ordersArr.get(i));
             }            
         }
-        if(temp.size()==0){
+        if(temp.size()==0 && ordersArr.size() != 0){
             throw new OrdenNotFound(symbol);
         }
         return temp;
