@@ -1,10 +1,19 @@
 package oms.deliverer;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import oms.Grafica.SendMessage;
 import oms.util.Console;
 import quickfix.FieldNotFound;
 import quickfix.SessionID;
 import quickfix.field.*;
+import quickfix.fix42.ExecutionReport;
 
 /**
  *
@@ -16,7 +25,22 @@ public class MessageHandler {
     SessionID sessionID;
     static String temp_msj = new String();
     public static Date date = null;
-
+    private static Socket socket;
+    private static BufferedReader inFromNode;
+    private static DataOutputStream outNode;
+    /**
+     * Pequeña clase tipo constructior.
+     */
+    public static void Init(){
+        try {
+            socket = new Socket("127.0.0.1",3000);
+            outNode = new DataOutputStream(socket.getOutputStream());
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+    }
     /**
      * Evaluamos todas las ordenes de tipo Execution report (35=8)
      *
@@ -28,6 +52,7 @@ public class MessageHandler {
          * Evaluanos el ExecType(150) que contiene el tipo de execution que
          * recibimos del broker.
          */
+        Orden tempOrden = OrderHandler.getOrdenById(msj.getClOrdID().getValue());
         switch (msj.getExecType().getValue()) {
             /**
              * 150=0 -> New: Quiere decir que es una nueva orden, aqui entramos
@@ -58,7 +83,7 @@ public class MessageHandler {
              */
             case '2':
                 //Obtenemos la Orden entrante...
-                Orden tempOrden = OrderHandler.getOrdenById(msj.getClOrdID().getValue());
+                
                 /**
                  * Si la orden entrante: 40=C -> Forex - Market, la orden
                  * entrante es de un Apertura/Cierre de posicion.
@@ -74,11 +99,12 @@ public class MessageHandler {
                         //La cerramos en mongo:
                         OrderHandler.shutDown(tempOrden);
                         //Node notification
-
+                        clOrden(tempOrden.getId());
                         //Cerramos el oco de esta orden
                         OrderHandler.closeOCO(tempOrden);
                     } else {
                         OrderHandler.orderNotify(msj);
+                        nwOrden(tempOrden.getGrafId(),msj, tempOrden.getSl(), tempOrden.getTp());
                     }
                     /**
                      * Si 40=W -> OCO Entonce la orden cerro por OCO.
@@ -89,7 +115,8 @@ public class MessageHandler {
                     Console.msg(temp_msj);
                     //La marcamos como cerrada.
                     tempOrden.setClose(msj);
-                    //TODO Node notification
+                    //Notificamos a node
+                    clOrden(tempOrden.getId());
                     //La cerramos en mongo:
                     OrderHandler.shutDown(tempOrden);
                 }
@@ -108,11 +135,11 @@ public class MessageHandler {
              * broker hace rollovers(corte de caja, toma te intereses.
              */
             case '4':
-                if (msj.getOrdType().getValue() == 'W') {
+                if (msj.getOrdType().getValue() == 'W' && msj.getOrdStatus().getValue() == 'C') {
                     System.err.println("OCO cancelada " + msj.getClOrdID().getValue() + " reenviando.");
                     OrderHandler.resendOCO(msj);
-                } else {
-                    System.err.println("El horror! la orden fue cancelada " + msj.getClOrdID().getValue() + " no deberiamos entrar aqui, revisar log!");
+                } else if(msj.getOrdStatus().getValue() == '4') {
+                    System.err.println("OCO cerrada de "+tempOrden.getId());
                 }
                 break;
             /**
@@ -157,10 +184,47 @@ public class MessageHandler {
         }
 
     }
-
+    
     public static void errorHandler(quickfix.fix42.Reject msj) throws FieldNotFound {
         temp_msj = "Error: " + msj.getText().getValue();
         System.out.println(temp_msj);
         Console.msg(temp_msj);
+    }
+    public static void nwOrden(String grafId,ExecutionReport report,double sl, double tp){
+        try {
+            writeNode("{"
+                +"\"type\":\"onOrder\","
+                +"\"data\":"
+                    +"{"        
+                        +"\"id\":\""+ grafId+"\","
+                        +"\"ordid\":\""+report.getClOrdID().getValue()+"\","
+                        +"\"tipo\":\""+report.getSide().getValue()+"\"," //tipo de operacion
+                        +"\"lotes\":\""+(report.getOrderQty().getValue()/100000)+"\","
+                        +"\"symbol\":\""+report.getSymbol().getValue()+"\","
+                        +"\"precio\":\""+report.getAvgPx().getValue()+"\","
+                        +"\"sl\":\""+sl+"\","
+                        +"\"tp\":\""+tp+"\""
+                    +"}"
+            +"}");
+        } catch (FieldNotFound ex) {
+            Logger.getLogger(SendMessage.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    public static void clOrden(String id){
+        
+        writeNode("{"        
+            +"\"type\":\"onOrderClose\","
+            +"\"data\":"
+            +"{"
+                +"\"id\":\""+id+"\""
+            +"}"
+        +"}");
+    }
+    public static void writeNode(String msj) {
+        try {
+            outNode.writeUTF(msj + "\n");
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
     }
 }

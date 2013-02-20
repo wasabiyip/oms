@@ -45,11 +45,17 @@ public class ExpertMoc extends AbstractExpert{
         bollBandx1 = indicator.createBollinger(setts.bollx1);
         bollBandx2 = indicator.createBollinger(setts.bollx2);
         bollBandx3 = indicator.createBollinger(setts.bollx3);
-        bollUp = this.getAvgBoll(this.bollUp());
+        /*bollUp = this.getAvgBoll(this.bollUp());
         bollDn = this.getAvgBoll(this.bollDn());
         bollDif = this.bollingerDif();
         bollUpS = this.getAvgBoll(this.bollUpS());
-        bollDnS = this.getAvgBoll(this.bollDnS());
+        bollDnS = this.getAvgBoll(this.bollDnS());*/
+        bollUp = this.bollUp();
+        bollDn = this.bollDn();
+        bollDif = this.bollingerDif();
+        bollUpS = this.bollUpS();
+        bollDnS = this.bollDnS();
+        
         this.cont_velas = 0;
         this.startTime = this.TimeCurrent() - (this.TimeCurrent()%this.Periodo);
     }
@@ -62,22 +68,21 @@ public class ExpertMoc extends AbstractExpert{
      */
     @Override
     public void onTick() {   
-        if(this.OrdersCount() < 1){
+        /*if(this.OrdersCount() < 1){
             orderSend(this.Ask, this.setts.lots, '1', Ask-this.setts.sl, Ask+this.setts.tp);
-        }else if(this.OrdersCount()>1){
-             for (int i = 0; i < OrdersTotal().size(); i++) {
-                 Orden currentOrden = OrdersTotal().get(i);
-                 if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
-                     if (currentOrden.getSide() == '1') {
-                         currentOrden.Modify(Ask-this.setts.sl, Ask+this.setts.tp);
-                     }else if (currentOrden.getSide() == '2'){
-                         currentOrden.Modify(Bid+this.setts.sl, Bid-this.setts.tp);
-                     }
-                 }
+        }else if(this.OrdersCount()>=1){
+            for (int i = 0; i < OrdersTotal().size(); i++) {
+                Orden currentOrden = OrdersTotal().get(i);
+                if (currentOrden.getSide() == '1') {
+                    currentOrden.close(this.Bid);
+                }else if (currentOrden.getSide() == '2'){
+                    currentOrden.close(this.Ask);
+                }
+                 
              }
-        }
+        }*/
         //Revisamos que los precios se encuentren dentro de el rango de entrada.
-        /*if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
+        if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
                 && (this.OrdersCount() < 1) && (bollDif < this.setts.bollxUp && bollDif > setts.bollxDn)) {
             //entrada de operaciones.
             if ((this.open_min+ this.setts.boll_special) <= bollDn) {
@@ -131,7 +136,7 @@ public class ExpertMoc extends AbstractExpert{
                     }
                 }
             }
-        }*/
+        }
     }
     /*
      * Método que promedia un Promedio de bollingers con la variable spreadAask.
@@ -147,7 +152,7 @@ public class ExpertMoc extends AbstractExpert{
     public double getAvgOpen(){
         double temp = 0.0;
         temp = ((this.open_min) + (this.open_min +(this.Ask - this.Bid)))/2;
-        return temp;
+        return this.open_min;
     }
     /**
      * Obtenemos el promedio de bollinger de entrada (UP).
@@ -156,7 +161,6 @@ public class ExpertMoc extends AbstractExpert{
     public double bollUp() {
         return (bollBand1.getUpperBand() + bollBand2.getUpperBand() + 
                             bollBand3.getUpperBand())/3;
-        
     }
     
     /**

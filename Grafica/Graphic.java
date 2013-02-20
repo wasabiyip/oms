@@ -7,7 +7,10 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.CustomException.OrdenNotFound;
 import oms.Grafica.DAO.MongoDao;
+import oms.deliverer.Orden;
+import oms.deliverer.OrderHandler;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -181,7 +184,18 @@ public class Graphic extends Thread {
                     expert.Bid = ((double) json.get("precio"));
                     break;
                 case "close-order":
-                    //expert.order.Close(this.id, dao.getOrder((String)json.get("value")));
+                    try {
+                        //expert.order.Close(this.id, dao.getOrder((String)json.get("value")));
+                        Orden orden = OrderHandler.getOrdenById(id);
+                        if(orden.getSide() == '1'){
+                            orden.close(expert.Bid);
+                        }else if(orden.getSide() == '1'){
+                            orden.close(expert.Ask);
+                        }
+                    } catch (OrdenNotFound ex) {
+                        Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    
                     break;
                 default:
                     System.out.println("Mensaje no identificado"+ json.toString());

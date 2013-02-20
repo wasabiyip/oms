@@ -4,7 +4,6 @@ import java.util.Properties;
 import oms.Grafica.indicators.BollingerBands;
 import oms.Grafica.indicators.Indicador;
 import oms.deliverer.Orden;
-import oms.util.Console;
 import oms.util.idGenerator;
 
 /**

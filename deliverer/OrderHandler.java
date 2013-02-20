@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.CustomException.OrdenNotFound;
 import oms.CustomException.TradeContextBusy;
-import oms.Grafica.Order;
 import oms.dao.MongoDao;
 import quickfix.*;
 import quickfix.field.*;
@@ -157,7 +156,7 @@ public class OrderHandler {
         try {
             Session.sendToTarget(oco, SenderApp.sessionID);
         }catch (SessionNotFound ex) {
-            Logger.getLogger(Order.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
         }
         //GraficaHandler.orderClose(getGrafId(orden.id), order);   
     }
@@ -272,7 +271,7 @@ public class OrderHandler {
      * @param symbol
      * @return 
      */
-    public synchronized static ArrayList<Orden> getOrdersBySymbol(String symbol)throws OrdenNotFound{
+    public synchronized static ArrayList<Orden> getOrdersBySymbol(String symbol){
         ArrayList<Orden> temp= new ArrayList();
         
         for (int i = 0; i < ordersArr.size(); i++) {
@@ -280,9 +279,7 @@ public class OrderHandler {
                 temp.add(ordersArr.get(i));
             }            
         }
-        if(temp.size()==0 && ordersArr.size() != 0){
-            throw new OrdenNotFound(symbol);
-        }
+        
         return temp;
     }
 }

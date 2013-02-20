@@ -1,6 +1,6 @@
 package oms.util;
 
-import oms.deliverer.SenderApp;
+import oms.deliverer.MessageHandler;
 
 /**
  *
@@ -20,7 +20,7 @@ public class Console {
         temp.append("\"label\": \"warning\",");
         temp.append("\"msj\":\""+msj+" \"");
         temp.append("}");
-        SenderApp.writeNode(temp.toString());
+        MessageHandler.writeNode(temp.toString());
     }
     /**
      * Enviamos un mensaje para que sea imprimido en la pestaña de jornual,
@@ -34,6 +34,6 @@ public class Console {
         temp.append("\"label\": \"info\",");
         temp.append("\"msj\":\""+msj+" \"");
         temp.append("}");
-        SenderApp.writeNode(temp.toString());
+        MessageHandler.writeNode(temp.toString());
     }
 }

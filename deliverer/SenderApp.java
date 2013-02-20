@@ -2,22 +2,15 @@ package oms.deliverer;
 
 
 import java.io.*;
-import oms.Grafica.Graphic;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Properties;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.Grafica.Graphic;
 import oms.dao.MongoConnection;
-import oms.util.ConsoleNot;
-import oms.deliverer.MessageHandler;
 import oms.util.Console;
-import oms.util.Node;
 import quickfix.*;
-import quickfix.Message;
 import quickfix.field.*;
-import quickfix.fix42.MarketDataRequest;
 
 /**
  * Clase que maneja mensajes recibidos del servidor remoto. 
@@ -26,41 +19,22 @@ import quickfix.fix42.MarketDataRequest;
 public class SenderApp extends MessageCracker implements Application{
     private String passWord = "omar2012";
     private String userName = "GMIDemo00292fix";
-    public static PriceBeat pricebeat = new PriceBeat();
-    PriceSensitive pricesense = new PriceSensitive();
     public static MongoConnection mongo;
     public static SessionID sessionID;
     private GraficaHandler graficaHandler = new GraficaHandler();
     boolean lock = false;
-    private static Socket socket;
-    private static BufferedReader inFromNode;
-    private static DataOutputStream outNode;
+    
     
     /**
      * Constructor nos loggeamos a node al construir esta clase.
      */
     public SenderApp(){
-        try {
-            socket = new Socket("127.0.0.1",3000);
-            outNode = new DataOutputStream(this.socket.getOutputStream());
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
-        }         
+        MessageHandler.Init();
+                
     }
     
-    /**
-     * Enviamos mensajes de la aplicación.
-     * @param msj 
-     */
-    public static void writeNode(String msj) {
-        try {
-            outNode.writeUTF(msj + "\n");
-        } catch (IOException ex) {
-            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
+    
+    
     /**
      * Método que se ejecuta al crear aplicación.
      * @param id 
@@ -79,11 +53,12 @@ public class SenderApp extends MessageCracker implements Application{
     @Override
     public void onLogon(SessionID id) {
         Console.msg("Conectados exitosasmente con "+id+" desde la cuenta " + this.userName);
+       
         SenderApp.sessionID = id;
         //Para que los threads no se dupliquen cuando el servidor nos desconecta.
         if(!lock){
             System.out.println(this.graficaHandler.getProfile());
-            writeNode("{\"type\": \"login\", "
+            MessageHandler.writeNode("{\"type\": \"login\", "
                     + "\"name\":\"app\", "
                     + "\"profile\":\""+this.graficaHandler.getProfile()+"\""
                     + "}");
@@ -202,8 +177,6 @@ public class SenderApp extends MessageCracker implements Application{
      */
     public void onMessage(quickfix.fix42.MarketDataIncrementalRefresh msj,
             SessionID sessionID) throws FieldNotFound {
-        MessageHandler.marketDataPx(msj);
-        pricebeat.notifyObservers();        
     }
     
     public void onMessage(quickfix.fix42.ExecutionReport msj, SessionID sessionID) throws FieldNotFound, Exception{

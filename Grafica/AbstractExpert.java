@@ -98,11 +98,9 @@ public abstract class AbstractExpert {
      */
     public int OrdersCount(){
         Integer temp = null;
-        try {
-            temp = OrderHandler.getOrdersBySymbol(this.Symbol).size();
-        } catch (OrdenNotFound ex) {
-            Logger.getLogger(AbstractExpert.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+        temp = OrderHandler.getOrdersBySymbol(this.Symbol).size();
+        
         return temp;
         
         
@@ -114,11 +112,8 @@ public abstract class AbstractExpert {
      */
     public ArrayList<Orden> OrdersTotal() {
         ArrayList<Orden> temp = null;
-        try {
-            temp = OrderHandler.getOrdersBySymbol(this.Symbol);
-        } catch (OrdenNotFound ex) {
-            Logger.getLogger(AbstractExpert.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+        temp = OrderHandler.getOrdersBySymbol(this.Symbol);
         return temp;
     }
     /**

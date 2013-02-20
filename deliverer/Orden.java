@@ -76,7 +76,6 @@ public class Orden {
         this.newOrderSingle.set(new OrderQty(this.lotes));
         this.newOrderSingle.set(new OrdType('C'));
         this.newOrderSingle.set(new Price(this.open_price));
-        
         this.esNueva = true;
     }
     /**
@@ -340,8 +339,8 @@ public class Orden {
         
         try {
             if(this.sl ==0 && this.tp == 0){
-                this.sl = msj.getDouble(7540);
-                this.tp = msj.getDouble(7542);
+                this.sl = msj.getDouble(7542);
+                this.tp = msj.getDouble(7540);
                 System.err.println("Añadimos OCO: "+this + " correctamente! :)");
             }else{
                 this.sl = msj.getDouble(7540);
