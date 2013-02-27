@@ -19,4 +19,9 @@ systemctl start mongod.service
 # can just run "killall -9 node" and this'll kill all node PID's. (killall is a badass command)
 ##
 /*-------------------------------------------------------------------------------------------------*/
-
+##
+# If you are using a Linux distribution that uses strong iptables features, while having your
+# application in a non production enviroment it'll drop all your requests, you have to add an iptables
+# rule by: iptables -I INPUT 3 -p TCP --dport 3000 -j ACCEPT (3000 is the port you want to open).
+##
+/*-------------------------------------------------------------------------------------------------*/
