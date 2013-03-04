@@ -64,28 +64,29 @@ block content
                                           span #{chart.symbol} M#{chart.Periodo}-#{chart.Magicma}                           
                                       hr
                                       #chart-div
-                                        .vars.well
-                                          span.limite-cruce
-                                            abbr(title="Limite de operaciones para este cruce") 
-                                              h6 Limite
-                                                i.icon-minus-sign.var-ico
-                                          hr
-                                          span.hora
-                                            abbr(title="Rangos de hora para esta grafica") 
-                                              h6 Hora
-                                                i.icon-minus-sign.var-ico
-                                          hr
-                                          span.bollx
-                                            abbr(title="Bollinger de apertura (rango)") 
-                                              h6 BollX
-                                                i.icon-minus-sign.var-ico
-                                          span
-                                            -var prom = chart.ID + '-prom'
-                                            a.promedios(id=prom,href="#", rel="tooltip", data-placement="bottom", data-original-title="?")
-                                              i.icon-plus
-                                              
-                                        -var id = chart.ID +'-chart'
-                                        .chart(id=id)
+                                        .row-fluid  
+                                          .vars.well.span2
+                                            span.limite-cruce
+                                              abbr(title="Limite de operaciones para este cruce") 
+                                                h6 Limite
+                                                  i.icon-minus-sign.var-ico
+                                            hr
+                                            span.hora
+                                              abbr(title="Rangos de hora para esta grafica") 
+                                                h6 Hora
+                                                  i.icon-minus-sign.var-ico
+                                            hr
+                                            span.bollx
+                                              abbr(title="Bollinger de apertura (rango)") 
+                                                h6 BollX
+                                                  i.icon-minus-sign.var-ico
+                                            span
+                                              -var prom = chart.ID + '-prom'
+                                              a.promedios(id=prom,href="#", rel="tooltip", data-placement="bottom", data-original-title="?")
+                                                i.icon-plus
+                                                
+                                          -var id = chart.ID +'-chart'
+                                          .span9.chart(id=id)
                             -}                          
                         -}
                   -}               

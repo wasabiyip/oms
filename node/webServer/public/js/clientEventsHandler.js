@@ -205,6 +205,7 @@ closeOrder= function(grafica,orden){
 	  "id":orden
   };
   if (ask==true){
+    console.log('drama!');
     socket.emit('order-close',str);
   }else{
   	//nada  

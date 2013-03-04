@@ -27,6 +27,7 @@ app.on('connection', function(client) {
 	
     //Cuando se cierra la conexion con algun cliente.
     client.on('end', function(end){
+        
         var str = '{ "type" : "close"}';
         evaluar(formatStr(str), client);
     });
@@ -38,7 +39,7 @@ app.on('connection', function(client) {
     client.on('error', function(error){
         console.log('Colapso: ', error);
         console.log(handler.getGrafica(client).settings.ID);
-        //if (error.search('This socket is closed'));
+        console.log(error.search('This socket is closed'));
     });
 });
 

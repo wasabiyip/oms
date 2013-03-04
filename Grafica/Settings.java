@@ -1,7 +1,5 @@
 package oms.Grafica;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -78,7 +76,6 @@ public class Settings {
         bollS2 = new Integer(config.getProperty("periodoBollsalida2"));
         bollS3 = new Integer(config.getProperty("periodoBollsalida3"));
         boll_special = new Double(config.getProperty("bollspecial"));
-        System.out.println(MAGICMA);
         spread = new Double(config.getProperty("spread"));
         lots = new Double(config.getProperty("Lots"));
         tp = new Integer(config.getProperty("tp")) * this.Point;
@@ -125,6 +122,8 @@ public class Settings {
         }
         horaIni = horaIni>24? horaIni-24:horaIni;
         horaFin = horaFin>24? horaFin-24:horaFin;
+        //System.out.println(horaIni + " " + horaFin);
+        this.lots = 1.00;
         /*horaIni = 0.0;
         horaFin =24.0;*/
         

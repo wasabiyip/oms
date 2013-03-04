@@ -152,21 +152,23 @@ public class Graphic extends Thread {
                     //Este evento puede ser llamado cada tick, auqque mosotros
                     //lo llamamos cada open para ahorrar recursos.
                     this.expert.open_min = open;
-                    this.expert.onTick();
+                    
                     //Si es una nueva vel
-                    if (candle.isNewCandle(GMTDate.getTime()) == 1) {
+                    if (candle.isNewCandle(GMTDate.getTime())) {
                         this.expert.indicator.appendBollsData(open);
+                        this.expert.onTick();
                         this.sendMessage.ExpertState();
+                        this.sendMessage.Open();
+                       
+                    }else{
+                        this.expert.onTick();
+                        this.sendMessage.Open(); 
                     }
-                    //Tenemos una vela muerta, osea que abrió con precios muertos.
-                    else if(candle.isNewCandle(GMTDate.getTime()) == -1){
-                        
-                    }
+                    
                     //Si el expert puede operar
                     /*if(expert.isActive()){
                         this.writeBlackBoxFile(stateFeed.getExpertState());
                     }*/
-                    this.sendMessage.Open();
                     break;
                 case "close":
                     //TODO hacer algo con este precio de cierre

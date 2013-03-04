@@ -61,7 +61,7 @@ public abstract class AbstractExpert {
                 OrderHandler.sendOrder(new Orden(this.setts.id, this.Symbol, lotes, this.setts.MAGICMA, price, side,sl ,tp));
             }            
         } catch (TradeContextBusy ex) {
-            Logger.getLogger(AbstractExpert.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println(ex);
         }
     }
     /**

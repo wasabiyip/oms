@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import quickfix.FieldNotFound;
@@ -17,7 +18,7 @@ import quickfix.fix42.ExecutionReport;
  */
 public class SendMessage {
 
-    private static DataOutputStream outNode;
+    private DataOutputStream outNode;
     private StateFeed stateFeed;
     
     public SendMessage(DataOutputStream outNode, StateFeed stateFeed) {    
@@ -134,9 +135,11 @@ public class SendMessage {
     private  void writeNode(String msj) {
         try {
             
+            int random = new Random().nextInt(15);
+            //Esperamos entre 1-15 milis para prevenir perdida de mensajes.
+            Thread.sleep(random);
             outNode.writeUTF(msj + "\n");
-            //Esperamos para que los mensajes no se traslapen.
-            Thread.sleep(1);
+            
         } catch (IOException ex) {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {

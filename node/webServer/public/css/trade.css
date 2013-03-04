@@ -1,7 +1,7 @@
 body {
     line-height: 1;
     color: #1A202C;
-    background-color: rgba(249, 249, 249, 0.6);
+    
     background-image:url(../imgs/transmit.gif); 
     background-repeat:repeat
     color: #333333;
@@ -19,7 +19,7 @@ hr{
     height:inherit;
     width: 100%;
     height: 100%;
-    background-color: rgba(249, 249, 249, 0.6);
+    
     position: absolute;
 }
 h4,h5,p{
@@ -117,7 +117,7 @@ h4,h5,p{
 }
 .chart{
     margin-left: 70px;
-    width: 380px;
+    
     height: 200px;
 }
 .promedios {
@@ -132,7 +132,6 @@ h4,h5,p{
 .vars{
     padding: 3px 0 3px 3px; 
     margin: 7px 0 0 2px;
-    width: 65px;
     float: left;
 }
 

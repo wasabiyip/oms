@@ -26,14 +26,14 @@ public class Candle {
      * @param hora
      * @return 
      */
-    public int isNewCandle(Integer hora){
-        int temp = 0;
+    public boolean isNewCandle(Integer hora){
+        boolean temp= false;
+         cont_time++;
         if(hora%this.periodo == 0 || 
                 cont_time%this.periodo ==0){
-            temp = 1;
+            temp = true;
             cont_time=0;
-        }        
-        cont_time++;
+        }
         return temp;
     }
 }

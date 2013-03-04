@@ -24,6 +24,8 @@ function Grafica(data){
   this.data_master = [['Date','Open','bollUp','bollDn','bollUpS','bollDnS']];
   this.chart;
   this.chart_id;
+  this.chart_width;
+  this.chart_height;
   /*
   * Regresamos el valor de determinada propiedad para esta grafica.
   */
@@ -120,7 +122,9 @@ function Grafica(data){
 
     var options = {
       title: this.symbol,
-      pointSize : 3
+      pointSize : 3,
+      width : 350,
+      height : 200
     };
     this.chart = new google.visualization.LineChart(this.chart_id);
     

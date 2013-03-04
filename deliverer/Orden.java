@@ -116,21 +116,8 @@ public class Orden {
         this.newOrderSingle.set(new OrdType('C'));
         this.newOrderSingle.set(new Price(this.open_price));
         this.esNueva = true;
-
-        newOrderOco = new NewOrderSingle();
-        newOrderOco.set(new ClOrdID(this.ordId));
-        newOrderOco.set(new HandlInst('1'));
-        newOrderOco.set(new Currency(symbol.substring(0, 3)));
-        newOrderOco.set(new Symbol(this.symbol));
-        newOrderOco.set(new TransactTime());
-        newOrderOco.set(new OrderQty(this.lotes));
-        newOrderOco.set(new OrdType('W'));
-        newOrderOco.set(new Side(averse));
-        newOrderOco.setField(new CharField(7541, '3'));
-        newOrderOco.setField(new CharField(7553, averse));
-        newOrderOco.setField(new DoubleField(7542, redondear(sl)));
-        newOrderOco.setField(new DoubleField(7540, redondear(tp)));
-        OrderHandler.SendOCO(this.newOrderOco);
+        this.sl = sl;
+        this.tp = tp;
     }
     /**
      * Enviamos cierre de la orden.
@@ -152,7 +139,6 @@ public class Orden {
         try {
             System.err.println("Cerrando orden "+ this.ordId);
             OrderHandler.sendOrder(this);
-            //System.out.println("Close: #" +  this.id + " "+time +" $"+close);
         } catch (TradeContextBusy ex) {
             Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -199,7 +185,7 @@ public class Orden {
         return this.isActiva;
     }
     /**
-     * <<<<<<<<<<------------------------GETTERS!
+     * <<<<<<<<<<-------------------------------------------------------GETTERS!
      */
     /**
      * StopLoss de la orden.
@@ -230,7 +216,7 @@ public class Orden {
         return this.side;
     }
     /**
-     * @return Id de la orden generalmente sera el orden ascendente de la orden 
+     * @return Id de la orden generalmente sera el orden ascendente de la orden. 
      * cuando abrio.
      */
     public String getId(){
@@ -304,7 +290,7 @@ public class Orden {
         return this.newOrderOco;
     }
     /**
-     * SETTERS! ------------------------>>>>>>>>>>
+     * SETTERS!------------------------------------------------------->>>>>>>>>>
      */
     /**
      * Añadimos fecha por tick para saber que fecha/hora una orden cierra.
@@ -329,7 +315,24 @@ public class Orden {
         } catch (FieldNotFound ex) {
             Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Graphic.dao.recordOrden(this.grafId,this.executionReport,this.magicma);   
+        Graphic.dao.recordOrden(this.grafId,this.executionReport,this.magicma);
+        //Si tenemos pendiente la OCO.
+        if(this.newOrderOco == null && this.sl != 0 && this.tp != 0){
+            newOrderOco = new NewOrderSingle();
+            newOrderOco.set(new ClOrdID(this.ordId));
+            newOrderOco.set(new HandlInst('1'));
+            newOrderOco.set(new Currency(symbol.substring(0, 3)));
+            newOrderOco.set(new Symbol(this.symbol));
+            newOrderOco.set(new TransactTime());
+            newOrderOco.set(new OrderQty(this.lotes));
+            newOrderOco.set(new OrdType('W'));
+            newOrderOco.set(new Side(averse));
+            newOrderOco.setField(new CharField(7541, '3'));
+            newOrderOco.setField(new CharField(7553, averse));
+            newOrderOco.setField(new DoubleField(7542, redondear(this.sl)));
+            newOrderOco.setField(new DoubleField(7540, redondear(this.tp)));
+            OrderHandler.SendOCO(this.newOrderOco);
+        }
     }
     /**
      * Añadimos el TP/SL de la orden.
@@ -341,7 +344,7 @@ public class Orden {
             if(this.sl ==0 && this.tp == 0){
                 this.sl = msj.getDouble(7542);
                 this.tp = msj.getDouble(7540);
-                System.err.println("Añadimos OCO: "+this + " correctamente! :)");
+                //System.err.println("Añadimos OCO: "+this + " correctamente! :)");
             }else{
                 this.sl = msj.getDouble(7540);
                 this.tp = msj.getDouble(7542);

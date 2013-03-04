@@ -6,7 +6,7 @@ package oms.Grafica;
  * @author omar
  */
 public class StateFeed {
-    
+    //referencia del expert
     private ExpertMoc expert;
     private Settings setts;
     //Solo aceptamos clases que hayan implementado ek AbstractExpert.

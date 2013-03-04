@@ -68,30 +68,22 @@ public class ExpertMoc extends AbstractExpert{
      */
     @Override
     public void onTick() {   
-        /*if(this.OrdersCount() < 1){
-            orderSend(this.Ask, this.setts.lots, '1', Ask-this.setts.sl, Ask+this.setts.tp);
-        }else if(this.OrdersCount()>=1){
-            for (int i = 0; i < OrdersTotal().size(); i++) {
-                Orden currentOrden = OrdersTotal().get(i);
-                if (currentOrden.getSide() == '1') {
-                    currentOrden.close(this.Bid);
-                }else if (currentOrden.getSide() == '2'){
-                    currentOrden.close(this.Ask);
-                }
-                 
-             }
-        }*/
+        if(true){
+            //System.out.println(this.CurrentHora()+" hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni)));
+            //System.out.println("hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni))+
+              //   " ordenes: "+(this.OrdersCount() < 1) + " bollDif:"+(bollDif < this.setts.bollxUp && bollDif > setts.bollxDn));
+        }        
         //Revisamos que los precios se encuentren dentro de el rango de entrada.
         if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
                 && (this.OrdersCount() < 1) && (bollDif < this.setts.bollxUp && bollDif > setts.bollxDn)) {
             //entrada de operaciones.
             if ((this.open_min+ this.setts.boll_special) <= bollDn) {
                 //Compra
-                orderSend(this.Ask, this.setts.lots, '1', 0.0, 0.0);
+                orderSend(this.Ask, this.setts.lots, '1', this.Bid - this.setts.sl, this.Bid + this.setts.tp);
                 this.cont_velas = 0;
             } else if (this.open_min - this.setts.boll_special >= bollUp) {
                 //Venta
-                orderSend(this.Bid, this.setts.lots, '2', 0.0 ,0.0);
+                orderSend(this.Bid, this.setts.lots, '2', this.Ask + this.setts.sl, this.Ask - this.setts.tp);
                 this.cont_velas = 0;
             }
             //Revisamos que haya entrado alguna operación y que los precios se 
@@ -115,7 +107,7 @@ public class ExpertMoc extends AbstractExpert{
                         currentOrden.close(this.Bid);
                         break;
                     }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
-                        currentOrden.Modify(this.Bid-this.setts.sl, this.Bid+this.setts.tp);
+                        //currentOrden.Modify(this.Bid-this.setts.sl, this.Bid+this.setts.tp);
                     }
                 } else if (currentOrden.getSide() == '2') {
                     if (setts.salidaBollinger && this.open_min  <= bollDnS) {
@@ -132,7 +124,7 @@ public class ExpertMoc extends AbstractExpert{
                         currentOrden.close(this.Ask);
                         break;
                     }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
-                        currentOrden.Modify(this.Ask+this.setts.sl, this.Ask-this.setts.tp);
+                        //currentOrden.Modify(this.Ask+this.setts.sl, this.Ask-this.setts.tp);
                     }
                 }
             }

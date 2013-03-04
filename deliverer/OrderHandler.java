@@ -52,7 +52,7 @@ public class OrderHandler {
                     ordersArr.add(orden);
                 }
             } catch (SessionNotFound ex) {
-                Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+                System.err.println(ex);
             }
         }
     }

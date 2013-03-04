@@ -2,7 +2,7 @@
  * Module dependencies.
  */
  var express = require('express')
-  , routes = require('routes')
+  , routes = require('./routes')
   , http = require('http')
   , path = require('path');
 
@@ -22,7 +22,7 @@ models.master_modl = require('./models/masterModel');
 //Routes
 require('./routes')(app, models);
 //Inicializando
-server.listen(8000);
+server.listen(80);
 
 io.sockets.on('connection', function (client){ 
 //Todo lo que esta aqui adentro maneja mensajes recibidos desde 
