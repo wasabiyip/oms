@@ -126,7 +126,6 @@ public class Settings {
         this.lots = 1.00;
         /*horaIni = 0.0;
         horaFin =24.0;*/
-        
     }
     
     /**

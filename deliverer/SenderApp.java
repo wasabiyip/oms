@@ -17,8 +17,8 @@ import quickfix.field.*;
  * @author omar
  */
 public class SenderApp extends MessageCracker implements Application{
-    private String passWord = "omar2012";
-    private String userName = "GMIDemo00292fix";
+    private String passWord ;
+    private String userName ;
     public static MongoConnection mongo;
     public static SessionID sessionID;
     private GraficaHandler graficaHandler = new GraficaHandler();
@@ -28,7 +28,9 @@ public class SenderApp extends MessageCracker implements Application{
     /**
      * Constructor nos loggeamos a node al construir esta clase.
      */
-    public SenderApp(){
+    public SenderApp(String userName, String passWord){
+        this.userName = userName;
+        this.passWord = passWord;
         MessageHandler.Init();
                 
     }

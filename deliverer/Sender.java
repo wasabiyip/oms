@@ -27,12 +27,13 @@ public class Sender  {
     public Sender() throws Exception{
         InputStream inputS = new BufferedInputStream(
                                 new FileInputStream(
-                                new File("/home/omar/OMS/config/app.cnf")));
+                                new File("/home/omar/OMS/config/app1.cnf")));
+                                //new File("/home/omar/OMS/config/GMIDemo00292str.cnf")));
      
         SessionSettings settings = new SessionSettings(inputS);
         inputS.close();
         
-        SenderApp application = new SenderApp();
+        SenderApp application = new SenderApp(settings.getString("UserName"),settings.getString("PassWord"));
         MessageStoreFactory messageStoreFactory = new FileStoreFactory(settings);
         LogFactory logFactory = new ScreenLogFactory(true,true, true, true);
         MessageFactory messageFactory = new DefaultMessageFactory();

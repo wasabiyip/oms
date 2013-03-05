@@ -135,7 +135,7 @@ public class SendMessage {
     private  void writeNode(String msj) {
         try {
             
-            int random = new Random().nextInt(15);
+            int random = new Random().nextInt(30);
             //Esperamos entre 1-15 milis para prevenir perdida de mensajes.
             Thread.sleep(random);
             outNode.writeUTF(msj + "\n");

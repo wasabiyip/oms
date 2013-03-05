@@ -24,15 +24,15 @@ public abstract class IMongoDAO {
         Properties config = new Properties();
         try {
                 
-                config.load(new FileInputStream("/home/omar/OMS/config/app.cnf"));
+                config.load(new FileInputStream("/home/omar/OMS/config/app1.cnf"));
                 
             } catch (IOException ex) {
                 Logger.getLogger(MongoConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
         
         host = config.getProperty("host"); 
-        puerto = new Integer( config.getProperty("puerto"));;
-        datab = config.getProperty("data_base");
-        collection = config.getProperty("colleccion");        
+        puerto = new Integer( 27017);;
+        datab = config.getProperty("operacions");
+        collection = config.getProperty("log");        
     }
 }
