@@ -76,12 +76,7 @@ public class ExpertMoc extends AbstractExpert{
         }
         
         if(this.OrdersCount() < 1){
-            orderSend(this.Ask, this.setts.lots, '1', this.Bid - this.setts.sl, this.Bid + this.setts.tp);
-        }else{
-            for (int i = 0; i < OrdersTotal().size(); i++) {
-                Orden currentOrden = OrdersTotal().get(i);
-                currentOrden.close(this.Ask);
-            }
+            orderSend(this.Bid, this.setts.lots, '2', this.Ask + this.setts.sl, this.Ask - this.setts.tp);
         }
         //Revisamos que los precios se encuentren dentro de el rango de entrada.
         if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)

@@ -48,7 +48,7 @@ public class OrderHandler {
     public static void Init(){
         ordersArr = getSerializedOrders();//
         for (int i = 0; i < ordersArr.size(); i++) {
-            System.out.println(ordersArr.get(i));
+            MessageHandler.nwOrden(ordersArr.get(i));
         }
     }
     /**

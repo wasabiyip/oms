@@ -106,28 +106,7 @@ public class SendMessage {
                 +"}"
             +"}");
     }
-    /**
-     * Enviamos ordenes actuales de la grafica.
-     */
-    public void ordersInit(ArrayList<DBObject> data, String id){
-        
-         for(int i=0; i<data.size();i++){
-            this.writeNode("{"
-                +"\"type\":\"onOrderInit\","
-                +"\"data\":"
-                +"{"
-                    +"\"id\":\""+id+"\","
-                        +"\"ordid\":\""+data.get(i).get("OrderID") +"\","
-                        +"\"tipo\":\""+data.get(i).get("Type")+"\"," //tipo de operacion
-                        +"\"lotes\":\""+((Double)data.get(i).get("Size")/100000)+"\","
-                        +"\"symbol\":\""+data.get(i).get("Symbol")+"\","
-                        +"\"precio\":\""+data.get(i).get("Price")+"\","
-                        +"\"sl\":\""+data.get(i).get("StopL") +"\","
-                        +"\"tp\":\""+data.get(i).get("TakeP")+"\""
-                    +"}"
-            +"}");
-         }
-    }
+    
     /**
      * Método que envia mensajes a node.
      * @param msj

@@ -46,7 +46,6 @@ io.sockets.on('connection', function (client){
             }
         }
         if(msj.id == 'data'){
-            console.log('cliente data');
             webClients.push(client);
             checkClientsActivos();
         }
@@ -57,7 +56,7 @@ io.sockets.on('connection', function (client){
     });
     
     client.on('order-close', function(msj){
-        
+        console.log('close!!');
         handler.closeOrder(msj);
     });
     

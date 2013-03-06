@@ -65,6 +65,7 @@ public class MessageHandler {
                 if (msj.getOrdType().getValue() == 'W') {
                     //Guardamos el OCO.
                     OrderHandler.ocoEntry(msj);
+                    modOrden(tempOrden);
                 }
                 /**
                  * 150=1 -> Partial Fill:Acualmente no hemos visto que nos llene
@@ -99,12 +100,12 @@ public class MessageHandler {
                         //La cerramos en mongo:
                         OrderHandler.shutDown(tempOrden);
                         //Node notification
-                        clOrden(tempOrden.getId());
+                        clOrden(tempOrden);
                         //Cerramos el oco de esta orden
                         OrderHandler.closeOCO(tempOrden);
                     } else {
                         OrderHandler.orderNotify(msj);
-                        nwOrden(tempOrden.getGrafId(),msj, tempOrden.getSl(), tempOrden.getTp());
+                        nwOrden(tempOrden);
                     }
                     /**
                      * Si 40=W -> OCO Entonce la orden cerro por OCO.
@@ -116,7 +117,7 @@ public class MessageHandler {
                     //La marcamos como cerrada.
                     tempOrden.setClose(msj);
                     //Notificamos a node
-                    clOrden(tempOrden.getId());
+                    clOrden(tempOrden);
                     //La cerramos en mongo:
                     OrderHandler.shutDown(tempOrden);
                 }
@@ -190,36 +191,60 @@ public class MessageHandler {
         System.out.println(temp_msj);
         Console.msg(temp_msj);
     }
-    public static void nwOrden(String grafId,ExecutionReport report,double sl, double tp){
-        try {
+    /**
+     * Notificamos que modificamos/añadimos Sl-Tp de una orden.
+     * @param orden 
+     */
+    public static void modOrden(Orden orden){
+        
             writeNode("{"
-                +"\"type\":\"onOrder\","
+                +"\"type\":\"orderModify\","
                 +"\"data\":"
-                    +"{"        
-                        +"\"id\":\""+ grafId+"\","
-                        +"\"ordid\":\""+report.getClOrdID().getValue()+"\","
-                        +"\"tipo\":\""+report.getSide().getValue()+"\"," //tipo de operacion
-                        +"\"lotes\":\""+(report.getOrderQty().getValue()/100000)+"\","
-                        +"\"symbol\":\""+report.getSymbol().getValue()+"\","
-                        +"\"precio\":\""+report.getAvgPx().getValue()+"\","
-                        +"\"sl\":\""+sl+"\","
-                        +"\"tp\":\""+tp+"\""
-                    +"}"
+                +"{"
+                    +"\"id\":\""+orden.getId()+"\","
+                    +"\"nwSl\":"+orden.getSl()+","
+                    +"\"nwTp\":"+orden.getTp()+","
+                +"}"
             +"}");
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(SendMessage.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
-    public static void clOrden(String id){
+    /**
+     * Notificamos que cerro una orden.
+     * @param orden 
+     */
+    public static void clOrden(Orden orden){
         
         writeNode("{"        
             +"\"type\":\"onOrderClose\","
             +"\"data\":"
             +"{"
-                +"\"id\":\""+id+"\""
+                +"\"id\":\""+orden.getId()+"\""
             +"}"
         +"}");
     }
+    /**
+     * Notificamos que entro una nueva orden.
+     * @param orden 
+     */
+    public static void nwOrden(Orden orden){
+        writeNode("{"
+            +"\"type\":\"onOrder\","
+            +"\"data\":"
+                +"{"        
+                    +"\"id\":\""+orden.getGrafId()+"\","
+                    +"\"ordid\":\""+orden.getId()+"\","
+                    +"\"tipo\":\""+orden.getSide()+"\"," //tipo de operacion
+                    +"\"lotes\":\""+orden.getLotes()+"\","
+                    +"\"symbol\":\""+orden.getSymbol()+"\","
+                    +"\"precio\":\""+orden.getOpenPrice()+"\","
+                    +"\"sl\":\""+orden.getSl()+"\","
+                    +"\"tp\":\""+orden.getTp()+"\""
+                +"}"
+        +"}");
+    }
+    /**
+     * Escribimos mensajes a node.
+     * @param msj 
+     */
     public static void writeNode(String msj) {
         try {
             outNode.writeUTF(msj + "\n");

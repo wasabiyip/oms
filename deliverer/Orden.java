@@ -289,6 +289,10 @@ public class Orden implements java.io.Serializable{
     public NewOrderSingle getOcoOrden(){
         return this.newOrderOco;
     }
+    
+    public Double getLotes(){
+        return this.lotes;
+    }
     /**
      * SETTERS!------------------------------------------------------->>>>>>>>>>
      */
