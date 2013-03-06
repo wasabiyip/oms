@@ -37,8 +37,7 @@ app.on('connection', function(client) {
     });
 
     client.on('error', function(error){
-        console.log('Colapso: ', error);
-        console.log(handler.getGrafica(client).settings.ID);
+        
         console.log(error.search('This socket is closed'));
     });
 });
@@ -129,7 +128,6 @@ function evaluar(msj, socket){
                     app = null;
                     handler.resetStuff();
                     webServer.resetStuff();
-                    console.log('Tenemos ' + handler.graficasLength() + ' graficas');
                 }else if(server_precios === socket){
                     serverPrecios = null;
                     temp.msj = 'El horror -> ¡El streaming de precios se desconecto!';                    

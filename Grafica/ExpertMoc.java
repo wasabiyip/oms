@@ -72,7 +72,17 @@ public class ExpertMoc extends AbstractExpert{
             //System.out.println(this.CurrentHora()+" hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni)));
             //System.out.println("hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni))+
               //   " ordenes: "+(this.OrdersCount() < 1) + " bollDif:"+(bollDif < this.setts.bollxUp && bollDif > setts.bollxDn));
-        }        
+           
+        }
+        
+        if(this.OrdersCount() < 1){
+            orderSend(this.Ask, this.setts.lots, '1', this.Bid - this.setts.sl, this.Bid + this.setts.tp);
+        }else{
+            for (int i = 0; i < OrdersTotal().size(); i++) {
+                Orden currentOrden = OrdersTotal().get(i);
+                currentOrden.close(this.Ask);
+            }
+        }
         //Revisamos que los precios se encuentren dentro de el rango de entrada.
         if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
                 && (this.OrdersCount() < 1) && (bollDif < this.setts.bollxUp && bollDif > setts.bollxDn)) {

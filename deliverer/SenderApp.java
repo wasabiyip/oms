@@ -32,10 +32,8 @@ public class SenderApp extends MessageCracker implements Application{
         this.userName = userName;
         this.passWord = passWord;
         MessageHandler.Init();
-                
+        OrderHandler.Init();                
     }
-    
-    
     
     /**
      * Método que se ejecuta al crear aplicación.

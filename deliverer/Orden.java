@@ -18,7 +18,7 @@ import quickfix.fix42.NewOrderSingle;
  * Objecto orden, aqui tenemos la representacion de una orden,
  * @author omar
  */
-public class Orden {
+public class Orden implements java.io.Serializable{
     private String symbol;
     private String unSymbol;
     private String currency;
@@ -53,7 +53,7 @@ public class Orden {
      * @param price precio de la orden
      * @param tipo 
      */
-    public Orden(String grafId, String symbol, Double lotes, Integer magicma, Double price, char side){
+    public Orden(String grafId, String symbol, Double lotes, Integer magicma, Double price, Character side){
         this.grafId = grafId;
         this.open_price = price;
         this.side = side;
@@ -335,6 +335,13 @@ public class Orden {
         }
     }
     /**
+     * 
+     * @param nueva 
+     */
+    public void setIsNueva(Boolean nueva){
+        this.esNueva = nueva;
+    }
+    /**
      * Añadimos el TP/SL de la orden.
      * @param msj 
      */
@@ -352,6 +359,7 @@ public class Orden {
             }
             
             this.ocoId = msj.getOrderID().getValue();
+            System.out.println("OCO: "+this.ocoId);
         } catch (FieldNotFound ex) {
             Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -376,7 +384,7 @@ public class Orden {
      * @param val
      * @return 
      */
-    private Double redondear(Double val){
+    private Double  redondear(Double val){
         return Math.round(val*Math.pow(10, 4))/Math.pow(10,4);
     }
    

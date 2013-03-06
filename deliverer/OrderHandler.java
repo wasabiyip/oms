@@ -2,12 +2,24 @@ package oms.deliverer;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.CustomException.OrdenNotFound;
 import oms.CustomException.TradeContextBusy;
+import oms.Grafica.Graphic;
 import oms.dao.MongoDao;
 import quickfix.*;
 import quickfix.field.*;
@@ -30,6 +42,15 @@ public class OrderHandler {
      * Aquí yacen los cruces que están en Trade context busy.
      */
     private static ArrayList contextBusy = new ArrayList();
+    /**
+     * Inicializamos las órdenes que esten serializadas en la carpeta OMS/temp/_cereal
+     */
+    public static void Init(){
+        ordersArr = getSerializedOrders();//
+        for (int i = 0; i < ordersArr.size(); i++) {
+            System.out.println(ordersArr.get(i));
+        }
+    }
     /**
      * Metodo que envia las ordenes a Currenex, es sincronizado para que no se
      * confunda si muchas graficas quieren enviar ordenés al mismo tiempo.
@@ -79,7 +100,7 @@ public class OrderHandler {
        
         Orden temp = getOrdenById(msj.getClOrdID().getValue());
         temp.setFilled(msj);
-        
+        serializeOrder(temp);
         /**
          * liberamos el cruce del context busy.
          */
@@ -133,7 +154,8 @@ public class OrderHandler {
         Orden temp = getOrdenById(msj.getClOrdID().getValue());
         //Si es null entonces no tenemos un oco previo asi que solo lo guardamos
         if(temp.getOco() == null){
-            temp.setOco(msj);            
+            temp.setOco(msj); 
+            serializeOrder(temp);
         }else{
             closeOCO(temp);
             temp.setOco(msj);
@@ -145,6 +167,7 @@ public class OrderHandler {
      * @param order 
      */
     public synchronized static void closeOCO(Orden orden) {
+        System.out.println("OCO: "+orden.getOco());
         quickfix.fix42.OrderCancelRequest oco = new quickfix.fix42.OrderCancelRequest();
         oco.set(new ClOrdID(orden.getId()));
         oco.set(new OrigClOrdID(orden.getId()));
@@ -183,6 +206,7 @@ public class OrderHandler {
         coll.update(new BasicDBObject().append("OrderID", orden.getId()), hora);        
         coll.update(new BasicDBObject().append("OrderID", orden.getId()), sl);
         coll.update(new BasicDBObject().append("OrderID", orden.getId()), tp);
+        deleteCerealFile(orden.getId());
     }
     
     /**
@@ -267,7 +291,7 @@ public class OrderHandler {
         return temp;
     }
     /**
-     * Obtenemos El total de ordenes para determinado Symbol
+     * Obtenemos El total de ordenes para determinado Symbol.
      * @param symbol
      * @return 
      */
@@ -281,5 +305,64 @@ public class OrderHandler {
         }
         
         return temp;
+    }
+    /**
+     * Obtenemos objetos Orden serializados en la carpeta del sistem _cereal.
+     * @return 
+     */
+    private static ArrayList<Orden> getSerializedOrders(){
+        ArrayList<Orden> temp = new ArrayList();
+        File folder = new File("/home/omar/OMS/temp/_cereal/");
+        ObjectInputStream objIn;
+        if(folder.exists() || folder.listFiles().length>0){
+            File[] prof_files = folder.listFiles();
+            for(File file : prof_files){
+                try {
+                    
+                    InputStream arch = new FileInputStream(file.getPath());
+                    InputStream buffer = new BufferedInputStream(arch);
+                    objIn = new ObjectInputStream(buffer);
+                    Object obj = objIn.readObject();
+                    temp.add((Orden)obj);
+                } catch (IOException ex) {
+                    Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (Exception ex){
+                    Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        return temp;
+    }
+    /**
+     * Serializamos una orden guardandola en archivo de obj. Podemos sobreescribir
+     * los estados de las órdenes.
+     * @param orden Objeto a serializar.
+     */
+    private static void serializeOrder(Orden orden){
+        try {
+            FileOutputStream fOut = new FileOutputStream("/home/omar/OMS/temp/_cereal/"+orden.getId()+".obj");
+            ObjectOutputStream oOut = new ObjectOutputStream(fOut);
+            oOut.writeObject(orden);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(OrderHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    /**
+     * Borramos archivo del objeto
+     * @param id de la orden.
+     */
+    private static void deleteCerealFile(String id){
+        try{
+            File file = new File("/home/omar/OMS/temp/_cereal/"+id+".obj");
+            if(file.delete()){
+                //System.out.println("Borramos archivo de objeto "+id);
+            }else{
+                System.err.println("No se pudo borrar el archivo .obj de "+id + " no existe o algo.");
+            }
+        }catch(Exception ex){
+            System.out.println(ex);
+        }
     }
 }
