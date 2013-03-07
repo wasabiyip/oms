@@ -1,5 +1,6 @@
 package oms.deliverer;
 
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.CustomException.TradeContextBusy;
@@ -35,9 +36,8 @@ public class Orden implements java.io.Serializable{
     private String execId;
     private int date;
     private int hora;
-    private String open_time = "----";
-    private String close_time = "----";
     private String ocoId = null;
+    private String brokerOrderId;
     private NewOrderSingle newOrderSingle;
     private NewOrderSingle newOrderOco;
     private ExecutionReport closeOrderSingle;
@@ -45,6 +45,9 @@ public class Orden implements java.io.Serializable{
     private boolean esNueva = false;
     private boolean filled = false;
     private Integer magicma;
+    private Date horaOpen ;
+    private Date horaClose ;
+    private String account;
     /**
      * Constructor que inicializa con datos de una orden.
      * @param grafId id de la grafica que envia.
@@ -55,7 +58,7 @@ public class Orden implements java.io.Serializable{
      */
     public Orden(String grafId, String symbol, Double lotes, Integer magicma, Double price, Character side){
         this.grafId = grafId;
-        this.open_price = price;
+        
         this.side = side;
         this.averse = this.side =='1'?'2':'1';
         this.lotes = lotes*10000;
@@ -253,18 +256,7 @@ public class Orden implements java.io.Serializable{
     public Double getOpenPrice(){
         return this.redondear(this.open_price);
     }
-    /**
-     * @return Hora de apertura de la orden.
-     */
-    public String getOpenTime(){
-        return this.open_time;
-    }
-    /**
-     * @return Hora de cierre de la orden null si no ha cerrado.
-     */
-    public String getcloseTime(){
-        return this.close_time;
-    }
+    
     /**
      * @return Precio de cierre de la orden, -1 si no ha cerrado.
      */
@@ -294,6 +286,36 @@ public class Orden implements java.io.Serializable{
         return this.lotes;
     }
     /**
+     * @return La hora en que abrió la orden.
+     */
+    public Date getHoraOpen(){
+        return this.horaOpen;
+    }
+    /**
+     * @return La hora en que abrió la orden.
+     */
+    public Date getHoraClose(){
+        return this.horaClose;
+    }
+    /**
+     * @return Cuenta de la orden.
+     */
+    public String getAccount(){
+        return this.account;
+    }
+    /**
+     * @return Id de execucion de la orden.
+     */
+    public String getExecId(){
+        return this.execId;
+    }
+    /**
+     * @return Id de la orden asignada por el broker.
+     */
+    public String getBrokerOrdId(){
+        return this.brokerOrderId;
+    }
+    /**
      * SETTERS!------------------------------------------------------->>>>>>>>>>
      */
     /**
@@ -314,12 +336,16 @@ public class Orden implements java.io.Serializable{
         this.filled = true;
         this.esNueva = false;
         try {
+            this.open_price = msj.getAvgPx().getValue();
+            this.account = msj.getAccount().getValue();
+            this.horaOpen = msj.getTransactTime().getValue();
             this.execId = msj.getExecID().getValue();
+            this.brokerOrderId = msj.getOrderID().getValue();
             System.err.println("Abrimos posicion: "+this + " correctamente! :)");
         } catch (FieldNotFound ex) {
             Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Graphic.dao.recordOrden(this.grafId,this.executionReport,this.magicma);
+        //Graphic.dao.recordOrden(this.grafId,this.executionReport,this.magicma);
         //Si tenemos pendiente la OCO.
         if(this.newOrderOco == null && this.sl != 0 && this.tp != 0){
             newOrderOco = new NewOrderSingle();
@@ -352,6 +378,7 @@ public class Orden implements java.io.Serializable{
     public void setOco(ExecutionReport msj){
         
         try {
+            
             if(this.sl ==0 && this.tp == 0){
                 this.sl = msj.getDouble(7542);
                 this.tp = msj.getDouble(7540);
@@ -375,6 +402,7 @@ public class Orden implements java.io.Serializable{
     public void setClose(ExecutionReport msj){
         this.isActiva = false;
         try {
+            this.horaClose = msj.getTransactTime().getValue();
             this.closeOrderSingle = msj;
             this.close_price = msj.getAvgPx().getValue();
         } catch (FieldNotFound ex) {
@@ -399,7 +427,7 @@ public class Orden implements java.io.Serializable{
     @Override
    public String toString(){
         String tipo = this.getSide() == '1' ? "Compra" : "Venta ";
-        return "#"+this.getId()+" Symbol:"+this.symbol +"  OT:"+this.getOpenTime() + " " + tipo + " OP: " + this.getOpenPrice() + " SL:"+
-                    this.getSl() + " TP:"+this.getTp() + " CT:" + this.getcloseTime() +" CP:" + this.getClosePrice();
+        return "#"+this.getId()+" Symbol:"+this.symbol +"  OT:"+this.horaOpen + " " + tipo + " OP: " + this.getOpenPrice() + " SL:"+
+                    this.getSl() + " TP:"+this.getTp() + " CT:" + this.horaClose +" CP:" + this.getClosePrice();
    }
 }

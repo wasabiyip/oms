@@ -2,6 +2,7 @@ package oms.util;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.deliverer.Orden;
 import quickfix.FieldNotFound;
 
 /**
@@ -18,30 +19,28 @@ public class fixToJson  {
      * @return
      * @throws FieldNotFound 
      */
-    public String parseOrder(quickfix.fix42.ExecutionReport msj, String id, int magic) {
+    public String parseOrder(Orden orden) {
         StringBuffer buffer = new StringBuffer("");
-        try {
-            buffer.append("{");
-                buffer.append("\"horaOpen\" :\""+msj.getTransactTime().getValue()+"\",");
-                buffer.append("\"grafica\" :\""+id+"\",");
-                buffer.append("\"Account\" :\"" + msj.getAccount().getValue()+"\",");
-                buffer.append("\"ExecID\" : \"" + msj.getExecID().getValue() + "\",");
-                buffer.append("\"OrderID\" :\"" + msj.getClOrdID().getValue() + "\",");
-                buffer.append("\"NoOrder\" :" + msj.getOrderID().getValue() + ",");
-                buffer.append("\"MAGICMA\" :" +magic+ ",");
-                buffer.append("\"Size\" :" + msj.getOrderQty().getValue() + ",");
-                buffer.append("\"Type\" :"+ msj.getSide().getValue() + ",");
-                buffer.append("\"Symbol\" :\""+ msj.getSymbol().getValue() + "\" ,");
-                buffer.append("\"Price\" :" + msj.getLastPx().getValue() + ",");
-                buffer.append("\"Commision\":" + "10,  " );
-                buffer.append("\"Status\":" + "1");
-            buffer.append("}");
-            
-            
-        } catch (FieldNotFound ex) {
-            buffer.append("HORROR!");
-            Logger.getLogger(fixToJson.class.getName()).log(Level.SEVERE, null, ex);
-        }
+       
+        buffer.append("{");
+            buffer.append("\"horaOpen\" :\""+ orden.getHoraOpen()+"\",");
+            buffer.append("\"grafica\" :\""+orden.getGrafId()+"\",");
+            buffer.append("\"account\" :\"" + orden.getAccount()+"\",");
+            buffer.append("\"execID\" : \"" + orden.getExecId()+ "\",");
+            buffer.append("\"OrderID\" :\"" + orden.getId()+ "\",");
+            buffer.append("\"noOrder\" :" + orden.getBrokerOrdId() + ",");
+            buffer.append("\"MAGICMA\" :" +orden.getMagic()+ ",");
+            buffer.append("\"size\" :" + orden.getLotes() + ",");
+            buffer.append("\"type\" :"+ orden.getSide() + ",");
+            buffer.append("\"symbol\" :\""+ orden.getSymbol()+ "\" ,");
+            buffer.append("\"price\" :" + orden.getOpenPrice() + ",");
+            buffer.append("\"cPrice\" :" + orden.getClosePrice()+ ",");
+            buffer.append("\"sl\" :" + orden.getSl()+",");
+            buffer.append("\"tp\" :" + orden.getTp()+",");
+            buffer.append("\"horaClose\" : \"" + orden.getHoraClose()+ "\",");
+            buffer.append("\"comision\":" + "10,  " );
+
+        buffer.append("}");
         return buffer.toString();
     }
 }

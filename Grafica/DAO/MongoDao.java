@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Settings;
+import oms.deliverer.Orden;
 import oms.util.fixToJson;
 import quickfix.fix42.ExecutionReport;
 
@@ -115,10 +116,10 @@ public class MongoDao {
         return cursor;
     }
     
-    public void recordOrden(String id,ExecutionReport orden, int magicma){
+    public void recordOrden(Orden orden){
         DBObject obj;
         String entry = "";
-        String json = new fixToJson().parseOrder(orden,id,magicma);
+        String json = new fixToJson().parseOrder(orden);
         DBCollection coll = getCollection("operaciones");
         obj = (DBObject) JSON.parse(json);
         coll.insert(obj);

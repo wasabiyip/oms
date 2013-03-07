@@ -45,16 +45,16 @@ public class ExpertMoc extends AbstractExpert{
         bollBandx1 = indicator.createBollinger(setts.bollx1);
         bollBandx2 = indicator.createBollinger(setts.bollx2);
         bollBandx3 = indicator.createBollinger(setts.bollx3);
-        /*bollUp = this.getAvgBoll(this.bollUp());
+        bollUp = this.getAvgBoll(this.bollUp());
         bollDn = this.getAvgBoll(this.bollDn());
         bollDif = this.bollingerDif();
         bollUpS = this.getAvgBoll(this.bollUpS());
-        bollDnS = this.getAvgBoll(this.bollDnS());*/
-        bollUp = this.bollUp();
+        bollDnS = this.getAvgBoll(this.bollDnS());
+        /*bollUp = this.bollUp();
         bollDn = this.bollDn();
         bollDif = this.bollingerDif();
         bollUpS = this.bollUpS();
-        bollDnS = this.bollDnS();
+        bollDnS = this.bollDnS();*/
         
         this.cont_velas = 0;
         this.startTime = this.TimeCurrent() - (this.TimeCurrent()%this.Periodo);
@@ -73,10 +73,6 @@ public class ExpertMoc extends AbstractExpert{
             //System.out.println("hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni))+
               //   " ordenes: "+(this.OrdersCount() < 1) + " bollDif:"+(bollDif < this.setts.bollxUp && bollDif > setts.bollxDn));
            
-        }
-        
-        if(this.OrdersCount() < 1){
-            orderSend(this.Bid, this.setts.lots, '2', this.Ask + this.setts.sl, this.Ask - this.setts.tp);
         }
         //Revisamos que los precios se encuentren dentro de el rango de entrada.
         if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)

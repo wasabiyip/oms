@@ -1,9 +1,5 @@
 package oms.deliverer;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,13 +10,11 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.CustomException.OrdenNotFound;
 import oms.CustomException.TradeContextBusy;
 import oms.Grafica.Graphic;
-import oms.dao.MongoDao;
 import quickfix.*;
 import quickfix.field.*;
 import quickfix.fix42.ExecutionReport;
@@ -31,8 +25,6 @@ import quickfix.fix42.NewOrderSingle;
  * @author omar
  */
 public class OrderHandler {
-
-    public static MongoDao mongo = new MongoDao();
     /**
      * Cada elemento de este array representa una orden que esta activa, las
      * guaradamos por la grafica que la metio y el ordid.
@@ -192,17 +184,7 @@ public class OrderHandler {
      * @throws Exception
      */
     public synchronized static void shutDown(Orden orden) throws Exception {
-        DBCollection coll = mongo.getCollection("operaciones");
-        BasicDBObject set = new BasicDBObject().append("$set", new BasicDBObject().append("Status", 0));
-        BasicDBObject push = new BasicDBObject().append("$set", new BasicDBObject().append("Close", orden.getClosePrice()));
-        BasicDBObject hora = new BasicDBObject().append("$set", new BasicDBObject().append("horaClose", new Date().toString()));
-        BasicDBObject sl = new BasicDBObject().append("$set", new BasicDBObject().append("StopL", orden.getSl()));
-        BasicDBObject tp = new BasicDBObject().append("$set", new BasicDBObject().append("TakeP", orden.getTp()));
-        coll.update(new BasicDBObject().append("OrderID", orden.getId()), set);
-        coll.update(new BasicDBObject().append("OrderID", orden.getId()), push);
-        coll.update(new BasicDBObject().append("OrderID", orden.getId()), hora);        
-        coll.update(new BasicDBObject().append("OrderID", orden.getId()), sl);
-        coll.update(new BasicDBObject().append("OrderID", orden.getId()), tp);
+        Graphic.dao.recordOrden(orden);
         deleteCerealFile(orden.getId());
     }
     
