@@ -45,16 +45,16 @@ public class ExpertMoc extends AbstractExpert{
         bollBandx1 = indicator.createBollinger(setts.bollx1);
         bollBandx2 = indicator.createBollinger(setts.bollx2);
         bollBandx3 = indicator.createBollinger(setts.bollx3);
-        bollUp = this.getAvgBoll(this.bollUp());
+        /*bollUp = this.getAvgBoll(this.bollUp());
         bollDn = this.getAvgBoll(this.bollDn());
         bollDif = this.bollingerDif();
         bollUpS = this.getAvgBoll(this.bollUpS());
-        bollDnS = this.getAvgBoll(this.bollDnS());
-        /*bollUp = this.bollUp();
+        bollDnS = this.getAvgBoll(this.bollDnS());*/
+        bollUp = this.bollUp();
         bollDn = this.bollDn();
         bollDif = this.bollingerDif();
         bollUpS = this.bollUpS();
-        bollDnS = this.bollDnS();*/
+        bollDnS = this.bollDnS();
         
         this.cont_velas = 0;
         this.startTime = this.TimeCurrent() - (this.TimeCurrent()%this.Periodo);
@@ -70,13 +70,11 @@ public class ExpertMoc extends AbstractExpert{
     public void onTick() {   
         if(true){
             //System.out.println(this.CurrentHora()+" hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni)));
-            //System.out.println("hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni))+
-              //   " ordenes: "+(this.OrdersCount() < 1) + " bollDif:"+(bollDif < this.setts.bollxUp && bollDif > setts.bollxDn));
-           
+            //System.out.println(this.CurrentHora()); 
         }
         //Revisamos que los precios se encuentren dentro de el rango de entrada.
         if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
-                && (this.OrdersCount() < 1) && (bollDif < this.setts.bollxUp && bollDif > setts.bollxDn)) {
+                && (this.OrdersCount() < this.setts.limiteCruce) && (bollDif < this.setts.bollxUp && bollDif > setts.bollxDn)) {
             //entrada de operaciones.
             if ((this.open_min+ this.setts.boll_special) <= bollDn) {
                 //Compra

@@ -5,9 +5,6 @@
 package oms.Grafica;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import oms.CustomException.OrdenNotFound;
 import oms.CustomException.TradeContextBusy;
 import oms.Grafica.indicators.Indicador;
 import oms.deliverer.Orden;
@@ -76,8 +73,8 @@ public abstract class AbstractExpert {
      * @return 
      */
     public Double CurrentHora(){
-        Date date = new oms.Grafica.Date();
-        return (date.getHour() + (date.getMinute() * 0.01));
+       
+        return GMTDate.getHora();
     }
 
     /**

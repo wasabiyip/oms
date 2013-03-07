@@ -25,6 +25,10 @@ $(document).ready(function(){
     socket.emit('handshake', {
        id: 'oms'
     });
+    socket.emit('getOrders',{
+      //Lo voy a dejar asi por que es muy cagado!
+      msj : 'ola k ase!'
+    });
   });
   
   socket.on('grafica-ini', function(data){
@@ -35,10 +39,7 @@ $(document).ready(function(){
     socket.emit('grafica-state',{
         id: data.setts.ID
     }); 
-    socket.emit('getOrders',{
-      //Lo voy a dejar asi por que es muy cagado!
-      msj : 'ola k ase!'
-    });
+    
     graficas.push(new Grafica(data.setts));
     
     $.each(data.setts, function(key, val){

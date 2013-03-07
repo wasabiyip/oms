@@ -19,14 +19,21 @@ public class GMTDate {
 
     public static Integer getTime() {
 
-        int hora = getDate().getHour();
+        int hora = getDate().getHour()+8>=24?(getDate().getHour()+8)-24:getDate().getHour()+8;
         int min = getDate().getMinute();
         int seg = getDate().getSecond();
         //String time = hora +""+ min +""+ ( (seg<9)? ("0"+seg):seg);
         String time = hora + "" + ((min < 9) ? ("0" + min) : min);
         return (new Integer(time));
     }
-
+    public static Double getHora(){
+        int hora = getDate().getHour()+8>=24?(getDate().getHour()+8)-24:getDate().getHour()+8;
+        int min = getDate().getMinute();
+        int seg = getDate().getSecond();
+        //String time = hora +""+ min +""+ ( (seg<9)? ("0"+seg):seg);
+        String time = hora + "." + ((min < 9) ? ("0" + min) : min);
+        return (new Double(time));
+    }
     public static Integer getTimeFin(int i) {
 
         int hora = getDate().getHour();

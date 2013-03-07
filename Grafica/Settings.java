@@ -80,8 +80,8 @@ public class Settings {
         lots = new Double(config.getProperty("Lots"));
         tp = new Integer(config.getProperty("tp")) * this.Point;
         sl = new Integer(config.getProperty("sl")) * this.Point;
-        horaIni = new Double(config.getProperty("horainicial"))+this.CUSTOM_HORA;
-        horaFin = new Double(config.getProperty("horafinal"))+this.CUSTOM_HORA;
+        horaIni = new Double(config.getProperty("horainicial"));
+        horaFin = new Double(config.getProperty("horafinal"));
         horaIniS = new Double(config.getProperty("timesalidainicial"));
         horaFinS = new Double(config.getProperty("timesalidafinal"));
         limiteCruce = new Integer(config.getProperty("limiteCruce"));
@@ -120,12 +120,8 @@ public class Settings {
                 Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
             } 
         }
-        horaIni = horaIni>24? horaIni-24:horaIni;
-        horaFin = horaFin>24? horaFin-24:horaFin;
-        //System.out.println(horaIni + " " + horaFin);
+        
         this.lots = 1.00;
-        /*horaIni = 0.0;
-        horaFin =24.0;*/
     }
     
     /**

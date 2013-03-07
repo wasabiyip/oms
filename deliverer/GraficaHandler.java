@@ -16,7 +16,7 @@ import oms.Grafica.Graphic;
  * @author omar
  */
 public class GraficaHandler {
-
+    
     public static ArrayList<Graphic> graficas = new ArrayList();
     public ArrayList<Properties> chart_files = new ArrayList();
     private String last_profile;
@@ -166,5 +166,12 @@ public class GraficaHandler {
             }
         }
         return temp;
+    }
+    /**
+     * 
+     * @return Numero de graficas.
+     */
+    public static Integer getGraficasSize(){
+        return graficas.size();
     }
 }

@@ -187,7 +187,6 @@ public class Graphic extends Thread {
                 case "close-order":
                     try {
                         Orden orden = OrderHandler.getOrdenById(id);
-                        System.out.println(orden.getId());
                         if(orden.getSide() == '1'){
                             orden.close(expert.Bid);
                         }else if(orden.getSide() == '2'){

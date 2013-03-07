@@ -1,16 +1,11 @@
 package oms.Grafica;
 
-import com.mongodb.DBObject;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import quickfix.FieldNotFound;
-import quickfix.fix42.ExecutionReport;
+import oms.deliverer.GraficaHandler;
 
 /**
  *
@@ -72,7 +67,7 @@ public class SendMessage {
     private  void writeNode(String msj) {
         try {
             
-            int random = new Random().nextInt(30);
+            int random = new Random().nextInt(GraficaHandler.graficas.size());
             //Esperamos entre 1-15 milis para prevenir perdida de mensajes.
             Thread.sleep(random);
             outNode.writeUTF(msj + "\n");
