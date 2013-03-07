@@ -105,15 +105,15 @@ exports.closeOrder = function(close){
             "value":close.id
         }
     });
-    
+    console.log('Enviando cierre: '+close.grafica );
     for(i=0; i<Graficas.length;i++){
+        console.log(Graficas[i].getSetts().ID);
         if(Graficas[i].getSetts().ID===close.grafica){
             Graficas[i].getSocket().write(msj +"\n");
         }
     }
 }
 exports.getOrders = function(msj){
-    
     msj = JSON.stringify({
         "msj" :{
             "type": "getOrders",
@@ -122,6 +122,7 @@ exports.getOrders = function(msj){
     });
     server_op.write(msj+"\n");
 }
+
 function Slash(cadena){
   var text = cadena.split("");
   var res ="";

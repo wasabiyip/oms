@@ -163,10 +163,15 @@ public class MsjStreaming extends Thread {
             switch ((String) json.get("type")) {
                 
                 case "getOrders":
+                    Orden temp ;
                     for (int i = 0; i < OrderHandler.ordersArr.size(); i++) {
-                        this.nwOrden(OrderHandler.ordersArr.get(i));
+                        temp = OrderHandler.ordersArr.get(i);
+                        if(temp.IsActiva()){
+                            this.nwOrden(temp);
+                        }
                     }
                     break;
+                  
                         
             }
         }catch (ParseException ex) {

@@ -59,7 +59,6 @@ io.sockets.on('connection', function (client){
         handler.getOrders(msj);
     });
     client.on('order-close', function(msj){
-        console.log('close!!');
         handler.closeOrder(msj);
     });
 });

@@ -186,11 +186,11 @@ public class Graphic extends Thread {
                     break;
                 case "close-order":
                     try {
-                        //expert.order.Close(this.id, dao.getOrder((String)json.get("value")));
                         Orden orden = OrderHandler.getOrdenById(id);
+                        System.out.println(orden.getId());
                         if(orden.getSide() == '1'){
                             orden.close(expert.Bid);
-                        }else if(orden.getSide() == '1'){
+                        }else if(orden.getSide() == '2'){
                             orden.close(expert.Ask);
                         }
                     } catch (OrdenNotFound ex) {

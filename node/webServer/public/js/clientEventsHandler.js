@@ -36,10 +36,11 @@ $(document).ready(function(){
         id: data.setts.ID
     }); 
     socket.emit('getOrders',{
+      //Lo voy a dejar asi por que es muy cagado!
       msj : 'ola k ase!'
     });
     graficas.push(new Grafica(data.setts));
-    console.log('nueva grafia '+data.setts.ID);
+    
     $.each(data.setts, function(key, val){
       if(key != 'ID' && key != 'symbol'){
         if(key== 'TP' || key == 'SL')
@@ -145,29 +146,24 @@ $(document).ready(function(){
   });
   //Entro una orden.
   socket.on('grafica-order', function(data){
-   playOrder(); 
-   document.title = '('+ ++contOp +') Operaciones';
-   var id =  data.id;
-   var ord = data.ordid;
-   
-   getGrafica(id).onOrderOpen(data);
-   
-   $("#trade .log").prepend('<tr class="success" id='+ord+'></tr>');
-   $.each(data, function(key,val){
-  		if(key == 'id')	{
-				//para que no ponga el id de la grafica en la tabla
-  		}else if(key =='tipo'){
-         if(val ==1)
-             $("#" + ord).append('<td><span id='+key+ '>Compra</span></td>');
-         else
-             $("#" + ord).append('<td><span id='+key+ '>Venta</span></td>');
-     }else $("#" + ord).append('<td><span id='+key+ '>'+val+'</span></td>');
-   });
-   $("#" + ord).append('<td><button class="btn" onClick="closeOrder(\''+data.id+'\',\''+ord+'\')">cerrar</button></td>');
-   //$("#" + ord).append('<td><span class=\'cerrar\' title="Cerrar operacion" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">x</span></td>');
-   //para que el title del navegador se muestre las operaciones que tenemos.
-   
-   
+    playOrder(); 
+    document.title = '('+ ++contOp +') Operaciones';
+    var id =  data.id;
+    var ord = data.ordid;
+    $("#trade .log").prepend('<tr class="success" id='+ord+'></tr>');
+    $.each(data, function(key,val){
+    if(key == 'id') {
+      //para que no ponga el id de la grafica en la tabla
+    }else if(key =='tipo'){
+       if(val ==1)
+           $("#" + ord).append('<td><span id='+key+ '>Compra</span></td>');
+       else
+           $("#" + ord).append('<td><span id='+key+ '>Venta</span></td>');
+    }else $("#" + ord).append('<td><span id='+key+ '>'+val+'</span></td>');
+    });
+    $("#" + ord).append('<td><button class="btn" onClick="closeOrder(\''+data.id+'\',\''+ord+'\')">cerrar</button></td>');
+
+    getGrafica(id).onOrderOpen(data);
   });
   //Salio una orden
   socket.on('grafica-orderClose', function(data) {
