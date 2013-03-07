@@ -7,7 +7,9 @@ exports.createGrafica = function(symbol, socket, settings){
     
     Graficas.push(new Grafica(symbol, socket, settings));
 }
-
+exports.setApp = function(app){
+    server_op = app;
+}
 //Notificamos a cada grafica conectada con el precio entrante.
 exports.notify = function (type,moneda, precio){
     msj = JSON.stringify({
@@ -109,6 +111,16 @@ exports.closeOrder = function(close){
             Graficas[i].getSocket().write(msj +"\n");
         }
     }
+}
+exports.getOrders = function(msj){
+    
+    msj = JSON.stringify({
+        "msj" :{
+            "type": "getOrders",
+            "value": msj
+        }
+    });
+    server_op.write(msj+"\n");
 }
 function Slash(cadena){
   var text = cadena.split("");

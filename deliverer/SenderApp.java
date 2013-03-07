@@ -8,7 +8,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.Grafica.Graphic;
 import oms.dao.MongoConnection;
-import oms.util.Console;
 import quickfix.*;
 import quickfix.field.*;
 
@@ -52,16 +51,14 @@ public class SenderApp extends MessageCracker implements Application{
      */
     @Override
     public void onLogon(SessionID id) {
-        Console.msg("Conectados exitosasmente con "+id+" desde la cuenta " + this.userName);
+        MessageHandler.mStreaming.msg("Conectados exitosasmente con "+id+" desde la cuenta " + this.userName);
        
         SenderApp.sessionID = id;
         //Para que los threads no se dupliquen cuando el servidor nos desconecta.
         if(!lock){
-            System.out.println(this.graficaHandler.getProfile());
-            MessageHandler.writeNode("{\"type\": \"login\", "
-                    + "\"name\":\"app\", "
-                    + "\"profile\":\""+this.graficaHandler.getProfile()+"\""
-                    + "}");
+            //Enviamos el login de app.            
+            MessageHandler.mStreaming.login(this.graficaHandler.getProfile());
+            //corremos la gráfica.
             this.graficaHandler.runProfile();
             lock = true;
         }
@@ -73,7 +70,7 @@ public class SenderApp extends MessageCracker implements Application{
      */
     @Override
     public void onLogout(SessionID id){
-        Console.msg("Recibimos Logout del broker esperando para volver a conectarnos-...");
+        MessageHandler.mStreaming.msg("Recibimos Logout del broker esperando para volver a conectarnos-...");
     }
     /**
      * Método que envia al servidor el Usuario y la contraseña

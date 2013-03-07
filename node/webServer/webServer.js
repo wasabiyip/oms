@@ -14,7 +14,7 @@ var models = {};
 var obj_Config = require('./config.js');
 var webClients = [];
 var handler =  require('../Handler');
-
+var orders = [];
 //Configuration.
 var config = new obj_Config(app, express);
 models.graf_modl = require('./models/graficaModel');
@@ -55,23 +55,12 @@ io.sockets.on('connection', function (client){
         handler.expertState(msj);
     });
     
+    client.on('getOrders', function(msj){
+        handler.getOrders(msj);
+    });
     client.on('order-close', function(msj){
         console.log('close!!');
         handler.closeOrder(msj);
-    });
-    
-    client.on('ops-history', function(){
-        db.operaciones.find({Status:0}, function(err,operaciones){
-           if(err || !operaciones)
-               console.log('Da Fuck!');
-           else
-               operaciones.forEach(function (op){
-                   client.emit('orders',op);
-               });
-        });
-    });
-    client.on('ops-grafic', function(){
-        
     });
 });
 exports.log = function(data){
@@ -123,7 +112,9 @@ exports.onOrderInit = function(data){
 }
 //Evento de una orden entrante
 exports.onOrder = function(data){
-        notify('grafica-order', data)
+    orders.push(data);
+    
+    notify('grafica-order', data)
 }
 //Evento de una orden saliente.
 exports.onOrderClose = function(data){

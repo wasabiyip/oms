@@ -87,8 +87,7 @@ public class Graphic extends Thread {
     public void run() {
 
         try {
-            String inputLine;
-            String modifiedSentence;
+            
             this.socket = new Socket("127.0.0.1", 3000);
             this.outNode = new DataOutputStream(this.socket.getOutputStream());
             sendMessage = new SendMessage(outNode, stateFeed);

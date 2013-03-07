@@ -16,7 +16,6 @@ var addGrafica = function(grafica){
 //ademas si todas las graficas de una moneda ya fueron cerradas
 //Borramos ese elemento de el primer nivel de graf_arr
 var resetStuff = function(){
-	
 	graf_arr = [];
 	sorted_arr = [['EURUSD',[]],['GBPUSD',[]],['USDCHF',[]],['USDJPY',[]], ['EURGBP',[]]];
 };

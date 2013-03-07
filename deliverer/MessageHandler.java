@@ -1,19 +1,20 @@
 package oms.deliverer;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.Socket;
+
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import oms.Grafica.SendMessage;
-import oms.util.Console;
+import oms.Grafica.Graphic;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import quickfix.FieldNotFound;
 import quickfix.SessionID;
-import quickfix.field.*;
-import quickfix.fix42.ExecutionReport;
 
 /**
  *
@@ -25,21 +26,12 @@ public class MessageHandler {
     SessionID sessionID;
     static String temp_msj = new String();
     public static Date date = null;
-    private static Socket socket;
-    private static BufferedReader inFromNode;
-    private static DataOutputStream outNode;
+    static MsjStreaming mStreaming = new MsjStreaming();
     /**
      * Pequeña clase tipo constructior.
      */
     public static void Init(){
-        try {
-            socket = new Socket("127.0.0.1",3000);
-            outNode = new DataOutputStream(socket.getOutputStream());
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        mStreaming.start();
     }
     /**
      * Evaluamos todas las ordenes de tipo Execution report (35=8)
@@ -65,7 +57,7 @@ public class MessageHandler {
                 if (msj.getOrdType().getValue() == 'W') {
                     //Guardamos el OCO.
                     OrderHandler.ocoEntry(msj);
-                    modOrden(tempOrden);
+                    mStreaming.modOrden(tempOrden);
                 }
                 /**
                  * 150=1 -> Partial Fill:Acualmente no hemos visto que nos llene
@@ -75,7 +67,7 @@ public class MessageHandler {
             case '1':
                 temp_msj = "**¡Peligro: Partial fill " + msj.getClOrdID().getValue() + " algo fué mal!...";
                 System.out.println(temp_msj);
-                Console.msg(temp_msj);
+                mStreaming.msg(temp_msj);
                 break;
             /**
              * 150=2 -> Fill: La orden fue aceptada(fill) correctamente, asi que
@@ -100,12 +92,12 @@ public class MessageHandler {
                         //La cerramos en mongo:
                         OrderHandler.shutDown(tempOrden);
                         //Node notification
-                        clOrden(tempOrden);
+                        mStreaming.clOrden(tempOrden);
                         //Cerramos el oco de esta orden
                         OrderHandler.closeOCO(tempOrden);
                     } else {
                         OrderHandler.orderNotify(msj);
-                        nwOrden(tempOrden);
+                        mStreaming.nwOrden(tempOrden);
                     }
                     /**
                      * Si 40=W -> OCO Entonce la orden cerro por OCO.
@@ -113,11 +105,11 @@ public class MessageHandler {
                 } else if (msj.getOrdType().getValue() == 'W') {
                     temp_msj = "La orden cerro por OCO #" + msj.getClOrdID().getValue() + ".";
                     System.out.println(temp_msj);
-                    Console.msg(temp_msj);
+                    mStreaming.msg(temp_msj);
                     //La marcamos como cerrada.
                     tempOrden.setClose(msj);
                     //Notificamos a node
-                    clOrden(tempOrden);
+                    mStreaming.clOrden(tempOrden);
                     //La cerramos en mongo:
                     OrderHandler.shutDown(tempOrden);
                 }
@@ -128,7 +120,7 @@ public class MessageHandler {
             case '3':
                 temp_msj = "Done for a day " + msj.getClOrdID().getValue() + " favor de revisar currenex...";
                 System.out.println(temp_msj);
-                Console.msg(temp_msj);
+                mStreaming.msg(temp_msj);
                 break;
             /**
              * 150=4 -> Canceled : Si una orden fué cerrada insperadamente por
@@ -185,71 +177,14 @@ public class MessageHandler {
         }
 
     }
-    
+    /**
+     * Cada que recibimos un mensaje de Node lo mandamos aquí para ser evaluado.
+     *
+     * @param msj
+     */    
     public static void errorHandler(quickfix.fix42.Reject msj) throws FieldNotFound {
         temp_msj = "Error: " + msj.getText().getValue();
         System.out.println(temp_msj);
-        Console.msg(temp_msj);
-    }
-    /**
-     * Notificamos que modificamos/añadimos Sl-Tp de una orden.
-     * @param orden 
-     */
-    public static void modOrden(Orden orden){
-        
-            writeNode("{"
-                +"\"type\":\"orderModify\","
-                +"\"data\":"
-                +"{"
-                    +"\"id\":\""+orden.getId()+"\","
-                    +"\"nwSl\":"+orden.getSl()+","
-                    +"\"nwTp\":"+orden.getTp()+","
-                +"}"
-            +"}");
-    }
-    /**
-     * Notificamos que cerro una orden.
-     * @param orden 
-     */
-    public static void clOrden(Orden orden){
-        
-        writeNode("{"        
-            +"\"type\":\"onOrderClose\","
-            +"\"data\":"
-            +"{"
-                +"\"id\":\""+orden.getId()+"\""
-            +"}"
-        +"}");
-    }
-    /**
-     * Notificamos que entro una nueva orden.
-     * @param orden 
-     */
-    public static void nwOrden(Orden orden){
-        writeNode("{"
-            +"\"type\":\"onOrder\","
-            +"\"data\":"
-                +"{"        
-                    +"\"id\":\""+orden.getGrafId()+"\","
-                    +"\"ordid\":\""+orden.getId()+"\","
-                    +"\"tipo\":\""+orden.getSide()+"\"," //tipo de operacion
-                    +"\"lotes\":\""+orden.getLotes()+"\","
-                    +"\"symbol\":\""+orden.getSymbol()+"\","
-                    +"\"precio\":\""+orden.getOpenPrice()+"\","
-                    +"\"sl\":\""+orden.getSl()+"\","
-                    +"\"tp\":\""+orden.getTp()+"\""
-                +"}"
-        +"}");
-    }
-    /**
-     * Escribimos mensajes a node.
-     * @param msj 
-     */
-    public static void writeNode(String msj) {
-        try {
-            outNode.writeUTF(msj + "\n");
-        } catch (IOException ex) {
-            System.out.println(ex);
-        }
-    }
+        mStreaming.msg(temp_msj);
+    }   
 }

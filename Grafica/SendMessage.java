@@ -64,49 +64,7 @@ public class SendMessage {
         +"\"type\": \"onOpen\","
         +"\"precio\": " + this.stateFeed.getAvgOpen()
         + "}");
-    }
-    public void nwOrden(ExecutionReport report,double sl, double tp){
-        try {
-            this.writeNode("{"
-                +"\"type\":\"onOrder\","
-                +"\"data\":"
-                    +"{"        
-                        +"\"id\":\""+this.stateFeed.getId()+"\","
-                        +"\"ordid\":\""+report.getClOrdID().getValue()+"\","
-                        +"\"tipo\":\""+report.getSide().getValue()+"\"," //tipo de operacion
-                        +"\"lotes\":\""+(report.getOrderQty().getValue()/100000)+"\","
-                        +"\"symbol\":\""+report.getSymbol().getValue()+"\","
-                        +"\"precio\":\""+report.getAvgPx().getValue()+"\","
-                        +"\"sl\":\""+sl+"\","
-                        +"\"tp\":\""+tp+"\""
-                    +"}"
-            +"}");
-        } catch (FieldNotFound ex) {
-            Logger.getLogger(SendMessage.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    public void clOrden(String id){
-        
-        this.writeNode("{"        
-            +"\"type\":\"onOrderClose\","
-            +"\"data\":"
-            +"{"
-                +"\"id\":\""+id+"\""
-            +"}"
-        +"}");
-    }
-    public void modOrden(String ordid, Double precio){
-        
-            this.writeNode("{"
-                +"\"type\":\"orderModify\","
-                +"\"data\":"
-                +"{"
-                    +"\"id\":\""+ordid+"\","
-                    +"\"nwTp\":\""+precio+"\""
-                +"}"
-            +"}");
-    }
-    
+    }        
     /**
      * Método que envia mensajes a node.
      * @param msj

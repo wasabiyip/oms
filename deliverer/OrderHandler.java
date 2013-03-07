@@ -47,9 +47,6 @@ public class OrderHandler {
      */
     public static void Init(){
         ordersArr = getSerializedOrders();//
-        for (int i = 0; i < ordersArr.size(); i++) {
-            MessageHandler.nwOrden(ordersArr.get(i));
-        }
     }
     /**
      * Metodo que envia las ordenes a Currenex, es sincronizado para que no se

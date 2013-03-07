@@ -7,6 +7,7 @@ var app = net.createServer();
 var handler = require('./Handler'); 
 //Iniciamos el servidor TCP.
 var Graficas = [];
+
 var server_precios, server_op, app;
 //Stream de precios.
 /*var dealear = net.connect({port:7000}, function(){
@@ -57,28 +58,25 @@ function unSlash(cadena){
 //Evaluamos todos los mensajes entrantes (JSON);
 function evaluar(msj, socket){
     //convertimos la cadena entrante a JSON
-    
     try{
         var income = JSON.parse(msj);
         switch (income.type){
-            //Un cliente conectado
+            //Un cliente conectado.
             case 'login':
                 if(income.name === 'app'){
-                    app = socket;
+                    console.log('app conectada perfil:');
+
                     var temp={
                         type: 'journal',
                         label: 'error'                     
                     }
-                    console.log('app conectada perfil:'+income.profile);
+                    app = socket;
+                    handler.setApp(socket);
                     webServer.masterInit(income);
                 }else if(income.name === 'SERVIDOR_PRECIOS'){
                     server_precios = socket;
                     webServer.journal(temp);
                     console.log('Servidor de precios conectado: ' + server_precios.name);	
-                }else
-                if (income.name === 'SERVIDOR_OP'){
-                    server_op = socket;
-                    console.log('Servidor de Operaciones conectado: ' + server_op.name);
                 }else if( income.name === 'CLIENT_TCP'){
 					
                     //clients.push([income.symbol,socket,income.settings]);
@@ -88,7 +86,6 @@ function evaluar(msj, socket){
                     //el socket desde el cual recibimos conexion y los settings del expert que controla
                     //esa grafica.
                     handler.createGrafica(income.symbol, socket, income.settings);
-                    console.log("app: Añadiendo grafica...");
                     webServer.addGrafica(income.settings);
                     if (!server_precios){
                         console.log('Servidor de precios desconectado');
@@ -123,12 +120,12 @@ function evaluar(msj, socket){
                         type: 'journal',
                         label: 'error'                     
                     }
-                if(app === socket){
+                if(app == socket){
                     console.log('app desconectada...');
                     app = null;
                     handler.resetStuff();
                     webServer.resetStuff();
-                }else if(server_precios === socket){
+                }else if(server_precios == socket){
                     serverPrecios = null;
                     temp.msj = 'El horror -> ¡El streaming de precios se desconecto!';                    
                     webServer.journal(temp);
@@ -174,6 +171,7 @@ function evaluar(msj, socket){
             break;
         case 'onOrderInit':
             webServer.onOrderInit(income.data);
+            console.log('Order INIT');
             break;
         case 'onOrder':
             webServer.onOrder(income.data,income.length);

@@ -2,8 +2,9 @@
 * Este es el objecto gracias al cual podemos representar a una grafica
 */
 function Grafica(data){
+
   this.data = data;
-  this.id = unSlash(data.ID);
+  this.id = data.ID;
   this.symbol = data.symbol;
   this.open_min;
   this.bollUp = 0;
@@ -26,6 +27,7 @@ function Grafica(data){
   this.chart_id;
   this.chart_width;
   this.chart_height;
+  
   /*
   * Regresamos el valor de determinada propiedad para esta grafica.
   */
@@ -84,6 +86,7 @@ function Grafica(data){
     this.order = orden;
     this.drawChart();
     notificator(this.symbol,'1');
+    console.log(orden);
   }
   /*
   *Evento de cierre de operación

@@ -35,7 +35,11 @@ $(document).ready(function(){
     socket.emit('grafica-state',{
         id: data.setts.ID
     }); 
+    socket.emit('getOrders',{
+      msj : 'ola k ase!'
+    });
     graficas.push(new Grafica(data.setts));
+    console.log('nueva grafia '+data.setts.ID);
     $.each(data.setts, function(key, val){
       if(key != 'ID' && key != 'symbol'){
         if(key== 'TP' || key == 'SL')
@@ -142,8 +146,10 @@ $(document).ready(function(){
   //Entro una orden.
   socket.on('grafica-order', function(data){
    playOrder(); 
-   var id =  unSlash(data.id);
+   document.title = '('+ ++contOp +') Operaciones';
+   var id =  data.id;
    var ord = data.ordid;
+   
    getGrafica(id).onOrderOpen(data);
    
    $("#trade .log").prepend('<tr class="success" id='+ord+'></tr>');
@@ -160,7 +166,7 @@ $(document).ready(function(){
    $("#" + ord).append('<td><button class="btn" onClick="closeOrder(\''+data.id+'\',\''+ord+'\')">cerrar</button></td>');
    //$("#" + ord).append('<td><span class=\'cerrar\' title="Cerrar operacion" onClick="closeOrder(\''+graf+'\',\''+ord+'\')">x</span></td>');
    //para que el title del navegador se muestre las operaciones que tenemos.
-   document.title = 'Operaciones (' + ++contOp +')';
+   
    
   });
   //Salio una orden
