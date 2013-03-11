@@ -38,8 +38,8 @@ public class fixToJson  {
             buffer.append("\"sl\" :" + orden.getSl()+",");
             buffer.append("\"tp\" :" + orden.getTp()+",");
             buffer.append("\"horaClose\" : \"" + orden.getHoraClose()+ "\",");
+            buffer.append("\"razon\" : \"" + orden.getReason()+ "\",");
             buffer.append("\"comision\":" + "10,  " );
-
         buffer.append("}");
         return buffer.toString();
     }

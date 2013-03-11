@@ -34,7 +34,6 @@ $(document).ready(function(){
   socket.on('grafica-ini', function(data){
     var temp="";
     ids.push(data.setts.ID);
-    console.log(data.setts);
     //pedimos el esta de la grafica hasta este momento.     
     socket.emit('grafica-state',{
         id: data.setts.ID
@@ -76,7 +75,6 @@ $(document).ready(function(){
   //Datos de cambio de vela.
   socket.on('grafica-candle', function(data){
     var id = unSlash(data.values.id);
-    console.log('grafica-cndl: '+data.values.vars.id);
     getGrafica(id).onCandle(data.values.vars);
     //Actualizamos los íconos
     updateIcons(data);
@@ -143,7 +141,6 @@ $(document).ready(function(){
   socket.on('grafica-open', function(data){
     
     function setOpen(grafica,open){
-      console.log('open '+open);
       grafica.onOpen(open);
     }
     for(var i in graficas){

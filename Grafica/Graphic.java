@@ -151,7 +151,6 @@ public class Graphic extends Thread {
                     //Este evento puede ser llamado cada tick, auqque mosotros
                     //lo llamamos cada open para ahorrar recursos.
                     this.expert.open_min = open;
-                    
                     //Si es una nueva vel
                     if (candle.isNewCandle()) {
                         this.expert.indicator.appendBollsData(open);
@@ -162,10 +161,10 @@ public class Graphic extends Thread {
                         this.expert.onTick();
                     }
                     
-                    //Si el expert puede operar
-                    /*if(expert.isActive()){
+                    //Si el expert puede operar, guardamos una bitacora.
+                    if(expert.isActive()){
                         this.writeBlackBoxFile(stateFeed.getExpertState());
-                    }*/
+                    }
                     break;
                 case "close":
                     //TODO hacer algo con este precio de cierre

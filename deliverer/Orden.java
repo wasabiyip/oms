@@ -47,6 +47,7 @@ public class Orden implements java.io.Serializable{
     private Date horaOpen ;
     private Date horaClose ;
     private String account;
+    private String reason ="";
     /**
      * Constructor que inicializa con datos de una orden.
      * @param grafId id de la grafica que envia.
@@ -144,6 +145,31 @@ public class Orden implements java.io.Serializable{
         } catch (TradeContextBusy ex) {
             Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    /**
+     * Sobrecargado para que acepte una razon de cierre.
+     * @param close
+     * @param reason 
+     */
+    public void close(Double close,String reason){
+        this.newOrderSingle = new NewOrderSingle();
+        
+        this.newOrderSingle.set(new ClOrdID((this.ordId)));
+        this.newOrderSingle.set(new HandlInst('1'));
+        this.newOrderSingle.set(new Side(this.averse));
+        this.newOrderSingle.set(new Currency(this.currency));
+        this.newOrderSingle.set(new Symbol(this.symbol));
+        this.newOrderSingle.set(new TransactTime());
+        this.newOrderSingle.set(new OrderQty(this.lotes));
+        this.newOrderSingle.set(new OrdType('C'));
+        this.newOrderSingle.set(new Price(close));
+        try {
+            System.err.println("Cerrando orden "+ this.ordId +" "+reason);
+            OrderHandler.sendOrder(this);
+        } catch (TradeContextBusy ex) {
+            Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.reason = reason;
     }
     
     /**
@@ -313,6 +339,12 @@ public class Orden implements java.io.Serializable{
      */
     public String getBrokerOrdId(){
         return this.brokerOrderId;
+    }
+    /**
+     * @return Razon de cierre de la operacion, si es que hay...
+     */
+    public String getReason(){
+        return this.reason;
     }
     /**
      * SETTERS!------------------------------------------------------->>>>>>>>>>

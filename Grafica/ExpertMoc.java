@@ -97,33 +97,35 @@ public class ExpertMoc extends AbstractExpert{
                     if (currentOrden.getSide() == '1') {
                         if (setts.salidaBollinger && this.open_min  >= bollUpS) {
                             //System.out.println("Cerrando orden por bollinger");
-                            currentOrden.close(this.Bid);
+                            currentOrden.close(this.Bid, "cierre por bollinger");
                             break;
                         } else if (cont_velas == setts.velasS) {
                             //System.out.println("Cerrando orden por velas");
-                            currentOrden.close(this.Bid);
+                            currentOrden.close(this.Bid, "cierre por velas");
                             break;
                         } else if (this.rangeSalida()) {
                             //System.out.println("Cerrando orden por minutos");
-                            currentOrden.close(this.Bid);
+                            currentOrden.close(this.Bid ,"cierre por minutos");
                             break;
+                         //Si queremos poner el Sl/TP después de que entro la orden.
                         }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
                             //currentOrden.Modify(this.Bid-this.setts.sl, this.Bid+this.setts.tp);
                         }
                     } else if (currentOrden.getSide() == '2') {
                         if (setts.salidaBollinger && this.open_min  <= bollDnS) {
                             //System.out.println("Cerrando orden por bollinger");
-                            currentOrden.close(this.Ask);
+                            currentOrden.close(this.Ask, "cierre por bollinger");
                             break;
                             //Cerramos las ordenes...
                         } else if (cont_velas == setts.velasS) {
                             //System.out.println("Cerrando orden por velas");
-                            currentOrden.close(this.Ask);
+                            currentOrden.close(this.Ask, "cierre por velas");
                             break;
                         } else if (this.rangeSalida()) {
                             //System.out.println("Cerrando orden por minutos");
-                            currentOrden.close(this.Ask);
+                            currentOrden.close(this.Ask ,"cierre por minutos");
                             break;
+                        //Si queremos poner el Sl/TP después de que entro la orden.
                         }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
                             //currentOrden.Modify(this.Ask+this.setts.sl, this.Ask-this.setts.tp);
                         }
