@@ -1,6 +1,6 @@
 package oms.Grafica;
 
-import java.util.ArrayList;
+import static oms.Grafica.GMTDate.getDate;
 
 /**
  * Clase que calcula cuando las velas de un período determinado.
@@ -19,17 +19,17 @@ public class Candle {
     public Candle(int periodo) {
         this.periodo = periodo;
         //cuantos minutos van en la vela inicial.
-        cont_time = GMTDate.getTime() % this.periodo;
+        this.cont_time = GMTDate.getMod(this.periodo);
     }
     /**
      * Es una nueva vela, si la hora es mod del periodo o 
      * @param hora
      * @return 
      */
-    public boolean isNewCandle(Integer hora){
+    public boolean isNewCandle(){
         boolean temp= false;
-         cont_time++;
-        if(hora%this.periodo == 0 || 
+        this.cont_time++;
+        if(getDate().getMinute() == 0 || 
                 cont_time%this.periodo ==0){
             temp = true;
             cont_time=0;

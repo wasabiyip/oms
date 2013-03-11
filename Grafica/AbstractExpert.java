@@ -99,6 +99,9 @@ public abstract class AbstractExpert {
         temp = OrderHandler.getOrdersBySymbol(this.Symbol).size();
         return temp;
     }
+    /**
+     * @return número de ordenes que hay para este magic
+     */
     public int OrderMagicCount(){
         int temp=0;
         temp = OrderHandler.getOrdersByMagic(this.Symbol, this.setts.MAGICMA).size();

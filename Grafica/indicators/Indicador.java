@@ -27,10 +27,10 @@ public class Indicador {
      * @param symbol Simbolo del cual vamos a extraer datos de mongo
      * @param periodoGrafica periodo de la gráfica.
      */
-    public Indicador(String symbol, int periodoGrafica) {
+    public Indicador(String symbol, int periodo) {
         this.symbol = symbol;
-        this.periodoGrafica = periodoGrafica;
-        dif = GMTDate.getDate().getMinute() % periodoGrafica;
+        this.periodoGrafica = periodo;
+        this.dif = GMTDate.getMod(periodo);
     }
 
     /**

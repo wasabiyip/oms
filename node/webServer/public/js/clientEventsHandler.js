@@ -87,8 +87,9 @@ $(document).ready(function(){
     var date = new Date();
     var symbol = unSlash(data.values.symbol);
     var selector;                
-    //este desmadre es para que no imprima las valores si el cero.
-    var hora = date.getHours()<10 ? '0'+date.getHours():date.getHours();
+    //
+    var hora = date.getHours()+9>=24 ? (date.getHours()+9)-24:date.getHours()+9;
+    //este desmadre es para que no imprima las valores si el valor es < 10.
     var min = date.getMinutes()<10 ? '0'+date.getMinutes():date.getMinutes();
     var segs = date.getSeconds()<10 ? '0'+date.getSeconds():date.getSeconds();;
     $('#market-hora').empty().append('  '+ hora + ':' + min + ':'+ segs);
@@ -140,8 +141,9 @@ $(document).ready(function(){
   });
   //cada que hay un precio de apertura de minuto.
   socket.on('grafica-open', function(data){
-    console.log(data.values);
+    
     function setOpen(grafica,open){
+      console.log('open '+open);
       grafica.onOpen(open);
     }
     for(var i in graficas){

@@ -153,10 +153,11 @@ public class Graphic extends Thread {
                     this.expert.open_min = open;
                     
                     //Si es una nueva vel
-                    if (candle.isNewCandle(GMTDate.getTime())) {
+                    if (candle.isNewCandle()) {
                         this.expert.indicator.appendBollsData(open);
                         this.expert.onTick();
-                        this.sendMessage.ExpertState();                       
+                        this.sendMessage.ExpertState();
+                        System.out.println(this.symbol +" nueva vela: "+this.setts.MAGICMA );
                     }else{
                         this.expert.onTick();
                     }
