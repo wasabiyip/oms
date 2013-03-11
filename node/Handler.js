@@ -18,6 +18,7 @@ exports.notify = function (type,moneda, precio){
             "precio":precio
         }
     });
+
     for(var i=0; i<Graficas.length; i++) {
         if(Graficas[i].getSymbol() === moneda){  
             //Es muy importante enviar '\n' ya que java espera un fin de 
@@ -114,13 +115,15 @@ exports.closeOrder = function(close){
     }
 }
 exports.getOrders = function(msj){
-    msj = JSON.stringify({
+    if(server_op){
+        msj = JSON.stringify({
         "msj" :{
             "type": "getOrders",
             "value": msj
-        }
-    });
-    server_op.write(msj+"\n");
+            }
+        });
+        server_op.write(msj+"\n");
+    }
 }
 
 function Slash(cadena){

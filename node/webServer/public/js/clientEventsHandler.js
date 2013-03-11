@@ -140,10 +140,15 @@ $(document).ready(function(){
   });
   //cada que hay un precio de apertura de minuto.
   socket.on('grafica-open', function(data){
-    var id = unSlash(data.values.id);    
-    var temp = getGrafica(id);
-    temp.onOpen(data.values.precio);
     console.log(data.values);
+    function setOpen(grafica,open){
+      grafica.onOpen(open);
+    }
+    for(var i in graficas){
+      if(graficas[i].symbol == data.values.symbol){
+        setOpen(graficas[i],data.values.precio);
+      }  
+    }
   });
   //Entro una orden.
   socket.on('grafica-order', function(data){

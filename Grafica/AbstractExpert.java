@@ -94,13 +94,15 @@ public abstract class AbstractExpert {
      * @return 
      */
     public int OrdersCount(){
+        
         Integer temp = null;
-        
         temp = OrderHandler.getOrdersBySymbol(this.Symbol).size();
-        
         return temp;
-        
-        
+    }
+    public int OrderMagicCount(){
+        int temp=0;
+        temp = OrderHandler.getOrdersByMagic(this.Symbol, this.setts.MAGICMA).size();
+        return temp;
     }
     /**
      * Obetenemos El total de ordenes que podemos cerrar, cada gráfica esta
@@ -108,8 +110,8 @@ public abstract class AbstractExpert {
      * @return Ordenes en forma de ArrayList
      */
     public ArrayList<Orden> OrdersTotal() {
-        ArrayList<Orden> temp = null;
         
+        ArrayList<Orden> temp = null;
         temp = OrderHandler.getOrdersBySymbol(this.Symbol);
         return temp;
     }

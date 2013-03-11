@@ -156,12 +156,9 @@ public class Graphic extends Thread {
                     if (candle.isNewCandle(GMTDate.getTime())) {
                         this.expert.indicator.appendBollsData(open);
                         this.expert.onTick();
-                        this.sendMessage.ExpertState();
-                        this.sendMessage.Open();
-                       
+                        this.sendMessage.ExpertState();                       
                     }else{
                         this.expert.onTick();
-                        this.sendMessage.Open(); 
                     }
                     
                     //Si el expert puede operar
@@ -187,6 +184,7 @@ public class Graphic extends Thread {
                 case "close-order":
                     try {
                         Orden orden = OrderHandler.getOrdenById(id);
+                        System.out.println(orden.getId());
                         if(orden.getSide() == '1'){
                             orden.close(expert.Bid);
                         }else if(orden.getSide() == '2'){

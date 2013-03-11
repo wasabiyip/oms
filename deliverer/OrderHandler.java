@@ -285,6 +285,19 @@ public class OrderHandler {
         
         return temp;
     }
+    public synchronized static ArrayList<Orden> getOrdersByMagic(String symbol, Integer magic){
+        ArrayList<Orden> temp= new ArrayList();
+        
+        for (int i = 0; i < ordersArr.size(); i++) {
+            if(ordersArr.get(i).IsActiva() && ordersArr.get(i).getUnSymbol().equals(symbol)
+                    && ordersArr.get(i).getMagic() == magic){
+                temp.add(ordersArr.get(i));
+            }            
+        }
+        
+        return temp;
+    }
+    
     /**
      * Obtenemos objetos Orden serializados en la carpeta del sistem _cereal.
      * @return 

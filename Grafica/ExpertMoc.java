@@ -72,9 +72,10 @@ public class ExpertMoc extends AbstractExpert{
             //System.out.println(this.CurrentHora()+" hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni)));
             //System.out.println(this.CurrentHora()); 
         }
-        //Revisamos que los precios se encuentren dentro de el rango de entrada.
+        //Revisamos que los rmprecios se encuentren dentro de el rango de entrada.
         if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
-                && (this.OrdersCount() < this.setts.limiteCruce) && (bollDif < this.setts.bollxUp && bollDif > setts.bollxDn)) {
+                && (this.OrdersCount() < this.setts.limiteCruce) && this.OrderMagicCount()<1 && (bollDif < this.setts.bollxUp 
+                && bollDif > setts.bollxDn)) {
             //entrada de operaciones.
             if ((this.open_min+ this.setts.boll_special) <= bollDn) {
                 //Compra
@@ -92,38 +93,40 @@ public class ExpertMoc extends AbstractExpert{
             //System.out.println(contVelas);
             for (int i = 0; i < OrdersTotal().size(); i++) {
                 Orden currentOrden = OrdersTotal().get(i);
-                if (currentOrden.getSide() == '1') {
-                    if (setts.salidaBollinger && this.open_min  >= bollUpS) {
-                        //System.out.println("Cerrando orden por bollinger");
-                        currentOrden.close(this.Bid);
-                        break;
-                    } else if (cont_velas == setts.velasS) {
-                        //System.out.println("Cerrando orden por velas");
-                        currentOrden.close(this.Bid);
-                        break;
-                    } else if (this.rangeSalida()) {
-                        //System.out.println("Cerrando orden por minutos");
-                        currentOrden.close(this.Bid);
-                        break;
-                    }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
-                        //currentOrden.Modify(this.Bid-this.setts.sl, this.Bid+this.setts.tp);
-                    }
-                } else if (currentOrden.getSide() == '2') {
-                    if (setts.salidaBollinger && this.open_min  <= bollDnS) {
-                        //System.out.println("Cerrando orden por bollinger");
-                        currentOrden.close(this.Ask);
-                        break;
-                        //Cerramos las ordenes...
-                    } else if (cont_velas == setts.velasS) {
-                        //System.out.println("Cerrando orden por velas");
-                        currentOrden.close(this.Ask);
-                        break;
-                    } else if (this.rangeSalida()) {
-                        //System.out.println("Cerrando orden por minutos");
-                        currentOrden.close(this.Ask);
-                        break;
-                    }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
-                        //currentOrden.Modify(this.Ask+this.setts.sl, this.Ask-this.setts.tp);
+                if(currentOrden.getMagic()==this.setts.MAGICMA){
+                    if (currentOrden.getSide() == '1') {
+                        if (setts.salidaBollinger && this.open_min  >= bollUpS) {
+                            //System.out.println("Cerrando orden por bollinger");
+                            currentOrden.close(this.Bid);
+                            break;
+                        } else if (cont_velas == setts.velasS) {
+                            //System.out.println("Cerrando orden por velas");
+                            currentOrden.close(this.Bid);
+                            break;
+                        } else if (this.rangeSalida()) {
+                            //System.out.println("Cerrando orden por minutos");
+                            currentOrden.close(this.Bid);
+                            break;
+                        }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
+                            //currentOrden.Modify(this.Bid-this.setts.sl, this.Bid+this.setts.tp);
+                        }
+                    } else if (currentOrden.getSide() == '2') {
+                        if (setts.salidaBollinger && this.open_min  <= bollDnS) {
+                            //System.out.println("Cerrando orden por bollinger");
+                            currentOrden.close(this.Ask);
+                            break;
+                            //Cerramos las ordenes...
+                        } else if (cont_velas == setts.velasS) {
+                            //System.out.println("Cerrando orden por velas");
+                            currentOrden.close(this.Ask);
+                            break;
+                        } else if (this.rangeSalida()) {
+                            //System.out.println("Cerrando orden por minutos");
+                            currentOrden.close(this.Ask);
+                            break;
+                        }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
+                            //currentOrden.Modify(this.Ask+this.setts.sl, this.Ask-this.setts.tp);
+                        }
                     }
                 }
             }

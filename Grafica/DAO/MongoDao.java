@@ -3,12 +3,9 @@ package oms.Grafica.DAO;
 import com.mongodb.*;
 import com.mongodb.util.JSON;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import oms.Grafica.Settings;
 import oms.deliverer.Orden;
 import oms.util.fixToJson;
-import quickfix.fix42.ExecutionReport;
 
 /**
  *

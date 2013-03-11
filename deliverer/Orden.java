@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.CustomException.TradeContextBusy;
-import oms.Grafica.Graphic;
 import oms.Grafica.Settings;
 import oms.util.idGenerator;
 import quickfix.CharField;

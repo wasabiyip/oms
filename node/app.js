@@ -8,7 +8,7 @@ var handler = require('./Handler');
 //Iniciamos el servidor TCP.
 var Graficas = [];
 
-var server_precios, server_op, app;
+var server_precios, server_op, app; 
 //Stream de precios.
 /*var dealear = net.connect({port:7000}, function(){
     console.log('conectando');
@@ -97,6 +97,13 @@ function evaluar(msj, socket){
             case 'open':
                
                 handler.notify('open',unSlash(income.data.Moneda), income.data.Open);
+                msj = {
+                    "values":{
+                        "symbol":unSlash(income.data.Moneda) , 
+                        "precio": income.data.Open
+                        }
+                    };
+                webServer.onOpen(msj);
                 break;
             //Cada que se recibe un precio.	
             case 'tick':
@@ -135,19 +142,7 @@ function evaluar(msj, socket){
                     handler.closeGrafica(socket);
                     webServer.journal(temp);
                 }*/
-                break;	
-            //al recibir un evento onTick de un cliente conectado.
-            case 'onOpen':
-                id = handler.getGrafica(socket).settings.ID;
-                console.log(id+' Open: '+ income.precio);
-                msj = {
-                    "values":{
-                        "id":id , 
-                        "precio": income.precio
-                        }
-                    };
-            webServer.onOpen(msj);     
-            break;
+            break;	
             //al recibir un evento onClandle de un cliente conectado.
             case 'onCandle':
                 id = handler.getGrafica(socket).settings.ID;

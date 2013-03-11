@@ -50,16 +50,7 @@ public class SendMessage {
         + this.stateFeed.getExpertState()
         +"}");
     }
-    /**
-     * Enviamos evento de Open.
-     */
-    public void Open(){
-        
-        this.writeNode("{"
-        +"\"type\": \"onOpen\","
-        +"\"precio\": " + this.stateFeed.getAvgOpen()
-        + "}");
-    }        
+           
     /**
      * Método que envia mensajes a node.
      * @param msj
