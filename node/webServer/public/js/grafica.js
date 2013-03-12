@@ -85,8 +85,6 @@ function Grafica(data){
   this.onOrderOpen = function(orden){
     this.order = orden;
     this.drawChart();
-    notificator(this.symbol,'1');
-    console.log(orden);
   }
   /*
   *Evento de cierre de operación
@@ -94,19 +92,18 @@ function Grafica(data){
   this.onOrderClose = function(){
      this.order = false;
      this.drawChart();
-     notificator(this.symbol,'0');
   }
   this.setDataOpen = function(open){
-
+    
     if(this.data_master.length >10){
       //Si tiene mas de 40 datos, quitamos el 1 para que no se acumulen.
       this.data_master.splice(1,1);
       this.data_master[this.data_master.length] = [
-        getDate(),this.open_min, this.bollUp, this.bollDn,this.bollUpS,this.bollDnS
+        getPeriodDate(this.getPropiedad('Periodo')),this.open_min, this.bollUp, this.bollDn,this.bollUpS,this.bollDnS
       ];
     }else{
       this.data_master[this.data_master.length] = [
-        getDate(),this.open_min,this.bollUp, this.bollDn,this.bollUpS,this.bollDnS
+        getPeriodDate(this.getPropiedad('Periodo')),this.open_min,this.bollUp, this.bollDn,this.bollUpS,this.bollDnS
       ];
     }
     this.drawChart();

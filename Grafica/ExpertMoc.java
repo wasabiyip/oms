@@ -68,10 +68,10 @@ public class ExpertMoc extends AbstractExpert{
      */
     @Override
     public void onTick() {   
-        if(true){
-            //System.out.println(this.CurrentHora()+" hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni)));
-            //System.out.println(this.CurrentHora()); 
-        }
+        /*if(this.setts.MAGICMA == 20){
+            System.out.println(this.CurrentHora()+" hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni))
+                    +" "+(bollDif < this.setts.bollxUp && bollDif > setts.bollxDn) +" "+(this.OrdersCount() < this.setts.limiteCruce)+ " "+(this.OrderMagicCount()<1 ));
+        }*/
         //Revisamos que los rmprecios se encuentren dentro de el rango de entrada.
         if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
                 && (this.OrdersCount() < this.setts.limiteCruce) && this.OrderMagicCount()<1 && (bollDif < this.setts.bollxUp 
@@ -86,9 +86,7 @@ public class ExpertMoc extends AbstractExpert{
                 orderSend(this.Bid, this.setts.lots, '2', this.Ask + this.setts.sl, this.Ask - this.setts.tp);
                 this.cont_velas = 0;
             }
-            //Revisamos que haya entrado alguna operación y que los precios se 
-            //encuentren dentro de el rango de salida.    
-            
+        //Revisamos que haya entrado alguna operación      
         }else if (this.OrdersCount() > 0) {
             //System.out.println(contVelas);
             for (int i = 0; i < OrdersTotal().size(); i++) {

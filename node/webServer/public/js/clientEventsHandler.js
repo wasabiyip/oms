@@ -86,7 +86,7 @@ $(document).ready(function(){
     var symbol = unSlash(data.values.symbol);
     var selector;                
     //
-    var hora = date.getHours()+9>=24 ? (date.getHours()+9)-24:date.getHours()+9;
+    var hora = date.getHours()+9>=24 ? (date.getHours()+AJUSTE)-24:date.getHours()+AJUSTE;
     //este desmadre es para que no imprima las valores si el valor es < 10.
     var min = date.getMinutes()<10 ? '0'+date.getMinutes():date.getMinutes();
     var segs = date.getSeconds()<10 ? '0'+date.getSeconds():date.getSeconds();;

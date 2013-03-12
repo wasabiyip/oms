@@ -186,6 +186,12 @@ public class OrderHandler {
     public synchronized static void shutDown(Orden orden) throws Exception {
         Graphic.dao.recordOrden(orden);
         deleteCerealFile(orden.getId());
+        //Borramos orden de array de ordenes.
+        for (int i = 0; i < ordersArr.size(); i++) {
+            if(ordersArr.get(i).getId() == orden.getId()){
+                ordersArr.remove(i);
+            }            
+        }
     }
     
     /**

@@ -35,7 +35,6 @@ public class SenderApp extends MessageCracker implements Application{
     @Override
     public void onCreate(SessionID id){
         //Si queremos usar la consola personalizada.
-        //Console console = new Console();   
         mongo = MongoConnection.getInstance();
     }
     

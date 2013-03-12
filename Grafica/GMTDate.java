@@ -6,7 +6,7 @@ import java.util.*;
 public class GMTDate {
 
     private static Date date;
-    static int ajuste=7;
+    static int ajuste=9;
     public static Date getDate() {
 
         SimpleDateFormat gmtDateFormat = new SimpleDateFormat("yyyyMMdd-HH:mm");
@@ -32,7 +32,13 @@ public class GMTDate {
         //String time = hora +""+ min +""+ ( (seg<9)? ("0"+seg):seg);
         String time = hora + "." + ((min < 9) ? ("0" + min) : min);
         return (new Double(time));
-    }
+    }/**
+     * Calculamos la diferencia (mod) de un periodo respecto a la hora actual,
+     * normalmente usariamos % pero al usar peridos que no sean 5 min el mod no 
+     * funciona como esperariamos.
+     * @param periodo
+     * @return 
+     */
     public static Integer getMod(int periodo){
         return getDate().getMinute()-(periodo*(getDate().getMinute()/periodo));
     }

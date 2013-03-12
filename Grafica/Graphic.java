@@ -156,7 +156,7 @@ public class Graphic extends Thread {
                         this.expert.indicator.appendBollsData(open);
                         this.expert.onTick();
                         this.sendMessage.ExpertState();
-                        System.out.println(this.symbol +" nueva vela: "+this.setts.MAGICMA );
+                        System.out.println(this.symbol +" nueva vela: "+this.setts.MAGICMA +" "+this.periodo);
                     }else{
                         this.expert.onTick();
                     }
