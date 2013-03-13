@@ -55,7 +55,6 @@ public class ExpertMoc extends AbstractExpert{
         bollDif = this.bollingerDif();
         bollUpS = this.bollUpS();
         bollDnS = this.bollDnS();
-        
         this.cont_velas = 0;
         this.startTime = this.TimeCurrent() - (this.TimeCurrent()%this.Periodo);
     }
@@ -68,10 +67,12 @@ public class ExpertMoc extends AbstractExpert{
      */
     @Override
     public void onTick() {   
+        
         /*if(this.setts.MAGICMA == 20){
             System.out.println(this.CurrentHora()+" hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni))
                     +" "+(bollDif < this.setts.bollxUp && bollDif > setts.bollxDn) +" "+(this.OrdersCount() < this.setts.limiteCruce)+ " "+(this.OrderMagicCount()<1 ));
         }*/
+       
         //Revisamos que los rmprecios se encuentren dentro de el rango de entrada.
         if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
                 && (this.OrdersCount() < this.setts.limiteCruce) && this.OrderMagicCount()<1 && (bollDif < this.setts.bollxUp 
@@ -186,9 +187,10 @@ public class ExpertMoc extends AbstractExpert{
                             bollBandS3.getLowerBand()) / 3;
     }
     
-    double bollingerDif(){
+    public double bollingerDif(){
         double tempUp = (bollBandx1.getUpperBand() + bollBandx2.getUpperBand() + bollBand3.getUpperBand())/3 ;
         double tempDn = (bollBandx1.getLowerBand() + bollBandx2.getLowerBand() + bollBand3.getLowerBand())/3;
+        //System.out.println("XUp: "+tempUp + " - XDn: "+tempDn);
         double temp = tempUp - tempDn;
         return temp;
     }

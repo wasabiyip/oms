@@ -12,9 +12,11 @@ module.exports = function(app, models){
 	});
 	
 	app.get('/operaciones', function(req, res){
+		console.log(models.operaciones_modl.getOperaciones());
 		res.render('OperacionesView',{
 			title : 'Operaciones',
-			profile : models.master_modl.getProfile()
+			profile : models.master_modl.getProfile(),
+			operaciones : models.operaciones_modl.getOperaciones()
 		});
 	});
 }

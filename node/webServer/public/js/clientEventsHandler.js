@@ -278,7 +278,10 @@ function hardSorting(id, up, dn, upS, dnS){
   }
 }
 function updateIcons(data){
-  
+  var id=data.values.id;
+  $('#'+id+' .bollx abbr').attr({
+      'title': 'Dif: '+ redondear(data.values.vars.bollDif)
+    });
   //Cambiamos los iconos en la parte de vars.
   if(data.values.vars.limite)
     $('#'+id+' .limite-cruce .var-ico').removeClass().addClass('icon-ok');
@@ -293,7 +296,7 @@ function updateIcons(data){
   if(data.values.vars.bollX)
     $('#'+id+' .bollx .var-ico').removeClass().addClass('icon-ok');
   else
-    $('#'+id+' .bollx .var-ico').removeClass().addClass('icon-remove');
+    $('#'+id+' .bollx .var-ico').removeClass().addClass('icon-remove');  
   /**
   **/
   //Añadimos el icono de el pulgar en el menu de opciones si la grafica esta activa o no.

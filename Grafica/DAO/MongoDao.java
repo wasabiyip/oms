@@ -101,7 +101,6 @@ public class MongoDao {
         this.setDB("history");
         this.setCollection(symbol);
         DBCursor cursor;
-        //System.out.println(periodo);
         if (periodo > 0) {
             //Obtenemos la cantidad de datos necesarios para formar velas de ciertos
             //periodos

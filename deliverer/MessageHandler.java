@@ -92,6 +92,7 @@ public class MessageHandler {
                      */
                 } else if (msj.getOrdType().getValue() == 'W') {
                     temp_msj = "La orden cerro por OCO #" + msj.getClOrdID().getValue() + ".";
+                    tempOrden.setReason("cirre por oco");
                     System.out.println(temp_msj);
                     mStreaming.msg(temp_msj);
                     //La marcamos como cerrada.

@@ -124,10 +124,12 @@ function Grafica(data){
       title: this.symbol,
       pointSize : 3,
       width : 350,
-      height : 200
+      height : 200,
+      legent : {
+        position : "none"
+      }
     };
     this.chart = new google.visualization.LineChart(this.chart_id);
-    
     this.chart.draw(data, options);
   } 
   /**

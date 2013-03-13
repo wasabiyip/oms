@@ -441,6 +441,9 @@ public class Orden implements java.io.Serializable{
         }
         System.err.println("Cerramos posicion: "+this + " correctamente! :)");
     }
+    public void setReason(String reason){
+        this.reason = reason;
+    }
     /**
      * redondeamos un valor a un decimal quirandole todos los valores, después del
      * cuarto dígito despues del punto. 

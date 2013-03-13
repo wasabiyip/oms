@@ -19,6 +19,7 @@ var orders = [];
 var config = new obj_Config(app, express);
 models.graf_modl = require('./models/graficaModel');
 models.master_modl = require('./models/masterModel');
+models.operaciones_modl = require('./models/operacionesModel');
 //Routes
 require('./routes')(app, models);
 //Inicializando

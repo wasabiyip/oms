@@ -91,9 +91,6 @@ public class Settings {
         bollx3 = new Integer(config.getProperty("XBoll3"));
         bollxUp = new Double(config.getProperty("BollxUp"));
         bollxDn = new Double(config.getProperty("BollxDn"));
-        //Arreglar esta charrada
-        bollxUp = 1000;
-        bollxDn =0;
         volVal = new Double(config.getProperty("volatibidad"))* this.Point;
         velasS = new Integer (config.getProperty("num_velas_salida"));
         nwTp = new Double(config.getProperty("nwTP"))*this.Point;

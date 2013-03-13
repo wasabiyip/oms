@@ -37,11 +37,11 @@ public class StateFeed {
             temp.append("\"bollDn\":"+ expert.getAvgBoll(expert.bollDn())+ ",");
             temp.append("\"bollUpS\":"+ expert.getAvgBoll(expert.bollUpS()) + ",");
             temp.append("\"bollDnS\":"+ expert.getAvgBoll(expert.bollDnS())+ ",");
-            //temp.append("\"Velas\":"+expert.cont_velas + ",");
+            temp.append("\"bollDif\":"+ expert.bollingerDif()+ ",");
             temp.append("\"limite\":"+(expert.OrdersCount()<expert.setts.limiteCruce?true:false) + ",");
             temp.append("\"hora\":"+ (expert.CurrentHora()< expert.setts.horaFin && expert.CurrentHora()>=expert.setts.horaIni)+ ",");
             temp.append("\"bollX\":"+(expert.bollingerDif() < expert.setts.bollxUp && 
-                    expert.bollingerDif()> expert.setts.bollxDn)+ ",");
+                             expert.bollingerDif()> expert.setts.bollxDn)+ ",");
             temp.append("\"Active\":"+expert.isActive());
         temp.append("}");
         return temp.toString();
@@ -62,6 +62,9 @@ public class StateFeed {
             init.append("\"BollS1\" : " + setts.bollS1 + ",");
             init.append("\"BollS2\" : " + setts.bollS2 + ",");
             init.append("\"BollS3\" : " + setts.bollS3 + ",");
+            init.append("\"XBoll1\" : " + setts.bollx1+ ",");
+            init.append("\"XBoll2\" : " + setts.bollx2 + ",");
+            init.append("\"XBoll3\" : " + setts.bollx3 + ",");
             init.append("\"TP\" : " + setts.tp + ",");
             init.append("\"SL\" : " + setts.sl + ",");
             init.append("\"VelasSalida\": " + setts.velasS + ",");

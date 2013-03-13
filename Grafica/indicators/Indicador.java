@@ -5,6 +5,7 @@ import com.mongodb.DBObject;
 import oms.Grafica.DAO.MongoDao;
 import oms.Grafica.GMTDate;
 import java.util.ArrayList;
+import static oms.Grafica.GMTDate.getDate;
 
 /**
  * Esta clase regula la creacion de Bollingers se encarga de llenar con valores
@@ -41,7 +42,7 @@ public class Indicador {
     public BollingerBands createBollinger(int periodo) {
         int exists = this.getExistingBoll(periodo);
         if(exists>=0){
-            return bolls_arr.get(exists);
+            return this.bolls_arr.get(exists);
         }else{
             ArrayList data = new ArrayList();
             MongoDao dao = new MongoDao();
@@ -56,15 +57,20 @@ public class Indicador {
                 Double open = (Double)temp.get("Open");
                 Integer hora=0;
                 hora = (Integer)temp.get("hour");
-                resta = last_hora - hora;   
-
-                if((hora/100)%this.periodoGrafica == 0){
+                resta = last_hora - hora;
+                //getDate().getMinute()-(periodo*(getDate().getMinute()/periodo));
+                /**
+                 * Usamos el tipo de técnica para obtener si un minuto es la apertura
+                 * de vela, como en el metodo GMTDate.getMod.
+                 **/
+                int mins=getMinVela(hora/100);
+                if(mins -(this.periodoGrafica*(mins/this.periodoGrafica))== 0){
                     data.add(open);
-                    /**
-                     * Si la hora no es del mod de la grafica, pero hay una diferencia
-                     *entre las horas debemos de revisar que dentro de esa diferencia no
-                     * haya una apertura de vela
-                    */ 
+                /**
+                 * Si la hora no es del mod de la grafica, pero hay una diferencia
+                 *entre las horas debemos de revisar que dentro de esa diferencia no
+                 * haya una apertura de vela
+                */ 
                 }else if(resta>100 && !(resta >= 4100)){
 
                     for(int i=last_hora-100;i> hora;i=i-100){
@@ -83,8 +89,8 @@ public class Indicador {
                 last_hora = hora;
                 last_close = (Double)temp.get("Close");
             }
-            bolls_arr.add(new BollingerBands(periodo, data));
-            return bolls_arr.get(bolls_arr.size()-1);
+            this.bolls_arr.add(new BollingerBands(periodo, data));
+            return this.bolls_arr.get(this.bolls_arr.size()-1);
         }
     }
     
@@ -94,8 +100,8 @@ public class Indicador {
      * @param precio 
      */
     public void appendBollsData(Double precio){
-        for(int i=0; i<bolls_arr.size();i++){
-            bolls_arr.get(i).setPrice(precio);
+        for(int i=0; i<this.bolls_arr.size();i++){
+            this.bolls_arr.get(i).setPrice(precio);
         }
     }
     /**
@@ -106,12 +112,24 @@ public class Indicador {
      */
     private int getExistingBoll(int periodo){
         int temp = -1;
-        for (int i = 0; i < bolls_arr.size(); i++) {
-            if(bolls_arr.get(i).getSize() == periodo){
+        for (int i = 0; i < this.bolls_arr.size(); i++) {
+            if(this.bolls_arr.get(i).getSize() == periodo){
                 temp = i;
                 break;
             }
         }
         return temp;
     }
+    /**
+     * Obtenemos minutos de hora en formato 1234 = 34.
+     * @param hora
+     * @return 
+     */
+    private Integer getMinVela(int hora){
+        int uni=(int)(hora%100/1);
+                
+        return uni;
+    }
+    
 }
+
