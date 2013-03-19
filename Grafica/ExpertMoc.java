@@ -34,17 +34,17 @@ public class ExpertMoc extends AbstractExpert{
     @Override
     public void Init() {
         
-        bollBand1 = indicator.createBollinger(setts.boll1);
-        bollBand2 = indicator.createBollinger(setts.boll2);
-        bollBand3 = indicator.createBollinger(setts.boll3);
+        bollBand1 = this.iBands(setts.boll1);
+        bollBand2 = this.iBands(setts.boll2);
+        bollBand3 = this.iBands(setts.boll3);
         
-        bollBandS1 = indicator.createBollinger(setts.bollS1);
-        bollBandS2 = indicator.createBollinger(setts.bollS2);
-        bollBandS3 = indicator.createBollinger(setts.bollS3);
+        bollBandS1 = this.iBands(setts.bollS1);
+        bollBandS2 = this.iBands(setts.bollS2);
+        bollBandS3 = this.iBands(setts.bollS3);
         
-        bollBandx1 = indicator.createBollinger(setts.bollx1);
-        bollBandx2 = indicator.createBollinger(setts.bollx2);
-        bollBandx3 = indicator.createBollinger(setts.bollx3);
+        bollBandx1 = this.iBands(setts.bollx1);
+        bollBandx2 = this.iBands(setts.bollx2);
+        bollBandx3 = this.iBands(setts.bollx3);
         /*bollUp = this.getAvgBoll(this.bollUp());
         bollDn = this.getAvgBoll(this.bollDn());
         bollDif = this.bollingerDif();

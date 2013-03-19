@@ -5,7 +5,7 @@ import com.mongodb.DBObject;
 import oms.Grafica.DAO.MongoDao;
 import oms.Grafica.GMTDate;
 import java.util.ArrayList;
-import static oms.Grafica.GMTDate.getDate;
+import oms.CustomException.IndicatorLengthGap;
 
 /**
  * Esta clase regula la creacion de Bollingers se encarga de llenar con valores
@@ -39,7 +39,7 @@ public class Indicador {
      * @param periodo
      * @return el bollinger regresamos el bollinger creado para que sea referenciado.
      */
-    public BollingerBands createBollinger(int periodo) {
+    public BollingerBands createBollinger(int periodo)throws IndicatorLengthGap{
         int exists = this.getExistingBoll(periodo);
         if(exists>=0){
             return this.bolls_arr.get(exists);
@@ -49,45 +49,44 @@ public class Indicador {
             int cont =0;
             DBCursor cursor = dao.getCandleData(this.symbol, (periodo * periodoGrafica) + this.dif);
             int last_hora=0;
-            Double last_close=0.0;
+            Double last_open=0.0;
             int resta;
-
+           // System.out.println(cursor.size());
             while(cursor.hasNext() && data.size()< periodo) {
                 DBObject temp = cursor.next();
                 Double open = (Double)temp.get("Open");
                 Integer hora=0;
                 hora = (Integer)temp.get("hour");
                 resta = last_hora - hora;
-                //getDate().getMinute()-(periodo*(getDate().getMinute()/periodo));
+                
                 /**
                  * Usamos el tipo de técnica para obtener si un minuto es la apertura
                  * de vela, como en el metodo GMTDate.getMod.
                  **/
                 int mins=getMinVela(hora/100);
+                //System.out.println(resta);
                 if(mins -(this.periodoGrafica*(mins/this.periodoGrafica))== 0){
+                    //System.err.println("#"+mins +" "+ last_open+ " <-> "+open);
                     data.add(open);
+                    
                 /**
-                 * Si la hora no es del mod de la grafica, pero hay una diferencia
-                 *entre las horas debemos de revisar que dentro de esa diferencia no
-                 * haya una apertura de vela
-                */ 
-                }else if(resta>100 && !(resta >= 4100)){
-
-                    for(int i=last_hora-100;i> hora;i=i-100){
-                        /**
-                         * si en i debería de haber una apertura de grafica, guardamos
-                         * el último close 
-                         */
-                        if((i/100)%this.periodoGrafica==0 && data.size()<periodo){
-                            data.add(last_close);
-                        }
-                    }
-                }else if((resta - 4100)>100){
-                    //Si hay un lag al cambiar de hora.
+                 * Si la resta es mayor a 100 quiere decir que hay un gap, asi 
+                 * que la apertura de vela será el último open recibido.
+                 */ 
+                }else if(resta>100 && !(resta == 4100)){
+                    //System.err.println("##"+getMinVela(last_hora/100) +" "+ last_open+ " <-> "+open);
+                    data.add(last_open);
                 }
                 cont++;
                 last_hora = hora;
-                last_close = (Double)temp.get("Close");
+                last_open = open;
+            }
+            /**
+             * Si al obtener los datos resuta que nos son del periodo que esperabamos
+             * lanzamos una excepción ya que deberían.
+             */
+            if (data.size()!=periodo){
+                throw new IndicatorLengthGap(this.symbol, periodo);
             }
             this.bolls_arr.add(new BollingerBands(periodo, data));
             return this.bolls_arr.get(this.bolls_arr.size()-1);

@@ -5,7 +5,11 @@
 package oms.Grafica;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import oms.CustomException.IndicatorLengthGap;
 import oms.CustomException.TradeContextBusy;
+import oms.Grafica.indicators.BollingerBands;
 import oms.Grafica.indicators.Indicador;
 import oms.deliverer.Orden;
 import oms.deliverer.OrderHandler;
@@ -67,6 +71,15 @@ public abstract class AbstractExpert {
      */
     public void indicatorDataIn(Double precio) {
         this.indicator.appendBollsData(precio);
+    }
+    BollingerBands iBands(Integer boll){
+        BollingerBands temp = null;
+        try {
+           temp = this.indicator.createBollinger(boll);
+        } catch (IndicatorLengthGap ex) {
+            System.err.println(ex + " " + this.setts.MAGICMA);
+        }
+        return temp;
     }
     /**
      * hora actual con formato de DB
