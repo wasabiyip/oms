@@ -42,6 +42,7 @@ public class Graphic extends Thread {
     private PrintWriter blackBox;
     private StateFeed stateFeed;
     private SendMessage sendMessage;
+    private Boolean loggedIn = false;
     
     /**
      * Constructor!
@@ -92,7 +93,7 @@ public class Graphic extends Thread {
             this.outNode = new DataOutputStream(this.socket.getOutputStream());
             sendMessage = new SendMessage(outNode, stateFeed);
             //al iniciar enviamos a Node los settings de el expert.
-            this.sendMessage.logIn();
+            this.hardLogIn();
             this.sendMessage.ExpertState();
             //Leemos mensajes de node
             BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
@@ -108,13 +109,29 @@ public class Graphic extends Thread {
                 //borramos el contenido pa' que no se acumule...
                 msjin.delete(0, msjin.length());
             }
+            
         } catch (UnknownHostException ex) {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }        
     }
-
+    private void hardLogIn(){
+        //this.sendMessage.logIn();
+        new Thread(){
+            public void run(){
+                try {
+                    sendMessage.logIn();
+                    Thread.sleep(3000);
+                    if(!getLoggedIn()){
+                        hardLogIn();
+                    }
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }.start();
+    }
     /**
      * Cada vez que que tenemos una vela nueva detonamos este método.
      */
@@ -195,6 +212,10 @@ public class Graphic extends Thread {
                     }
                     
                     break;
+                case "logged":
+                    System.out.println("Logged In "+ this.setts.symbol+ " - " + this.setts.MAGICMA);
+                    this.loggedIn = true;
+                    break;
                 default:
                     System.out.println("Mensaje no identificado"+ json.toString());
             }
@@ -258,5 +279,8 @@ public class Graphic extends Thread {
     
     public int getMagic(){
         return setts.MAGICMA;
+    }
+    Boolean getLoggedIn(){
+        return this.loggedIn;
     }
 }

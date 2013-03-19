@@ -23,14 +23,7 @@ public class SendMessage {
     }
 
     public void logIn() {
-         int random = new Random().nextInt(GraficaHandler.graficas.size());
-        try {
-            //Esperamos entre 1 y el número de graficas enmilis para prevenir 
-            //mensajes traslapados.
-            Thread.sleep(random);
-        } catch (InterruptedException ex) {
-            Logger.getLogger(SendMessage.class.getName()).log(Level.SEVERE, null, ex);
-        }
+         
         this.writeNode("{\"type\": \"login\", "
                 + "\"name\":\"CLIENT_TCP\", "
                 + "\"symbol\":\"" + this.stateFeed.getSymbol() + "\","
@@ -68,7 +61,8 @@ public class SendMessage {
             //Esperamos entre 1 y el número de graficas enmilis para prevenir 
             //mensajes traslapados.
             Thread.sleep(random);
-            outNode.writeUTF(msj + "\n");
+            this.outNode.writeUTF(msj + "\n");
+            this.outNode.flush();
             
         } catch (IOException ex) {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);

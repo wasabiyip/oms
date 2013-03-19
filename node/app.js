@@ -83,9 +83,13 @@ function evaluar(msj, socket){
                     //esa grafica.
                     handler.createGrafica(income.symbol, socket, income.settings);
                     webServer.addGrafica(income.settings);
-                    if (!server_precios){
-                        console.log('Servidor de precios desconectado');
-                    }
+                    console.log(income.settings.Magicma);
+                    msj = JSON.stringify({
+                        "msj" :{
+                            "type":"logged"
+                        }
+                    });
+                    socket.write(msj + '\n');
                 }
                 break;
 
@@ -181,6 +185,8 @@ function evaluar(msj, socket){
     }
     //Cachamos cualquier error y lo imprimimos.
     }catch(error){
+        
+        console.log(error);
         if(error == 'SyntaxError'){
             console.log('error de envio esperado!');
         }

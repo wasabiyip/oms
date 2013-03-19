@@ -1,5 +1,5 @@
 /**
-* Este es el objecto gracias al cual podemos representar a una grafica
+* Objeto grafica.
 */
 function Grafica(data){
 
@@ -127,9 +127,15 @@ function Grafica(data){
       height : 200,
       legent : {
         position : "none"
-      }
+      },
+      hAxis:{
+        textStyle:{
+          color:"white"
+        }
+      } 
     };
     this.chart = new google.visualization.LineChart(this.chart_id);
+
     this.chart.draw(data, options);
   } 
   /**

@@ -93,18 +93,8 @@ exports.onOpen= function(data){
 }
 
 exports.expertState = function(data){
-    var contState;
-    
-    if(waitState !== null){
-        waitState.emit('expert-state',data);
-        if(contState>=handler.graficasLength){
-            waitState = null;
-            contState =0;
-        }
-        contState++;
-    }
-    else
-        notify('expert-state', data);
+        
+    notify('expert-state', data);
 }
 //Estado inicial de las operaciones.
 exports.onOrderInit = function(data){
