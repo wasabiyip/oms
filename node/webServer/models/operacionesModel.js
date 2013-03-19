@@ -1,15 +1,6 @@
 
-var mongo = require('mongojs');
-var db = mongo('history')
-var colls = db.collection('operaciones');
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/history');
 
-var getOperaciones = function(){
-	var ops;
-	colls.find(function(err,docs){
-		ops= docs;
-	});
-	console.log(ops);
-	return ops;
-}
-
-module.exports.getOperaciones = getOperaciones;
+var schema = new mongoose.Schema({});
+module.exports = mongoose.model('operaciones',schema);

@@ -6,6 +6,7 @@ var Graficas = [];
 exports.createGrafica = function(symbol, socket, settings){
     
     Graficas.push(new Grafica(symbol, socket, settings));
+    console.log('#'+symbol+' '+Graficas.length);
 }
 exports.setApp = function(app){
     server_op = app;
@@ -33,7 +34,6 @@ exports.resetStuff = function(){
 }
 exports.expertState = function(txt){
     id= txt.id;
-    console.log('obteniando estado '+ id);
     msj = JSON.stringify({
         "msj" :{
             "type":"get-state",

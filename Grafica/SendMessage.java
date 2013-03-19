@@ -23,14 +23,20 @@ public class SendMessage {
     }
 
     public void logIn() {
-        
+         int random = new Random().nextInt(GraficaHandler.graficas.size());
+        try {
+            //Esperamos entre 1 y el número de graficas enmilis para prevenir 
+            //mensajes traslapados.
+            Thread.sleep(random);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SendMessage.class.getName()).log(Level.SEVERE, null, ex);
+        }
         this.writeNode("{\"type\": \"login\", "
                 + "\"name\":\"CLIENT_TCP\", "
                 + "\"symbol\":\"" + this.stateFeed.getSymbol() + "\","
                 + this.stateFeed.getExpertInfo() + ","
                 + this.stateFeed.getExpertState()
                 + "}");
-
     }
     public void ExpertState(){
         
@@ -59,7 +65,8 @@ public class SendMessage {
         try {
             
             int random = new Random().nextInt(GraficaHandler.graficas.size());
-            //Esperamos entre 1-15 milis para prevenir perdida de mensajes.
+            //Esperamos entre 1 y el número de graficas enmilis para prevenir 
+            //mensajes traslapados.
             Thread.sleep(random);
             outNode.writeUTF(msj + "\n");
             

@@ -66,6 +66,8 @@ function redondear( precio){
 //Tabla de /operaciones.
 $(document).ready(function() {
     $('#example').dataTable({
+          "bProcessing" : true,
+          "sAjaxSource" : "ops.txt",
           "oLanguage": {
             "sLengthMenu": "Mostrando _MENU_ por página",
             "sZeroRecords": "No hay ordenes :(",

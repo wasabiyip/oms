@@ -78,10 +78,6 @@ function evaluar(msj, socket){
                     webServer.journal(temp);
                     console.log('Servidor de precios conectado: ' + server_precios.name);	
                 }else if( income.name === 'CLIENT_TCP'){
-					
-                    //clients.push([income.symbol,socket,income.settings]);
-                    console.log('Cliente tcp conectado ' + income.symbol);
-
                     //Añadimos una grafica al array de graficas, con el Symbol, un ID de graafica 
                     //el socket desde el cual recibimos conexion y los settings del expert que controla
                     //esa grafica.

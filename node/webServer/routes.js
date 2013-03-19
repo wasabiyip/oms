@@ -1,3 +1,4 @@
+var ops_controller = require('./controllers/operacionesController.js');
 module.exports = function(app, models){
 	//Index
 	app.get('/', function(req, res){
@@ -11,12 +12,13 @@ module.exports = function(app, models){
 			});
 	});
 	
-	app.get('/operaciones', function(req, res){
-		console.log(models.operaciones_modl.getOperaciones());
+	/*app.get('/operaciones', function(req, res){
 		res.render('OperacionesView',{
 			title : 'Operaciones',
 			profile : models.master_modl.getProfile(),
 			operaciones : models.operaciones_modl.getOperaciones()
 		});
-	});
+	});*/
+	
+	app.get('/operaciones',ops_controller.getOperaciones);
 }

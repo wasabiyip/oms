@@ -2,3 +2,5 @@
 node/webServer/public/js/lib/*
 node/webServer/public/css/bootstrap/*
 /node/webServer/node_modules
+/node/*.json
+/node/webServer/public/*.txt
