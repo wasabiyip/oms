@@ -150,4 +150,9 @@ public class BollingerBands {
     public int getSize(){
         return values.size();
     }
+    
+    @Override
+    public String toString(){
+        return "+"+ this.getUpperBand() +" - " + this.getMiddleBand() +" _ " + this.getLowerBand();
+    }
 }

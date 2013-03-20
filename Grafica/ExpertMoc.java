@@ -72,7 +72,6 @@ public class ExpertMoc extends AbstractExpert{
             System.out.println(this.CurrentHora()+" hora: "+((this.CurrentHora() < this.setts.horaFin)&& (this.CurrentHora() >= this.setts.horaIni))
                     +" "+(bollDif < this.setts.bollxUp && bollDif > setts.bollxDn) +" "+(this.OrdersCount() < this.setts.limiteCruce)+ " "+(this.OrderMagicCount()<1 ));
         }*/
-       
         //Revisamos que los rmprecios se encuentren dentro de el rango de entrada.
         if ((this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
                 && (this.OrdersCount() < this.setts.limiteCruce) && this.OrderMagicCount()<1 && (bollDif < this.setts.bollxUp 

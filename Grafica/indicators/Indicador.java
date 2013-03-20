@@ -46,7 +46,6 @@ public class Indicador {
         }else{
             ArrayList data = new ArrayList();
             MongoDao dao = new MongoDao();
-            int cont =0;
             DBCursor cursor = dao.getCandleData(this.symbol, (periodo * periodoGrafica) + this.dif);
             int last_hora=0;
             Double last_open=0.0;
@@ -66,7 +65,7 @@ public class Indicador {
                 int mins=getMinVela(hora/100);
                 //System.out.println(resta);
                 if(mins -(this.periodoGrafica*(mins/this.periodoGrafica))== 0){
-                    //System.err.println("#"+mins +" "+ last_open+ " <-> "+open);
+                    //System.err.println("#"+mins);
                     data.add(open);
                     
                 /**
@@ -74,10 +73,25 @@ public class Indicador {
                  * que la apertura de vela será el último open recibido.
                  */ 
                 }else if(resta>100 && !(resta == 4100)){
-                    //System.err.println("##"+getMinVela(last_hora/100) +" "+ last_open+ " <-> "+open);
-                    data.add(last_open);
+                    /**
+                     * Si la diferencia es mayor a 4100 es por que es al cambio
+                     * de hora, asi que lo normalizamos.
+                     */
+                    if(resta>4100){
+                        resta = resta - 4100;
+                    }
+                    /**
+                     * recorremos la diferencia para buscar un supuesto cambio
+                     * de vela en ese rango.
+                     */
+                    for(int i=1;i<=resta/100;i++){
+                        //Misma forma de "mod" 
+                        if((mins+i) -(this.periodoGrafica*((mins+i)/this.periodoGrafica))== 0){
+                            //System.err.println("## "+(mins+1));
+                            data.add(last_open);
+                        }
+                    }
                 }
-                cont++;
                 last_hora = hora;
                 last_open = open;
             }

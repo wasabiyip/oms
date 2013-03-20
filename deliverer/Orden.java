@@ -367,7 +367,7 @@ public class Orden implements java.io.Serializable{
         this.filled = true;
         this.esNueva = false;
         try {
-            this.open_price = msj.getAvgPx().getValue();
+            this.open_price = msj.getLastPx().getValue();
             this.account = msj.getAccount().getValue();
             this.horaOpen = msj.getTransactTime().getValue();
             this.execId = msj.getExecID().getValue();

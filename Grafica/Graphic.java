@@ -28,6 +28,7 @@ public class Graphic extends Thread {
     private Socket socket;
     private BufferedReader inFromNode;
     private DataOutputStream outNode;
+    private InputStreamReader inputStreamReader;
     //private Expert expert;
     private ExpertMoc expert;
     private Candle candle;
@@ -42,8 +43,8 @@ public class Graphic extends Thread {
     private PrintWriter blackBox;
     private StateFeed stateFeed;
     private SendMessage sendMessage;
-    private Boolean loggedIn = false;
-    
+    private Boolean loggedIn = true;
+    private int contLogin=0;
     /**
      * Constructor!
      *
@@ -52,27 +53,27 @@ public class Graphic extends Thread {
      * @throws IOException
      */
     public Graphic(Properties log_file) {
-        setts = new Settings(log_file);
+        this.setts = new Settings(log_file);
         this.symbol = setts.symbol;
         this.periodo = setts.periodo; 
         //Estos es para expert alternativo
-        expert = new ExpertMoc();
-        expert.absInit(setts.symbol, setts.periodo, setts);
-        expert.Init();
-        stateFeed = new StateFeed(expert);
+        this.expert = new ExpertMoc();
+        this.expert.absInit(setts.symbol, setts.periodo, setts);
+        this.expert.Init();
+        this.stateFeed = new StateFeed(expert);
         this.candle = new Candle(this.periodo);
         //expert = new Expert(setts);
         
         String path = "/home/omar/OMS/log/"+setts.symbol;
         try {
-            blackBox = new PrintWriter(path+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
+            this.blackBox = new PrintWriter(path+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
          //Si no se encuentra la carpeta de log para esta moneda, la creamos y volvemos a
          // crear el archivo.
         } catch (IOException ex) {
             System.err.println("creando directorio de log para "+setts.symbol+"...");
             new File(path).mkdir();
             try {
-                blackBox = new PrintWriter(path+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
+                this.blackBox = new PrintWriter(path+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
             } catch (Exception ex1) {
                 Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex1);
             } 
@@ -91,21 +92,22 @@ public class Graphic extends Thread {
             
             this.socket = new Socket("127.0.0.1", 3000);
             this.outNode = new DataOutputStream(this.socket.getOutputStream());
-            sendMessage = new SendMessage(outNode, stateFeed);
+            this.sendMessage = new SendMessage(outNode, stateFeed);
             //al iniciar enviamos a Node los settings de el expert.
             this.hardLogIn();
             this.sendMessage.ExpertState();
             //Leemos mensajes de node
             BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
-            InputStreamReader isr = new InputStreamReader(bis, "US-ASCII");
+            this.inputStreamReader = new InputStreamReader(bis, "US-ASCII");
             StringBuffer msjin = new StringBuffer();
             int c;
-            while (isr.read() > 0) {
-                while ((c = isr.read()) != 10) {
+            while (this.inputStreamReader.read() > 0) {
+                while ((c = this.inputStreamReader.read()) != 10) {
                     msjin.append((char) c);
                 }
                 //Evaluamos cada cadena recibida.
                 handler(msjin.toString());
+                
                 //borramos el contenido pa' que no se acumule...
                 msjin.delete(0, msjin.length());
             }
@@ -116,8 +118,34 @@ public class Graphic extends Thread {
             Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
         }        
     }
+    /**
+     * Enviamos login.
+     */
     private void hardLogIn(){
-        //this.sendMessage.logIn();
+        /**
+         * Si hay tres intentos de login fallidos, reconstruimos el socket.
+         */
+        /*if(this.contLogin>=3){
+            try {
+                System.out.println("Rebuilding "+this.setts.MAGICMA);
+                this.socket.close();
+                this.outNode.close();
+                this.socket = new Socket("127.0.0.1", 3000);
+                this.inputStreamReader = new InputStreamReader(new 
+                        BufferedInputStream(socket.getInputStream()), "US-ASCII");
+                this.outNode = new DataOutputStream(this.socket.getOutputStream());
+                this.sendMessage = new SendMessage(outNode, stateFeed);
+                this.contLogin=0;
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }*/
+        this.contLogin++;
+        /**
+         * hacemos una llamada recursiva a método si no recibimos login.
+         */
         new Thread(){
             public void run(){
                 try {
