@@ -49,7 +49,7 @@ public class Orden implements java.io.Serializable{
     private String account;
     private String reason ="";
     /**
-     * Constructor que inicializa con datos de una orden.
+     * Constructor que inicializa con datos de una orden, sin SL/TP.
      * @param grafId id de la grafica que envia.
      * @param symbol Moneda de la orden
      * @param magicma numero identificador de la orden/gráfica
@@ -58,7 +58,6 @@ public class Orden implements java.io.Serializable{
      */
     public Orden(String grafId, String symbol, Double lotes, Integer magicma, Double price, Character side){
         this.grafId = grafId;
-        
         this.side = side;
         this.averse = this.side =='1'?'2':'1';
         this.lotes = lotes*10000;
@@ -97,7 +96,6 @@ public class Orden implements java.io.Serializable{
     public Orden(String grafId, String symbol, Double lotes, Integer magicma,
             Double price, char side, Double sl, Double tp) {
         this.grafId = grafId;
-        this.open_price = price;
         this.side = side;
         this.averse = this.side == '1' ? '2' : '1';
         this.lotes = lotes * 10000;
@@ -119,8 +117,8 @@ public class Orden implements java.io.Serializable{
         this.newOrderSingle.set(new OrdType('C'));
         this.newOrderSingle.set(new Price(this.open_price));
         this.esNueva = true;
-        this.sl = sl;
-        this.tp = tp;
+        this.sl = this.redondear(sl);
+        this.tp = this.redondear(tp);
     }
     /**
      * Enviamos cierre de la orden.
@@ -262,6 +260,10 @@ public class Orden implements java.io.Serializable{
     public String getSymbol(){
         return this.symbol;
     }
+    /**
+     * Symbolo sin Slash /
+     * @return 
+     */
     public String getUnSymbol(){
         return this.unSymbol;
     }
@@ -367,12 +369,13 @@ public class Orden implements java.io.Serializable{
         this.filled = true;
         this.esNueva = false;
         try {
-            this.open_price = msj.getLastPx().getValue();
+            this.open_price = msj.getLastPx().getObject();
+            System.err.println(msj.getLastPx().getObject()+" - "+ msj.getLastPx().getValue()+ " Precio:"+this.open_price);
             this.account = msj.getAccount().getValue();
             this.horaOpen = msj.getTransactTime().getValue();
             this.execId = msj.getExecID().getValue();
             this.brokerOrderId = msj.getOrderID().getValue();
-            System.err.println("Abrimos posicion: "+this + " correctamente! :)");
+            //System.err.println("Abrimos posicion: "+this + " correctamente! :)");
         } catch (FieldNotFound ex) {
             Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -390,8 +393,8 @@ public class Orden implements java.io.Serializable{
             newOrderOco.set(new Side(averse));
             newOrderOco.setField(new CharField(7541, '3'));
             newOrderOco.setField(new CharField(7553, averse));
-            newOrderOco.setField(new DoubleField(7542, redondear(this.sl)));
-            newOrderOco.setField(new DoubleField(7540, redondear(this.tp)));
+            newOrderOco.setField(new DoubleField(7542, this.sl));
+            newOrderOco.setField(new DoubleField(7540, this.tp));
             OrderHandler.SendOCO(this.newOrderOco);
         }
     }
@@ -417,11 +420,11 @@ public class Orden implements java.io.Serializable{
             }else{
                 this.sl = msj.getDouble(7540);
                 this.tp = msj.getDouble(7542);
-                System.err.println("Modificando : "+this + " correctamente! :)");
+                //System.err.println("Modificando : "+this + " correctamente! :)");
             }
             
             this.ocoId = msj.getOrderID().getValue();
-            System.out.println("OCO: "+this.ocoId);
+            System.out.println("OCO abierta: "+this.ocoId);
         } catch (FieldNotFound ex) {
             Logger.getLogger(Orden.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -430,7 +433,7 @@ public class Orden implements java.io.Serializable{
      * Marcamos esta órden como cerrada.
      * @param msj 
      */
-    public void setClose(ExecutionReport msj){
+    public void setOrdenClose(ExecutionReport msj){
         this.isActiva = false;
         try {
             this.horaClose = msj.getTransactTime().getValue();
@@ -441,6 +444,13 @@ public class Orden implements java.io.Serializable{
         }
         System.err.println("Cerramos posicion: "+this + " correctamente! :)");
     }
+    public void setOcoClose(ExecutionReport msj){
+        
+    }
+    /**
+     * Añadimos razon de cierre de la órden.
+     * @param reason 
+     */
     public void setReason(String reason){
         this.reason = reason;
     }
@@ -451,9 +461,9 @@ public class Orden implements java.io.Serializable{
      * @return 
      */
     private Double  redondear(Double val){
-        return Math.round(val*Math.pow(10, 4))/Math.pow(10,4);
+        return Math.round(val*Math.pow(10, 5))/Math.pow(10,5);
     }
-   
+    
     /**
      * Autodescripción de la orden.
      * @return 

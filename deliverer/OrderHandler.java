@@ -184,6 +184,7 @@ public class OrderHandler {
      * @throws Exception
      */
     public synchronized static void shutDown(Orden orden) throws Exception {
+        System.out.println("shutdown ... "+ orden);
         Graphic.dao.recordOrden(orden);
         deleteCerealFile(orden.getId());
         //Borramos orden de array de ordenes.

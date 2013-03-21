@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.CustomException.OrdenNotFound;
 import oms.Grafica.DAO.MongoDao;
+import oms.deliverer.GraficaHandler;
 import oms.deliverer.Orden;
 import oms.deliverer.OrderHandler;
 import org.json.simple.JSONObject;
@@ -107,7 +108,6 @@ public class Graphic extends Thread {
                 }
                 //Evaluamos cada cadena recibida.
                 handler(msjin.toString());
-                
                 //borramos el contenido pa' que no se acumule...
                 msjin.delete(0, msjin.length());
             }
@@ -125,23 +125,9 @@ public class Graphic extends Thread {
         /**
          * Si hay tres intentos de login fallidos, reconstruimos el socket.
          */
-        /*if(this.contLogin>=3){
-            try {
-                System.out.println("Rebuilding "+this.setts.MAGICMA);
-                this.socket.close();
-                this.outNode.close();
-                this.socket = new Socket("127.0.0.1", 3000);
-                this.inputStreamReader = new InputStreamReader(new 
-                        BufferedInputStream(socket.getInputStream()), "US-ASCII");
-                this.outNode = new DataOutputStream(this.socket.getOutputStream());
-                this.sendMessage = new SendMessage(outNode, stateFeed);
-                this.contLogin=0;
-            } catch (UnknownHostException ex) {
-                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }*/
+        if(this.contLogin>=3){
+            GraficaHandler.rebuildGrafica(this);
+        }
         this.contLogin++;
         /**
          * hacemos una llamada recursiva a método si no recibimos login.
@@ -152,7 +138,8 @@ public class Graphic extends Thread {
                     sendMessage.logIn();
                     Thread.sleep(3000);
                     if(!getLoggedIn()){
-                        hardLogIn();
+                        System.out.println("Re-Log-In:"+setts.MAGICMA);
+                        hardLogIn();                        
                     }
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
@@ -199,14 +186,10 @@ public class Graphic extends Thread {
                     //Si es una nueva vel
                     if (candle.isNewCandle()) {
                         this.expert.indicator.appendBollsData(open);
-                        this.expert.onTick();
                         this.sendMessage.ExpertState();
-                        System.out.println(this.symbol +" nueva vela: "+this.setts.MAGICMA +" "+this.periodo);
-                    }else{
-                        this.expert.onTick();
-                    }
-                    
+                        System.out.println(this.symbol +" nueva vela: "+this.setts.MAGICMA +" "+this.periodo);                    
                     //Si el expert puede operar, guardamos una bitacora.
+                    }
                     if(expert.isActive()){
                         this.writeBlackBoxFile(stateFeed.getExpertState());
                     }
@@ -223,8 +206,11 @@ public class Graphic extends Thread {
                     expert.Ask = ((double) json.get("precio"));
                     break;
                 case "bid":
-                    //expert.onTick((double) json.get("precio"));
                     expert.Bid = ((double) json.get("precio"));
+                    //Unica condición para dar tick.
+                    if(expert.Bid > 0 && expert.Ask > 0 && expert.open_min >0)
+                        this.expert.onTick();
+                    
                     break;
                 case "close-order":
                     try {

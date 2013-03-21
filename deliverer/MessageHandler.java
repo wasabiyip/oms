@@ -1,6 +1,9 @@
 package oms.deliverer;
 
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import oms.CustomException.OrdenNotFound;
 import quickfix.FieldNotFound;
 import quickfix.SessionID;
 
@@ -27,12 +30,17 @@ public class MessageHandler {
      * @param msj
      * @throws FieldNotFound
      */
-    public static void executionReport(quickfix.fix42.ExecutionReport msj) throws FieldNotFound, Exception {
+    public static void executionReport(quickfix.fix42.ExecutionReport msj) throws FieldNotFound,Exception{
         /**
          * Evaluanos el ExecType(150) que contiene el tipo de execution que
          * recibimos del broker.
          */
-        Orden tempOrden = OrderHandler.getOrdenById(msj.getClOrdID().getValue());
+        Orden tempOrden = null;
+        try {
+            tempOrden = OrderHandler.getOrdenById(msj.getClOrdID().getValue());
+        } catch (OrdenNotFound ex) {
+            System.err.println("No puede encontrar la orden de:"+msj);
+        }
         switch (msj.getExecType().getValue()) {
             /**
              * 150=0 -> New: Quiere decir que es una nueva orden, aqui entramos
@@ -76,7 +84,7 @@ public class MessageHandler {
                      */
                     if (tempOrden.isFilled()) {
                         //TODO La marcamos como cerrada
-                        tempOrden.setClose(msj);
+                        tempOrden.setOrdenClose(msj);
                         //La cerramos en mongo:
                         OrderHandler.shutDown(tempOrden);
                         //Node notification
@@ -96,7 +104,7 @@ public class MessageHandler {
                     System.out.println(temp_msj);
                     mStreaming.msg(temp_msj);
                     //La marcamos como cerrada.
-                    tempOrden.setClose(msj);
+                    tempOrden.setOrdenClose(msj);
                     //Notificamos a node
                     mStreaming.clOrden(tempOrden);
                     //La cerramos en mongo:
@@ -121,7 +129,9 @@ public class MessageHandler {
                     System.err.println("OCO cancelada " + msj.getClOrdID().getValue() + " reenviando.");
                     OrderHandler.resendOCO(msj);
                 } else if(msj.getOrdStatus().getValue() == '4') {
-                    System.err.println("OCO cerrada de "+tempOrden.getId());
+                    //La cerramos en mongo:
+                    //OrderHandler.shutDown(tempOrden);
+                    System.err.println("OCO cerrada cancelada...");
                 }
                 break;
             /**
@@ -164,7 +174,7 @@ public class MessageHandler {
             default:
                 System.err.println("El horror!  150 NO SOPORTADO! " + msj + "\n ---> revisar log!");
         }
-
+        tempOrden = null;
     }
     /**
      * Cada que recibimos un mensaje de Node lo mandamos aquí para ser evaluado.

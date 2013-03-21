@@ -151,20 +151,23 @@ $(document).ready(function(){
   });
   //Entro una orden.
   socket.on('grafica-order', function(data){
-    playOrder(); 
+    //playOrder(); 
     document.title = '('+ ++contOp +') Operaciones';
     var id =  data.id;
     var ord = data.ordid;
+    console.log(data);
     $("#trade .log").prepend('<tr class="success" id='+ord+'></tr>');
     $.each(data, function(key,val){
-    if(key == 'id') {
-      //para que no ponga el id de la grafica en la tabla
-    }else if(key =='tipo'){
-       if(val ==1)
-           $("#" + ord).append('<td><span id='+key+ '>Compra</span></td>');
-       else
-           $("#" + ord).append('<td><span id='+key+ '>Venta</span></td>');
-    }else $("#" + ord).append('<td><span id='+key+ '>'+val+'</span></td>');
+      if(key == 'precio'){
+        $("#" + ord).append('<td><span id='+key+ '>'+val+'<span id="par"></span></span></td>');
+      }else if(key == 'id') {
+        //para que no ponga el id de la grafica en la tabla
+      }else if(key =='tipo'){
+         if(val ==1)
+             $("#" + ord).append('<td><span id='+key+ '>Compra</span></td>');
+         else
+             $("#" + ord).append('<td><span id='+key+ '>Venta</span></td>');
+      }else $("#" + ord).append('<td><span id='+key+ '>'+val+'</span></td>');
     });
     $("#" + ord).append('<td><button class="btn" onClick="closeOrder(\''+data.id+'\',\''+ord+'\')">cerrar</button></td>');
 
@@ -307,7 +310,7 @@ function updateIcons(data){
 }
 function playOrder() {
 
- $('#sound_order').html(
+  $('#sound_order').html(
     "<embed src=sounds/alert.wav hidden=true autostart=true loop=false>");
 }
 function playWarn() {

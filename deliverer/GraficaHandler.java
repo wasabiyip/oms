@@ -18,7 +18,7 @@ import oms.Grafica.Graphic;
 public class GraficaHandler {
     
     public static ArrayList<Graphic> graficas = new ArrayList();
-    public ArrayList<Properties> chart_files = new ArrayList();
+    public static ArrayList<Properties> chart_files = new ArrayList();
     private String last_profile;
     Properties prof_conf = new Properties();
     /**
@@ -62,6 +62,9 @@ public class GraficaHandler {
         }   
        
     }
+    /**
+     * @return perfil actual/ultimo perfil usado.
+     */
     public String getProfile(){
         return this.last_profile;
     }
@@ -72,6 +75,9 @@ public class GraficaHandler {
     public static void main(String[] args) {
         new GraficaHandler().runProfile();
     }
+    /**
+     * Creamos las graficas apartir de los archivos del perfil.
+     */
     void runProfile(){
         
         for(Properties file : this.chart_files){
@@ -84,18 +90,39 @@ public class GraficaHandler {
      * @param symbol
      * @param periodo
      */
-    void addGrafica(Properties log_file) {
+    public static void addGrafica(Properties log_file) {
         //Podriamos poner aquí algunas opciones mas como pasar el archivo log.
         graficas.add(new Graphic(log_file));
         //Console.log("Grafica "+log_file.getProperty("symbol") +" de " + log_file.getProperty("period") + " minutos cargada correctamente");
         runGrafica(graficas.size() - 1);
     }
     /**
+     * Reconstruimos una grafica.
+     */
+    public synchronized static void rebuildGrafica(Graphic grafica){
+        Properties temp=null;
+        
+        for(Properties file : chart_files){
+            if(grafica.getID().equals(file.getProperty("grafid"))){
+                temp = file;
+                System.out.println("file!");
+            }
+        }
+        
+        for (int i = 0; i < graficas.size(); i++) {
+            if(graficas.get(i)==grafica){
+                graficas.remove(i);
+                System.out.println("rebuilding "+ graficas.size());
+                addGrafica(temp);
+            }
+        }
+    }
+    /**
      * Las gráficas son thread así que tenemos que correrlos para que comienzen
      * su trabajo.
      * @param index 
      */
-    private void runGrafica(int index) {
+    private static void runGrafica(int index) {
         graficas.get(index).start();
     }        
     /*
