@@ -25,9 +25,9 @@ public abstract class AbstractExpert {
     int Periodo;
     Settings setts;
     Double Point;
-    public double open_min;
-    public Double Ask;
-    public Double Bid;
+    public Double open_min=0.0;
+    public Double Ask=0.0;
+    public Double Bid=0.0;
     /**
      * Este funje como constructor de la clase, ya que la clase que hereda no 
      * tiene constructor por lo tanto no podemos mandar llamar a este constructor,

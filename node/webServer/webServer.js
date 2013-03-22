@@ -23,7 +23,7 @@ models.operaciones_modl = require('./models/operacionesModel');
 //Routes
 require('./routes')(app, models);
 //Inicializando
-server.listen(80);
+server.listen(1300);
 
 io.sockets.on('connection', function (client){ 
 //Todo lo que esta aqui adentro maneja mensajes recibidos desde 

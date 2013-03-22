@@ -91,18 +91,10 @@ $(document).ready(function(){
     var min = date.getMinutes()<10 ? '0'+date.getMinutes():date.getMinutes();
     var segs = date.getSeconds()<10 ? '0'+date.getSeconds():date.getSeconds();;
     $('#market-hora').empty().append('  '+ hora + ':' + min + ':'+ segs);
-
-    for(var i in graficas){
-      if(graficas[i].symbol == data.values.symbol){
-          //primero borramos lo que este y después ponemos el precio.
-        if(data.values.tipo == "ask"){
-            $('#'+ symbol + " .ask").empty().append(data.values.precio);
-            graficas[i].onTick("ask", parseFloat(data.values.precio));
-
-        }else if(data.values.tipo == "bid"){
-
-          graficas[i].onTick("bid", parseFloat(data.values.precio));
-          for(i=0; i<last_prices_arr.length;i++){
+    if(data.values.tipo == "ask"){
+        $('#'+ symbol + " .ask").empty().append(data.values.precio);
+    }else if(data.values.tipo == "bid"){
+      for(i=0; i<last_prices_arr.length;i++){
 
             if(last_prices_arr[i][0] == symbol){
                /**
@@ -123,6 +115,17 @@ $(document).ready(function(){
           $('#'+ symbol + " .bid").empty().append(data.values.precio);
           $('#'+ symbol + " .bid").css('color',selector);
           $('#'+ symbol + " .ask").css('color',selector);
+    }
+    for(var i in graficas){
+      if(graficas[i].symbol == data.values.symbol){
+          //primero borramos lo que este y después ponemos el precio.
+        if(data.values.tipo == "ask"){
+            graficas[i].onTick("ask", parseFloat(data.values.precio));
+
+        }else if(data.values.tipo == "bid"){
+
+          graficas[i].onTick("bid", parseFloat(data.values.precio));
+          
         }
       }
     }
@@ -151,7 +154,7 @@ $(document).ready(function(){
   });
   //Entro una orden.
   socket.on('grafica-order', function(data){
-    //playOrder(); 
+    playOrder(); 
     document.title = '('+ ++contOp +') Operaciones';
     var id =  data.id;
     var ord = data.ordid;
