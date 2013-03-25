@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.Iterator;
+import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import quickfix.*;
 import org.slf4j.Logger;
@@ -25,19 +26,25 @@ public class Sender  {
      * @throws Exception 
      */
     public Sender() throws Exception{
-        InputStream inputS = new BufferedInputStream(
+        System.out.println("Ingresa la raíz:");
+        String input = new Scanner(System.in).next();
+        /*InputStream inputS = new BufferedInputStream(
                                 new FileInputStream(
-                                new File("/home/omar/OMS/config/app1.cnf")));
+                                new File(input)));*/
                                 //new File("/home/omar/OMS/config/GMIDemo00292str.cnf")));
-     
-        SessionSettings settings = new SessionSettings(inputS);
-        inputS.close();
+        String path = input;
+        SessionSettings settings = new SessionSettings(input+"/OMS/config/app.cnf");
+        /**
+         * El path es la raíz en donde se encuentra la carpeta del programa, 
+         * localmente: /home/omar
+         * Server: /home/omarloren.
+         * TODO: Validar o algo.
+         */ 
         
-        SenderApp application = new SenderApp(settings.getString("UserName"),settings.getString("PassWord"));
+        SenderApp application = new SenderApp(settings.getString("UserName"),settings.getString("PassWord"), path);
         MessageStoreFactory messageStoreFactory = new FileStoreFactory(settings);
         LogFactory logFactory = new ScreenLogFactory(true,true, true, true);
         MessageFactory messageFactory = new DefaultMessageFactory();
-        
         initiator =  new SocketInitiator(application, messageStoreFactory, settings, 
                                         logFactory, messageFactory);        
     }

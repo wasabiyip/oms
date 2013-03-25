@@ -23,7 +23,8 @@ public class DoHistoryFile extends IMongoDAO{
      * @param file ruta del archivo a convertir.
      * @throws IOException  
      */
-    public DoHistoryFile() throws IOException{
+    public DoHistoryFile(String path) throws IOException{
+        super(path);
         String  strline;
         StringBuffer str= new StringBuffer("");
         

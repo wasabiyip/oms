@@ -21,13 +21,15 @@ public class GraficaHandler {
     public static ArrayList<Properties> chart_files = new ArrayList();
     private String last_profile;
     Properties prof_conf = new Properties();
+    private static String path;
     /**
      * Generamos las gráficas
      */
-    public GraficaHandler(){
+    public GraficaHandler(String path){
         
         try {
-            prof_conf.load(new FileInputStream("/home/omar/OMS/profiles/profiles.cnf"));
+            this.path = path;
+            prof_conf.load(new FileInputStream(this.path+"/OMS/profiles/profiles.cnf"));
             this.last_profile = (prof_conf.getProperty("last_profile"));
             setProfile(this.last_profile);
         } catch (IOException ex) {
@@ -48,7 +50,7 @@ public class GraficaHandler {
             this.chart_files = this.getChartFiles(perfil);
             //salvamos perfil como el último perfil que se usó.
             prof_conf.setProperty("last_profile",perfil);
-            prof_conf.store(new FileOutputStream("/home/omar/OMS/profiles/profiles.cnf"),"");
+            prof_conf.store(new FileOutputStream(this.path+"/OMS/profiles/profiles.cnf"),"");
             //Si no existe el perfil llamas otra vez al método para usar el default. 
         } catch (NoProfileFound ex) {
             try {
@@ -68,13 +70,7 @@ public class GraficaHandler {
     public String getProfile(){
         return this.last_profile;
     }
-    /**
-     * Pequeño Main para correr el programa sin necesidad de conectarnos con fix.
-     * @param args 
-     */
-    public static void main(String[] args) {
-        new GraficaHandler().runProfile();
-    }
+    
     /**
      * Creamos las graficas apartir de los archivos del perfil.
      */
@@ -92,7 +88,7 @@ public class GraficaHandler {
      */
     public static void addGrafica(Properties log_file) {
         //Podriamos poner aquí algunas opciones mas como pasar el archivo log.
-        graficas.add(new Graphic(log_file));
+        graficas.add(new Graphic(log_file,path));
         //Console.log("Grafica "+log_file.getProperty("symbol") +" de " + log_file.getProperty("period") + " minutos cargada correctamente");
         runGrafica(graficas.size() - 1);
     }
@@ -174,7 +170,7 @@ public class GraficaHandler {
      */
     private ArrayList<Properties> getChartFiles(String perfil) throws NoProfileFound{
         ArrayList<Properties> temp = new ArrayList();
-        File folder = new File("/home/omar/OMS/profiles/" + perfil);
+        File folder = new File(this.path+"/OMS/profiles/" + perfil );
         //Si la carpeta de perfil no existe o esta vacía, lanzamos exceptión.
         if (!folder.exists() || folder.listFiles().length==0){
             throw new NoProfileFound(perfil);
@@ -200,4 +196,5 @@ public class GraficaHandler {
     public static Integer getGraficasSize(){
         return graficas.size();
     }
+    
 }

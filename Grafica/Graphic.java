@@ -46,6 +46,7 @@ public class Graphic extends Thread {
     private SendMessage sendMessage;
     private Boolean loggedIn = true;
     private int contLogin=0;
+    private String path;
     /**
      * Constructor!
      *
@@ -53,7 +54,7 @@ public class Graphic extends Thread {
      * @param periodo tiempo con el que trabajaremos.
      * @throws IOException
      */
-    public Graphic(Properties log_file) {
+    public Graphic(Properties log_file, String path) {
         this.setts = new Settings(log_file);
         this.symbol = setts.symbol;
         this.periodo = setts.periodo; 
@@ -65,7 +66,7 @@ public class Graphic extends Thread {
         this.candle = new Candle(this.periodo);
         //expert = new Expert(setts);
         
-        String path = "/home/omar/OMS/log/"+setts.symbol;
+        this.path = path+"/OMS/log/"+setts.symbol;
         try {
             this.blackBox = new PrintWriter(path+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
          //Si no se encuentra la carpeta de log para esta moneda, la creamos y volvemos a
@@ -91,7 +92,7 @@ public class Graphic extends Thread {
 
         try {
             
-            this.socket = new Socket("127.0.0.1", 3000);
+            this.socket = new Socket("127.0.0.1", 1305);
             this.outNode = new DataOutputStream(this.socket.getOutputStream());
             this.sendMessage = new SendMessage(outNode, stateFeed);
             //al iniciar enviamos a Node los settings de el expert.

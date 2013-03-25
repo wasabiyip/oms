@@ -29,7 +29,7 @@ public class MsjStreaming extends Thread {
     @Override
     public void run(){
         try {
-            this.socket = new Socket("127.0.0.1",3000);
+            this.socket = new Socket("127.0.0.1",1305);
             this.outNode = new DataOutputStream(socket.getOutputStream());
             BufferedInputStream bis = new BufferedInputStream(socket.getInputStream());
             InputStreamReader isr = new InputStreamReader(bis, "US-ASCII");

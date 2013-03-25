@@ -14,18 +14,21 @@ public class SenderApp extends MessageCracker implements Application{
     private String userName ;
     public static MongoConnection mongo;
     public static SessionID sessionID;
-    private GraficaHandler graficaHandler = new GraficaHandler();
+    private GraficaHandler graficaHandler ;
     boolean lock = false;
-    
+    private String path;
     
     /**
      * Constructor nos loggeamos a node al construir esta clase.
      */
-    public SenderApp(String userName, String passWord){
+    public SenderApp(String userName, String passWord, String path){
         this.userName = userName;
         this.passWord = passWord;
         MessageHandler.Init();
+        OrderHandler.setPath(path);
         OrderHandler.Init();                
+        this.path = path;
+        graficaHandler = new GraficaHandler(this.path);
     }
     
     /**
@@ -34,7 +37,11 @@ public class SenderApp extends MessageCracker implements Application{
      */
     @Override
     public void onCreate(SessionID id){
-        //Si queremos usar la consola personalizada.
+        /**
+         * Antes de obtener la instancia debemos añadir el path.
+         */
+        MongoConnection.setPath(this.path);
+        //Pedimos la instancia de Mongo.
         mongo = MongoConnection.getInstance();
     }
     

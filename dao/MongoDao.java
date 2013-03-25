@@ -20,7 +20,7 @@ public class MongoDao extends IMongoDAO {
     private BasicDBObject fechaMin;
     private BasicDBObject sort;
     private ArrayList<Double> arrList = new ArrayList();
-
+    
     /**
      * Constructor Obtiene la conexión con mongo y hace un query con el
      * parametro recibido.
@@ -28,8 +28,8 @@ public class MongoDao extends IMongoDAO {
      * @param date fecha apartir de la cual queremos obtener datos.
      * @throws Exception
      */
-    public MongoDao() {
-
+    public MongoDao(String path) {
+        super(path);
         mongo = MongoConnection.getInstance();
         try {
             mongo.connect();

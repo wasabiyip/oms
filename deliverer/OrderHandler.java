@@ -37,6 +37,7 @@ public class OrderHandler {
     /**
      * Inicializamos las órdenes que esten serializadas en la carpeta OMS/temp/_cereal
      */
+    private static String path="";
     public static void Init(){
         ordersArr = getSerializedOrders();//
     }
@@ -311,7 +312,7 @@ public class OrderHandler {
      */
     private static ArrayList<Orden> getSerializedOrders(){
         ArrayList<Orden> temp = new ArrayList();
-        File folder = new File("/home/omar/OMS/temp/_cereal/");
+        File folder = new File(path+"/OMS/temp/_cereal/");
         ObjectInputStream objIn;
         if(folder.exists() || folder.listFiles().length>0){
             File[] prof_files = folder.listFiles();
@@ -339,7 +340,7 @@ public class OrderHandler {
      */
     private static void serializeOrder(Orden orden){
         try {
-            FileOutputStream fOut = new FileOutputStream("/home/omar/OMS/temp/_cereal/"+orden.getId()+".obj");
+            FileOutputStream fOut = new FileOutputStream(path+"/OMS/temp/_cereal/"+orden.getId()+".obj");
             ObjectOutputStream oOut = new ObjectOutputStream(fOut);
             oOut.writeObject(orden);
         } catch (FileNotFoundException ex) {
@@ -354,7 +355,7 @@ public class OrderHandler {
      */
     private static void deleteCerealFile(String id){
         try{
-            File file = new File("/home/omar/OMS/temp/_cereal/"+id+".obj");
+            File file = new File(path+"/OMS/temp/_cereal/"+id+".obj");
             if(file.delete()){
                 //System.out.println("Borramos archivo de objeto "+id);
             }else{
@@ -363,5 +364,8 @@ public class OrderHandler {
         }catch(Exception ex){
             System.out.println(ex);
         }
+    }
+    public static void setPath(String pathIn){
+        path = pathIn;
     }
 }

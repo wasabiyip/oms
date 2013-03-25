@@ -17,6 +17,7 @@ public class MongoConnection extends IMongoDAO {
 
     private static MongoConnection INSTANCE;
     private static Mongo m = null;
+    private static String path;
     DB db;  
         
     /**
@@ -24,6 +25,7 @@ public class MongoConnection extends IMongoDAO {
      */
     private MongoConnection(){
         //---//
+        super(path);
     }
     
     /**
@@ -71,5 +73,9 @@ public class MongoConnection extends IMongoDAO {
         
         this.db = m.getDB("history");
         return this.db;
+    }
+    
+    public static void setPath(String pathIn){
+        path = pathIn;
     }
 }

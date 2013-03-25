@@ -5,7 +5,6 @@ import com.mongodb.util.JSON;
 import java.io.*;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import oms.dao.MongoConnection;
 
 /**
  *
@@ -19,8 +18,8 @@ public class MongoPopulation extends IMongoDAO {
     MongoConnection mongo;
     DBCollection coll;
         
-    public MongoPopulation(String str) throws Exception {
-        
+    public MongoPopulation(String str, String path) throws Exception {
+        super(path);
         mongo = MongoConnection.getInstance();
         mongo.connect();
         DB database = mongo.getDataBase();

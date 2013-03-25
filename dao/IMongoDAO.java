@@ -20,11 +20,15 @@ public abstract class IMongoDAO {
     public String collection;
     public String history;
     public final String PATTERN [] = {"Symbol", "Date","Time","Open", "High", "Low", "Close", "Vol"};
-    public IMongoDAO(){
+    private String path;
+    public IMongoDAO(String path){
         Properties config = new Properties();
+        this.path = this.path;
         try {
-                
-                config.load(new FileInputStream("/home/omar/OMS/config/app1.cnf"));
+                /**
+                 * TODO hacer que este archivo sea variable.
+                 */
+                config.load(new FileInputStream(path+"/OMS/config/app.cnf"));
                 
             } catch (IOException ex) {
                 Logger.getLogger(MongoConnection.class.getName()).log(Level.SEVERE, null, ex);
