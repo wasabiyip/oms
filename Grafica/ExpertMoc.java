@@ -56,7 +56,7 @@ public class ExpertMoc extends AbstractExpert{
         bollUpS = this.bollUpS();
         bollDnS = this.bollDnS();
         this.cont_velas = 0;
-        this.startTime = this.TimeCurrent() - (this.TimeCurrent()%this.Periodo);
+        this.startTime = this.TimeCurrent() - this.getMod();
     }
     /**
      * Se llama cuando un se recibe un bid.
@@ -67,7 +67,17 @@ public class ExpertMoc extends AbstractExpert{
      */
     @Override
     public void onTick() {   
-        //System.out.println((this.Ask-this.Bid)+" "+(this.setts.spread*this.Point));
+        
+        if(this.TimeCurrent()-startTime >= this.Periodo){
+            bollUp = this.bollUp();
+            bollDn = this.bollDn();
+            bollDif = this.bollingerDif();
+            bollUpS = this.bollUpS();
+            bollDnS = this.bollDnS();
+            this.cont_velas++;
+            System.err.println(this);
+            this.startTime = this.TimeCurrent();
+        }
         //Revisamos que los rmprecios se encuentren dentro de el rango de entrada.
         if ((this.Ask-this.Bid)<=(this.setts.spread*this.Point)&&(this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
                 && (this.OrdersCount() < this.setts.limiteCruce) && this.OrderMagicCount()<1 && (bollDif < this.setts.bollxUp 
@@ -76,10 +86,12 @@ public class ExpertMoc extends AbstractExpert{
             if ((this.open_min+ this.setts.boll_special) <= bollDn) {
                 //Compra
                 orderSend(this.Ask, this.setts.lots, '1', this.Bid - this.setts.sl, this.Bid + this.setts.tp);
+                //Iniciamos conteo de velas.
                 this.cont_velas = 0;
             } else if (this.open_min - this.setts.boll_special >= bollUp) {
                 //Venta
                 orderSend(this.Bid, this.setts.lots, '2', this.Ask + this.setts.sl, this.Ask - this.setts.tp);
+                //Iniciamos conteo de velas.
                 this.cont_velas = 0;
             }
         //Revisamos que haya entrado alguna operación      
@@ -97,12 +109,7 @@ public class ExpertMoc extends AbstractExpert{
                             //System.out.println("Cerrando orden por velas");
                             currentOrden.close(this.Bid, "cierre por velas");
                             break;
-                        } else if (this.rangeSalida()) {
-                            //System.out.println("Cerrando orden por minutos");
-                            currentOrden.close(this.Bid ,"cierre por minutos");
-                            break;
-                         //Si queremos poner el Sl/TP después de que entro la orden.
-                        }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
+                        } else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
                             //currentOrden.Modify(this.Bid-this.setts.sl, this.Bid+this.setts.tp);
                         }
                     } else if (currentOrden.getSide() == '2') {
@@ -115,12 +122,7 @@ public class ExpertMoc extends AbstractExpert{
                             //System.out.println("Cerrando orden por velas");
                             currentOrden.close(this.Ask, "cierre por velas");
                             break;
-                        } else if (this.rangeSalida()) {
-                            //System.out.println("Cerrando orden por minutos");
-                            currentOrden.close(this.Ask ,"cierre por minutos");
-                            break;
-                        //Si queremos poner el Sl/TP después de que entro la orden.
-                        }else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
+                        } else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
                             //currentOrden.Modify(this.Ask+this.setts.sl, this.Ask-this.setts.tp);
                         }
                     }
@@ -199,5 +201,9 @@ public class ExpertMoc extends AbstractExpert{
         if(hora < setts.horaFinS && hora >= setts.horaIniS)
             temp=true;
         return temp;
+    }
+    @Override
+    public String toString(){
+        return "[INFO] "+this.Symbol+" "+"MAGIC:"+this.setts.MAGICMA+" Up:"+this.bollUp+" Dn:"+this.bollDn+" UpS:"+this.bollUpS +" DnS:"+this.bollDn+" Velas"+this.cont_velas;
     }
 }

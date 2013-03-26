@@ -44,9 +44,10 @@ public class Graphic extends Thread {
     private PrintWriter blackBox;
     private StateFeed stateFeed;
     private SendMessage sendMessage;
-    private Boolean loggedIn = true;
+    private Boolean loggedIn = false;
     private int contLogin=0;
     private String path;
+    private String logPath;
     /**
      * Constructor!
      *
@@ -64,18 +65,16 @@ public class Graphic extends Thread {
         this.expert.Init();
         this.stateFeed = new StateFeed(expert);
         this.candle = new Candle(this.periodo);
-        //expert = new Expert(setts);
-        
-        this.path = path+"/OMS/log/"+setts.symbol;
+        this.logPath = path+"/OMS/log/"+setts.symbol;
         try {
-            this.blackBox = new PrintWriter(path+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
+            this.blackBox = new PrintWriter(this.logPath+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
          //Si no se encuentra la carpeta de log para esta moneda, la creamos y volvemos a
          // crear el archivo.
         } catch (IOException ex) {
             System.err.println("creando directorio de log para "+setts.symbol+"...");
-            new File(path).mkdir();
+            new File(this.logPath).mkdir();
             try {
-                this.blackBox = new PrintWriter(path+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
+                this.blackBox = new PrintWriter(this.logPath+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
             } catch (Exception ex1) {
                 Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex1);
             } 
@@ -126,8 +125,9 @@ public class Graphic extends Thread {
         /**
          * Si hay tres intentos de login fallidos, reconstruimos el socket.
          */
-        if(this.contLogin>=3){
-            GraficaHandler.rebuildGrafica(this);
+        if(this.contLogin>=5){
+            //GraficaHandler.rebuildGrafica(this);
+            this.loggedIn=true;
         }
         this.contLogin++;
         /**
@@ -187,8 +187,7 @@ public class Graphic extends Thread {
                     //Si es una nueva vel
                     if (candle.isNewCandle()) {
                         this.expert.indicator.appendBollsData(open);
-                        this.sendMessage.ExpertState();
-                        System.out.println(this.symbol +" nueva vela: "+this.setts.MAGICMA +" "+this.periodo);                    
+                        this.sendMessage.ExpertState();                    
                     //Si el expert puede operar, guardamos una bitacora.
                     }
                     if(expert.isActive()){

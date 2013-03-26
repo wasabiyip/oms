@@ -50,7 +50,6 @@ public class Indicador {
             int last_hora=0;
             Double last_open=0.0;
             int resta;
-           // System.out.println(cursor.size());
             while(cursor.hasNext() && data.size()< periodo) {
                 DBObject temp = cursor.next();
                 Double open = (Double)temp.get("Open");
@@ -63,9 +62,7 @@ public class Indicador {
                  * de vela, como en el metodo GMTDate.getMod.
                  **/
                 int mins=getMinVela(hora/100);
-                //System.out.println(resta);
                 if(mins -(this.periodoGrafica*(mins/this.periodoGrafica))== 0){
-                    //System.err.println("#"+mins);
                     data.add(open);
                     
                 /**

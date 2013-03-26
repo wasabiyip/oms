@@ -139,6 +139,13 @@ public abstract class AbstractExpert {
         return GMTDate.getTime();
     }
     /**
+     * Obtenemos la diferencia del periodo de la grafica respecto a la hora.
+     * @return 
+     */
+    public Integer getMod(){
+        return GMTDate.getMod(Periodo);
+    }
+    /**
      * Evaluamos si esta gráfica esta en condiciones de operar
      * @return evaluacion.
      */

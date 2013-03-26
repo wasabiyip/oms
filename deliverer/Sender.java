@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
+import oms.Grafica.GMTDate;
 import quickfix.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,20 +27,17 @@ public class Sender  {
      * @throws Exception 
      */
     public Sender() throws Exception{
-        System.out.println("Ingresa la raíz:");
+        System.out.println("Ingresa el nombre del usuario:");
         String input = new Scanner(System.in).next();
-        /*InputStream inputS = new BufferedInputStream(
-                                new FileInputStream(
-                                new File(input)));*/
-                                //new File("/home/omar/OMS/config/GMIDemo00292str.cnf")));
-        String path = input;
-        SessionSettings settings = new SessionSettings(input+"/OMS/config/app.cnf");
+        String path = "/home/"+input;
+        SessionSettings settings = new SessionSettings("/home/"+input+"/OMS/config/app.cnf");
         /**
          * El path es la raíz en donde se encuentra la carpeta del programa, 
          * localmente: /home/omar
          * Server: /home/omarloren.
          * TODO: Validar o algo.
          */ 
+        System.out.println("[INFO] Hora del servidor:"+GMTDate.getTime());
         
         SenderApp application = new SenderApp(settings.getString("UserName"),settings.getString("PassWord"), path);
         MessageStoreFactory messageStoreFactory = new FileStoreFactory(settings);
