@@ -4,14 +4,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import oms.util.Console;
 
 
 /**
- *
+ * PRECAUCION ESTA CLASE VIOLA TODAS LAS REGLAS DE OOP. :)
  * @author omar
  */
 public class Settings {
@@ -114,10 +113,12 @@ public class Settings {
                 String path = config.getProperty("path");
                 config.store(new FileOutputStream(path),null);
             } catch (IOException ex) {
-                Logger.getLogger(Settings.class.getName()).log(Level.SEVERE, null, ex);
+                Console.exception(ex);
             } 
         }
-        
+        /**
+         * CHARRADA!
+         */
         this.lots = 1.00;
     }
     
@@ -132,8 +133,6 @@ public class Settings {
         Random r = new Random();
         Random r2 = new Random();
         int n = 25; // 65-90 codigo ASCII.
-
-
         for (int j = 0; j < 4; j++) {
             int i = r.nextInt() % n;
             if ((65 + i <= 90) && (65 + i >= 65)) {

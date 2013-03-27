@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import oms.CustomException.GraficaNotFound;
 import oms.CustomException.NoProfileFound;
 import oms.Grafica.Graphic;
-
+import oms.util.Console;
 
 /**
  * Esta clase es a la cuál nos dirigimos cuando queremos comunicar eventos que 
@@ -33,7 +33,7 @@ public class GraficaHandler {
             this.last_profile = (prof_conf.getProperty("last_profile"));
             setProfile(this.last_profile);
         } catch (IOException ex) {
-            System.err.println("El archivo de configuracion de perfiles no está, vamos a restaurarlo por tí ;)");
+            Console.exception("El archivo de configuracion de perfiles no está, vamos a restaurarlo por tí\n"+ex);
             this.last_profile = "default";
             setProfile(this.last_profile);
         }
@@ -54,13 +54,12 @@ public class GraficaHandler {
             //Si no existe el perfil llamas otra vez al método para usar el default. 
         } catch (NoProfileFound ex) {
             try {
-                
                 this.chart_files = this.getChartFiles(this.last_profile);
             } catch (NoProfileFound ex1) {
-                Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex1);
+                 Console.exception(ex1);
             }
         }catch(IOException ex){
-            System.err.println("El archivo de configuracion de perfiles no pudo ser creado, te fallé.");
+            Console.exception("El archivo de configuracion de perfiles no pudo ser creado, te fallé.\n"+ex);
         }   
        
     }
@@ -101,14 +100,12 @@ public class GraficaHandler {
         for(Properties file : chart_files){
             if(grafica.getID().equals(file.getProperty("grafid"))){
                 temp = file;
-                System.out.println("file!");
             }
         }
         
         for (int i = 0; i < graficas.size(); i++) {
             if(graficas.get(i)==grafica){
                 graficas.remove(i);
-                System.out.println("rebuilding "+ graficas.size());
                 addGrafica(temp);
             }
         }
@@ -121,30 +118,7 @@ public class GraficaHandler {
     private static void runGrafica(int index) {
         graficas.get(index).start();
     }        
-    /*
-     * Obtenemos el ask de una determinada grafica.
-     */
-    public static Double getAsk(String idgraf) {
-        Double temp=null;
-        try {
-            temp = getGraf(idgraf).getAsk();
-        } catch (GraficaNotFound ex) {
-            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return temp;
-    }
-    /*
-     * Obtenemos el ask de una determinada grafica.
-     */
-    public static Double getBid(String idgraf) {
-        Double temp=null;
-        try {
-            temp = getGraf(idgraf).getBid();
-        } catch (GraficaNotFound ex) {
-            Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return temp;
-    } 
+        
     /**
      * Obtenemos una grafica determinada.
      * @param id
@@ -184,7 +158,7 @@ public class GraficaHandler {
                 prop_temp.store(new FileOutputStream(file.getPath()), null);
                 temp.add(prop_temp);
             } catch (IOException ex) {
-                Logger.getLogger(GraficaHandler.class.getName()).log(Level.SEVERE, null, ex);
+                Console.exception(ex);
             }
         }
         return temp;

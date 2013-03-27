@@ -208,17 +208,4 @@ public class MongoDao {
             System.err.println("Colapso en oms.Grafica.DAO.MongoDao se encontro mas de una orden");
         return temp;
     }
-    public int getTotalActivas(){
-        DBCursor res;
-        DBCollection coll = getCollection("operaciones");
-        BasicDBObject query = new BasicDBObject();
-        query.put("Status", 1);
-        res = coll.find(query);
-        return res.count();
-    }
-    public double getCloseAnterior(String symbol){
-        DBCursor cursor = this.coll.find().sort(new BasicDBObject("$natural", -1)).limit(2);
-        cursor.next();
-        return (double)cursor.next().get("Close");
-    }
 }

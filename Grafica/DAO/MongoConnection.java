@@ -6,6 +6,7 @@ import com.mongodb.MongoException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.util.Console;
 
 /**
  *
@@ -44,9 +45,9 @@ public class MongoConnection {
                 INSTANCE = new MongoConnection();
                 
             } catch (UnknownHostException ex) {
-                Logger.getLogger(MongoConnection.class.getName()).log(Level.SEVERE, null, ex);
+               Console.exception(ex);
             } catch (MongoException ex) {
-                Logger.getLogger(MongoConnection.class.getName()).log(Level.SEVERE, null, ex);
+                Console.exception(ex);
             }
         }
         return INSTANCE;

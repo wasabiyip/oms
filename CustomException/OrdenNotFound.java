@@ -8,6 +8,6 @@ package oms.CustomException;
 public class OrdenNotFound extends Exception{
     
     public OrdenNotFound(String id){
-        super("####No se pudo encontrar una orden para "+ id +", esta orden no existe! ");
+        super(" No se pudo encontrar una orden para "+ id +", esta orden no existe! ");
     }
 }

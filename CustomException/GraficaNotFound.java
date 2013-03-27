@@ -6,7 +6,7 @@ package oms.CustomException;
  */
 public class GraficaNotFound extends Exception{
     public GraficaNotFound(String id){
-        super("El horror: No pude notificar a la grafica" + id +" que su orden fuè cerrada." );
+        super("No pude notificar a la grafica" + id);
     }
     
 }

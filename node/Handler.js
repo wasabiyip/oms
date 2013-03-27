@@ -24,7 +24,13 @@ exports.notify = function (type,moneda, precio){
         if(Graficas[i].getSymbol() === moneda){  
             //Es muy importante enviar '\n' ya que java espera un fin de 
             //linea: readLine();
-            Graficas[i].getSocket().write(msj + '\n');
+            
+            if(Graficas[i].getSocket().destroyed){
+                Graficas.splice(i,1);
+            }else{
+                Graficas[i].getSocket().write(msj + '\n');
+            }
+            
         }
     }
 }

@@ -119,7 +119,6 @@ exports.addGrafica = function(settings){
     var str = {
         setts : settings
     }
-    console.log('webServer: añadiendo grafica...');
     models.graf_modl.addGrafica(str);
 }
 

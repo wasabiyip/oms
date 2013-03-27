@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import oms.CustomException.GraficaNotConnected;
 import oms.CustomException.OrdenNotFound;
 import oms.Grafica.DAO.MongoDao;
-import oms.deliverer.GraficaHandler;
 import oms.deliverer.Orden;
 import oms.deliverer.OrderHandler;
+import oms.util.Console;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -71,12 +72,12 @@ public class Graphic extends Thread {
          //Si no se encuentra la carpeta de log para esta moneda, la creamos y volvemos a
          // crear el archivo.
         } catch (IOException ex) {
-            System.err.println("creando directorio de log para "+setts.symbol+"...");
+            Console.info("creando directorio de log para "+setts.symbol+"...");
             new File(this.logPath).mkdir();
             try {
                 this.blackBox = new PrintWriter(this.logPath+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
             } catch (Exception ex1) {
-                Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex1);
+                Console.exception(ex1);
             } 
         }
         this.writeBlackBoxFile("sesión iniciada...");
@@ -113,21 +114,23 @@ public class Graphic extends Thread {
             }
             
         } catch (UnknownHostException ex) {
-            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+            Console.exception(ex);
         } catch (IOException ex) {
-            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+            Console.exception(ex);
+        } catch (GraficaNotConnected ex) {
+            this.loggedIn = true;
+            Console.exception(ex);
         }        
     }
     /**
      * Enviamos login.
      */
-    private void hardLogIn(){
+    private void hardLogIn() throws GraficaNotConnected{
         /**
          * Si hay tres intentos de login fallidos, reconstruimos el socket.
          */
         if(this.contLogin>=5){
-            //GraficaHandler.rebuildGrafica(this);
-            this.loggedIn=true;
+            throw new GraficaNotConnected(this);
         }
         this.contLogin++;
         /**
@@ -139,11 +142,14 @@ public class Graphic extends Thread {
                     sendMessage.logIn();
                     Thread.sleep(3000);
                     if(!getLoggedIn()){
-                        System.out.println("Re-Log-In:"+setts.MAGICMA);
+                        Console.info("Re-Log-In:"+setts.MAGICMA);
                         hardLogIn();                        
                     }
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+                    Console.exception(ex);
+                } catch (GraficaNotConnected ex) {
+                    loggedIn = true;
+                    Console.exception(ex);
                 }
             }
         }.start();
@@ -215,28 +221,26 @@ public class Graphic extends Thread {
                 case "close-order":
                     try {
                         Orden orden = OrderHandler.getOrdenById(id);
-                        System.out.println(orden.getId());
                         if(orden.getSide() == '1'){
                             orden.close(expert.Bid);
                         }else if(orden.getSide() == '2'){
                             orden.close(expert.Ask);
                         }
                     } catch (OrdenNotFound ex) {
-                        Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+                        Console.exception(msj);
                     }
                     
                     break;
                 case "logged":
-                    System.out.println("Logged In "+ this.setts.symbol+ " - " + this.setts.MAGICMA);
+                    Console.success("Logged In "+ this.setts.symbol+ " - " + this.setts.MAGICMA);
                     this.loggedIn = true;
                     break;
                 default:
-                    System.out.println("Mensaje no identificado"+ json.toString());
+                    Console.warning("Mensaje no identificado"+ json.toString());
             }
 
         } catch (ParseException ex) {
-            System.out.println("Colapso!: " + msj);
-            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+            Console.exception(msj+" \n "+ex);
         }
     }
     /**
@@ -296,5 +300,10 @@ public class Graphic extends Thread {
     }
     Boolean getLoggedIn(){
         return this.loggedIn;
+    }
+    
+    @Override
+    public String toString(){
+        return "Id="+this.id+ " Symbol="+this.symbol + " M"+this.periodo+" "+this.setts.MAGICMA;
     }
 }

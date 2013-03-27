@@ -33,11 +33,11 @@ public class StateFeed {
         
         StringBuffer temp = new StringBuffer();
         temp.append("\"variables\":{");
-            temp.append("\"bollUp\":"+ expert.getAvgBoll(expert.bollUp())+ ",");
-            temp.append("\"bollDn\":"+ expert.getAvgBoll(expert.bollDn())+ ",");
-            temp.append("\"bollUpS\":"+ expert.getAvgBoll(expert.bollUpS()) + ",");
-            temp.append("\"bollDnS\":"+ expert.getAvgBoll(expert.bollDnS())+ ",");
-            temp.append("\"bollDif\":"+ expert.bollingerDif()+ ",");
+            temp.append("\"bollUp\":"+ expert.redondear(expert.bollUp())+ ",");
+            temp.append("\"bollDn\":"+ expert.redondear(expert.bollDn())+ ",");
+            temp.append("\"bollUpS\":"+ expert.redondear(expert.bollUpS()) + ",");
+            temp.append("\"bollDnS\":"+ expert.redondear(expert.bollDnS())+ ",");
+            temp.append("\"bollDif\":"+ expert.redondear(expert.bollingerDif())+ ",");
             temp.append("\"limite\":"+(expert.OrdersCount()<expert.setts.limiteCruce?true:false) + ",");
             temp.append("\"hora\":"+ (expert.CurrentHora()< expert.setts.horaFin && expert.CurrentHora()>=expert.setts.horaIni)+ ",");
             temp.append("\"bollX\":"+(expert.bollingerDif() < expert.setts.bollxUp && 

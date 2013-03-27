@@ -6,7 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * @author Omar
+ * @author Omar - DEPRECIADO.
  * Esta clase genera un archivo Json para ser usado por MongoDB, prácticamente
  * convierte un de Historico normal a uno listo para ser cargado en el motor
  * de datos.

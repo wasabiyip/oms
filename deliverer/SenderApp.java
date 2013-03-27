@@ -2,6 +2,7 @@ package oms.deliverer;
 
 
 import oms.dao.MongoConnection;
+import oms.util.Console;
 import quickfix.*;
 import quickfix.field.*;
 
@@ -58,6 +59,7 @@ public class SenderApp extends MessageCracker implements Application{
         if(!lock){
             //Enviamos el login de app.            
             MessageHandler.mStreaming.login(this.graficaHandler.getProfile());
+            Console.info("Iniciando perfil: "+this.graficaHandler.getProfile());
             //corremos la gráfica.
             this.graficaHandler.runProfile();
             lock = true;
@@ -70,7 +72,7 @@ public class SenderApp extends MessageCracker implements Application{
      */
     @Override
     public void onLogout(SessionID id){
-        MessageHandler.mStreaming.msg("Recibimos Logout del broker esperando para volver a conectarnos-...");
+        Console.warning("Recibimos Logout del broker esperando para volver a conectarnos-...");
     }
     /**
      * Método que envia al servidor el Usuario y la contraseña
@@ -86,8 +88,8 @@ public class SenderApp extends MessageCracker implements Application{
                 msg.setField(new Password(passWord));
                 msg.setField( new ResetSeqNumFlag(true));
             }
-        }catch(FieldNotFound e){
-            System.out.println(msg.getHeader()+ " " + e);
+        }catch(FieldNotFound ex){
+            Console.exception(msg.getHeader()+ " " + ex);
         }
     }
     
@@ -130,7 +132,7 @@ public class SenderApp extends MessageCracker implements Application{
     @Override
     public void fromApp(quickfix.Message msg, SessionID id) throws FieldNotFound,
                 IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType{
-       
+        //Enviamos cada mensaje recibido al manejador de mensajes.
         this.crack(msg,id);
     }
     
@@ -143,27 +145,7 @@ public class SenderApp extends MessageCracker implements Application{
      */
     public void onMessage(quickfix.fix42.TradingSessionStatus status,
                         SessionID sessionID) throws SessionNotFound{
-                /*        
-                quickfix.fix42.MarketDataRequest mdr = new quickfix.fix42.MarketDataRequest();
-                this.sessionID = sessionID;
-                mdr.set(new MDReqID("A"));
-                mdr.set(new SubscriptionRequestType('1'));
-                mdr.set(new MarketDepth(1));
-                mdr.set(new MDUpdateType(1));
-                mdr.set(new AggregatedBook(true));
-                                
-                MarketDataRequest.NoRelatedSym relatedSymbols = new MarketDataRequest.NoRelatedSym(); 
-                relatedSymbols.set(new Symbol("EUR/USD"));
-                
-                MarketDataRequest.NoMDEntryTypes mdEntryTypes = new MarketDataRequest.NoMDEntryTypes();
-                mdEntryTypes.set(new MDEntryType('0')); // bid
-                mdr.addGroup(mdEntryTypes);
-                mdEntryTypes.set(new MDEntryType('1')); // Offer = Ask
-                
-                mdr.addGroup(mdEntryTypes);
-                mdr.addGroup(relatedSymbols); 
-                
-                Session.sendToTarget(mdr, sessionID);   */
+                //Nada.
     }
     /**
      * Este se ejecuta al recibir un MarketDataIncrementalRefresh, que en pocas
@@ -174,15 +156,14 @@ public class SenderApp extends MessageCracker implements Application{
      */
     public void onMessage(quickfix.fix42.MarketDataIncrementalRefresh msj,
             SessionID sessionID) throws FieldNotFound {
+        //Nada
     }
     
     public void onMessage(quickfix.fix42.ExecutionReport msj, SessionID sessionID) throws FieldNotFound, Exception{
+        //Evaluamos ExcecutionReport
         MessageHandler.executionReport(msj);
     }
     
-    public void onMessage(quickfix.fix42.OrderCancelReject ordCancelRej,SessionID sessionID){
-        System.err.println("El Horror!... no se pudo modificar la orden: " + ordCancelRej);
-    }
     public void onMessage(quickfix.fix42.Reject msj, SessionID sessionID) throws FieldNotFound{
         MessageHandler.errorHandler(msj);
     }

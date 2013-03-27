@@ -1,13 +1,10 @@
 package oms.deliverer;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import oms.Grafica.GMTDate;
+import oms.util.Console;
 import quickfix.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +34,7 @@ public class Sender  {
          * Server: /home/omarloren.
          * TODO: Validar o algo.
          */ 
-        System.out.println("[INFO] Hora del servidor:"+GMTDate.getTime());
+        System.out.println("Hora del servidor:"+GMTDate.getTime());
         
         SenderApp application = new SenderApp(settings.getString("UserName"),settings.getString("PassWord"), path);
         MessageStoreFactory messageStoreFactory = new FileStoreFactory(settings);
@@ -52,8 +49,9 @@ public class Sender  {
             try{
                 initiator.start();
                 initStarted = true;                
-            }catch(Exception e){
-                log.error("Colapso en Login", e);
+            }catch(Exception ex){
+                Console.error(ex);
+                log.error("Colapso en Login", ex);
             }   
         }else{
             Iterator<SessionID> sessionIds = initiator.getSessions().iterator();
@@ -66,11 +64,17 @@ public class Sender  {
     public void stop(){
         shutdownLatch.countDown();
     }
+    /**
+     * Donde todo inicia.
+     * @param args
+     * @throws Exception 
+     */
     public static void main(String[] args) throws Exception{
         try{
             
-        }catch(Exception e){
-            log.info(e.getMessage(), e);
+        }catch(Exception ex){
+            Console.exception(ex);
+            log.info(ex.getMessage(), ex);
         }
         
         sender =new Sender();

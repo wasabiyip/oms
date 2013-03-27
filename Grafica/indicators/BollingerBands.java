@@ -12,7 +12,6 @@ public class BollingerBands {
     /**
      * StandardDeviation object used to calculate the standard deviation used in
      * this BollingerBands object.
-	 *
      */
     private StandardDeviation standardDeviation;
     /**

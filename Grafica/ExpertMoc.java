@@ -5,6 +5,7 @@
 package oms.Grafica;
 
 import oms.Grafica.indicators.BollingerBands;
+import oms.util.Console;
 import oms.deliverer.Orden;
 
 /**
@@ -75,7 +76,7 @@ public class ExpertMoc extends AbstractExpert{
             bollUpS = this.bollUpS();
             bollDnS = this.bollDnS();
             this.cont_velas++;
-            System.err.println(this);
+            Console.info(this);
             this.startTime = this.TimeCurrent();
         }
         //Revisamos que los rmprecios se encuentren dentro de el rango de entrada.
@@ -204,6 +205,6 @@ public class ExpertMoc extends AbstractExpert{
     }
     @Override
     public String toString(){
-        return "[INFO] "+this.Symbol+" "+"MAGIC:"+this.setts.MAGICMA+" Up:"+this.bollUp+" Dn:"+this.bollDn+" UpS:"+this.bollUpS +" DnS:"+this.bollDn+" Velas"+this.cont_velas;
+        return this.Symbol+" "+"MAGIC:"+this.setts.MAGICMA+" Up:"+this.bollUp+" Dn:"+this.bollDn+" UpS:"+this.bollUpS +" DnS:"+this.bollDnS+" Velas"+this.cont_velas;
     }
 }

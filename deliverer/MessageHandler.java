@@ -1,9 +1,8 @@
 package oms.deliverer;
 
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import oms.CustomException.OrdenNotFound;
+import oms.util.Console;
 import quickfix.FieldNotFound;
 import quickfix.SessionID;
 
@@ -39,7 +38,7 @@ public class MessageHandler {
         try {
             tempOrden = OrderHandler.getOrdenById(msj.getClOrdID().getValue());
         } catch (OrdenNotFound ex) {
-            System.err.println("No puede encontrar la orden de:"+msj);
+            Console.exception("No puede encontrar la orden de:"+msj +" \n"+ex);
         }
         switch (msj.getExecType().getValue()) {
             /**
@@ -62,7 +61,7 @@ public class MessageHandler {
                 break;
             case '1':
                 temp_msj = "**¡Peligro: Partial fill " + msj.getClOrdID().getValue() + " algo fué mal!...";
-                System.out.println(temp_msj);
+                Console.error(temp_msj);
                 mStreaming.msg(temp_msj);
                 break;
             /**
@@ -101,7 +100,7 @@ public class MessageHandler {
                 } else if (msj.getOrdType().getValue() == 'W') {
                     temp_msj = "La orden cerro por OCO #" + msj.getClOrdID().getValue() + ".";
                     tempOrden.setReason("cirre por oco");
-                    System.out.println(temp_msj);
+                    Console.info(temp_msj);
                     mStreaming.msg(temp_msj);
                     //La marcamos como cerrada.
                     tempOrden.setOrdenClose(msj);
@@ -116,7 +115,7 @@ public class MessageHandler {
              */
             case '3':
                 temp_msj = "Done for a day " + msj.getClOrdID().getValue() + " favor de revisar currenex...";
-                System.out.println(temp_msj);
+                Console.error(temp_msj);
                 mStreaming.msg(temp_msj);
                 break;
             /**
@@ -126,53 +125,53 @@ public class MessageHandler {
              */
             case '4':
                 if (msj.getOrdType().getValue() == 'W' && msj.getOrdStatus().getValue() == 'C') {
-                    System.err.println("OCO cancelada " + msj.getClOrdID().getValue() + " reenviando.");
+                    Console.warning("OCO cancelada " + msj.getClOrdID().getValue() + " reenviando.");
                     OrderHandler.resendOCO(msj);
                 } else if(msj.getOrdStatus().getValue() == '4') {
                     //La cerramos en mongo:
                     //OrderHandler.shutDown(tempOrden);
-                    System.err.println("OCO cerrada cancelada...");
+                    Console.info("OCO cerrada cancelada: "+msj.getClOrdID().getValue());
                 }
                 break;
             /**
              * 150=5 -> Replace : NO SOPORTADO.
              */
             case '5':
-                System.err.println("El horror! *Replace* no esta soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
+                Console.error("El horror! *Replace* no esta soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
                 break;
             /**
              * 150=6 -> Pending Cancel: NO SOPORTADO.
              */
             case '6':
-                System.err.println("El horror! Pending Cancel no esta soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
+                Console.error("El horror! Pending Cancel no esta soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
                 break;
             /**
              * 150=7 -> Stopped: NO SOPORTADO.
              */
             case '7':
-                System.err.println("El horror!  Stopped soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
+                Console.error("El horror!  Stopped soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
                 break;
             /**
              * 150=8 -> Rejected: NO SOPORTADO.
              */
             case '8':
-                System.err.println("El horror!  Order Rejected " + msj.getClOrdID().getValue() + " -> Colapso, ¡NO ESTA SOPORTADO!");
+                Console.error("El horror!  Order Rejected " + msj.getClOrdID().getValue() + " -> Colapso, ¡NO ESTA SOPORTADO!");
                 break;
             /**
              * 150=9 -> Suspended: NO SOPORTADO.
              */
             case '9':
-                System.err.println("El horror!  Suspended soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
+                Console.error("El horror!  Suspended soportado " + msj.getClOrdID().getValue() + " -> revisar log!");
                 break;
             /**
              * 150=7 -> Expired: NO SOPORTADO.
              */
             case 'C':
-                System.err.println("El horror!  Expiro algo que no es OCO " + msj.getClOrdID().getValue() + " -> revisar log!");
+                Console.error("El horror!  Expiro algo que no es OCO " + msj.getClOrdID().getValue() + " -> revisar log!");
                 break;
 
             default:
-                System.err.println("El horror!  150 NO SOPORTADO! " + msj + "\n ---> revisar log!");
+                Console.error("El horror!  150 NO SOPORTADO! " + msj + "\n ---> revisar log!");
         }
         tempOrden = null;
     }
@@ -182,8 +181,8 @@ public class MessageHandler {
      * @param msj
      */    
     public static void errorHandler(quickfix.fix42.Reject msj) throws FieldNotFound {
-        temp_msj = "Error: " + msj.getText().getValue();
-        System.out.println(temp_msj);
+        temp_msj = "ErrorHandler: " + msj;
+        Console.error(temp_msj);
         mStreaming.msg(temp_msj);
     }   
 }

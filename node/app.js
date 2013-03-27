@@ -8,7 +8,7 @@ var handler = require('./Handler');
 //Iniciamos el servidor TCP.
 var Graficas = [];
 
-var server_precios, server_op, app; 
+var server_precios, server_op; 
 //Stream de precios.
 /*var dealear = net.connect({port:7000}, function(){
     console.log('conectando');
@@ -22,24 +22,27 @@ app.on('connection', function(client) {
     //Método que se ejecuta cuando se recibe un precio desde java	
     client.on('data', function(data) {
         //Emitimos el precio.
- 
+        
         evaluar(formatStr(data), client);
     });
 	
     //Cuando se cierra la conexion con algun cliente.
     client.on('end', function(end){
-        
-        var str = '{ "type" : "close"}';
-        evaluar(formatStr(str), client);
+        console.log(client.name);
+        if(server_op == client){
+            console.log('app desconectada...');
+            app = null;
+            handler.resetStuff();
+            webServer.resetStuff();
+        } 
     });
     //Se pierde conexcion con el cliente.
     client.on('timeout', function(timeout){
         console.log('Tiempo de conexion expirado');
     });
 
-    client.on('error', function(error){
-        
-        console.log(error.search('This socket is closed'));
+    client.on('error', function(err){
+        console.error(err.stack);
     });
 });
 
@@ -63,6 +66,7 @@ function evaluar(msj, socket){
         switch (income.type){
             //Un cliente conectado.
             case 'login':
+                console.log(socket.name);
                 if(income.name === 'app'){
                     console.log('app conectada perfil:');
 
@@ -70,7 +74,7 @@ function evaluar(msj, socket){
                         type: 'journal',
                         label: 'error'                     
                     }
-                    app = socket;
+                    server_op = socket;
                     handler.setApp(socket);
                     webServer.masterInit(income);
                 }else if(income.name === 'SERVIDOR_PRECIOS'){
@@ -127,12 +131,7 @@ function evaluar(msj, socket){
                         type: 'journal',
                         label: 'error'                     
                     }
-                if(app == socket){
-                    console.log('app desconectada...');
-                    app = null;
-                    handler.resetStuff();
-                    webServer.resetStuff();
-                }else if(server_precios == socket){
+                if(server_precios == socket){
                     serverPrecios = null;
                     temp.msj = 'El horror -> ¡El streaming de precios se desconecto!';                    
                     webServer.journal(temp);
@@ -186,7 +185,6 @@ function evaluar(msj, socket){
     //Cachamos cualquier error y lo imprimimos.
     }catch(error){
         
-        console.log(error);
         if(error == 'SyntaxError'){
             console.log('error de envio esperado!');
         }

@@ -6,6 +6,6 @@ package oms.CustomException;
  */
 public class IndicatorLengthGap extends Exception{
     public IndicatorLengthGap(String symbol, Integer length){
-        super("El horror: Al llenar el indicador de "+symbol +" - "+length + " no sé que hacer...");
+        super(" Al llenar el indicador de "+symbol +" - "+length + " no sé que hacer...");
     }
 }

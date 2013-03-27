@@ -13,6 +13,7 @@ import oms.Grafica.indicators.BollingerBands;
 import oms.Grafica.indicators.Indicador;
 import oms.deliverer.Orden;
 import oms.deliverer.OrderHandler;
+import oms.util.Console;
 
 
 /**
@@ -53,7 +54,7 @@ public abstract class AbstractExpert {
      * @param tp 
      */
     public void orderSend(Double price,Double lotes, char side,Double sl, Double tp) {
-        System.out.println("Enviando Orden..."+ price + " sl:"+sl + " tp:"+tp);
+        Console.info("Enviando Orden "+ price + " sl:"+sl + " tp:"+tp);
         try {
             if(sl == 0 && tp == 0){
                 OrderHandler.sendOrder(new Orden(this.setts.id, this.Symbol, lotes, this.setts.MAGICMA, price, side));
@@ -62,7 +63,7 @@ public abstract class AbstractExpert {
                 OrderHandler.sendOrder(new Orden(this.setts.id, this.Symbol, lotes, this.setts.MAGICMA, price, side,sl ,tp));
             }            
         } catch (TradeContextBusy ex) {
-            System.err.println(ex);
+            Console.warning(ex);
         }
     }
     /**
@@ -77,7 +78,7 @@ public abstract class AbstractExpert {
         try {
            temp = this.indicator.createBollinger(boll);
         } catch (IndicatorLengthGap ex) {
-            System.err.println(ex + " " + this.setts.MAGICMA);
+            Console.exception(ex + " " + this.setts.MAGICMA);
         }
         return temp;
     }

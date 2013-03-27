@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import oms.deliverer.GraficaHandler;
+import oms.util.Console;
 
 /**
  *
@@ -65,9 +66,9 @@ public class SendMessage {
             this.outNode.flush();
             
         } catch (IOException ex) {
-            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+            Console.exception(ex);
         } catch (InterruptedException ex) {
-            Logger.getLogger(Graphic.class.getName()).log(Level.SEVERE, null, ex);
+            Console.exception(ex);
         }
     }
 }

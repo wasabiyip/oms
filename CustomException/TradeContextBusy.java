@@ -7,10 +7,10 @@ package oms.CustomException;
  */
 public class TradeContextBusy extends Exception{
     public TradeContextBusy(){
-        super("Lo siento, el trade context esta busy.");
+        super(" Lo siento, el trade context esta busy.");
     }
     public TradeContextBusy(String order, String symbol){
-        super("Lo siento no pude enviar la orden " +order+" por que el trade "
+        super(" Lo siento no pude enviar la orden " +order+" por que el trade "
                 + "context esta busy para "+symbol +".");
     }
 }
