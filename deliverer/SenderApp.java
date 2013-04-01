@@ -52,14 +52,14 @@ public class SenderApp extends MessageCracker implements Application{
      */
     @Override
     public void onLogon(SessionID id) {
-        MessageHandler.mStreaming.msg("Conectados exitosasmente con "+id+" desde la cuenta " + this.userName);
-       
+        //MessageHandler.mStreaming.msg("Conectados exitosasmente con "+id+" desde la cuenta " + this.userName);
+        Console.info("Conectados exitosasmente con "+id+" desde la cuenta " + this.userName);
         SenderApp.sessionID = id;
         //Para que los threads no se dupliquen cuando el servidor nos desconecta.
         if(!lock){
             //Enviamos el login de app.            
             MessageHandler.mStreaming.login(this.graficaHandler.getProfile());
-            Console.info("Iniciando perfil: "+this.graficaHandler.getProfile());
+            Console.warning("Iniciando perfil: "+this.graficaHandler.getProfile());
             //corremos la gráfica.
             this.graficaHandler.runProfile();
             lock = true;
@@ -72,7 +72,8 @@ public class SenderApp extends MessageCracker implements Application{
      */
     @Override
     public void onLogout(SessionID id){
-        Console.warning("Recibimos Logout del broker esperando para volver a conectarnos-...");
+        Console.info("Recibimos Logout del broker esperando para volver a conectarnos-...");
+        Console.warning("LOGOUT! -> "+id);
     }
     /**
      * Método que envia al servidor el Usuario y la contraseña

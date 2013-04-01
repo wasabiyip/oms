@@ -180,6 +180,7 @@ public class OrderHandler {
         oco.set(new Side(orden.averse));
         oco.set(new TransactTime());
         try {
+            Console.warning("cerrando oco:"+orden);
             Session.sendToTarget(oco, SenderApp.sessionID);
         } catch (SessionNotFound ex) {
             Console.exception(ex);

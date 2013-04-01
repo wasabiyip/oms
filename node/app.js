@@ -19,6 +19,7 @@ var server_precios, server_op;
 app.on('connection', function(client) {
 
     client.name = client.remotePort;
+    client.setEncoding('utf8');
     //Método que se ejecuta cuando se recibe un precio desde java	
     client.on('data', function(data) {
         //Emitimos el precio.

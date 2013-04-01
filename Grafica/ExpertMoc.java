@@ -76,7 +76,7 @@ public class ExpertMoc extends AbstractExpert{
             bollUpS = this.bollUpS();
             bollDnS = this.bollDnS();
             this.cont_velas++;
-            Console.info(this);
+            Console.log(this);
             this.startTime = this.TimeCurrent();
         }
         //Revisamos que los rmprecios se encuentren dentro de el rango de entrada.

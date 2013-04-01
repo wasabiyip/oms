@@ -88,7 +88,7 @@ public class GraficaHandler {
     public static void addGrafica(Properties log_file) {
         //Podriamos poner aquí algunas opciones mas como pasar el archivo log.
         graficas.add(new Graphic(log_file,path));
-        //Console.log("Grafica "+log_file.getProperty("symbol") +" de " + log_file.getProperty("period") + " minutos cargada correctamente");
+        Console.info("Grafica "+log_file.getProperty("symbol") +" de " + log_file.getProperty("period") + " minutos cargada correctamente");
         runGrafica(graficas.size() - 1);
     }
     /**

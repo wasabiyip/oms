@@ -5,8 +5,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import oms.CustomException.GraficaNotConnected;
 import oms.CustomException.OrdenNotFound;
 import oms.Grafica.DAO.MongoDao;
@@ -72,7 +70,7 @@ public class Graphic extends Thread {
          //Si no se encuentra la carpeta de log para esta moneda, la creamos y volvemos a
          // crear el archivo.
         } catch (IOException ex) {
-            Console.info("creando directorio de log para "+setts.symbol+"...");
+            Console.warning("creando directorio de log para "+setts.symbol+"...");
             new File(this.logPath).mkdir();
             try {
                 this.blackBox = new PrintWriter(this.logPath+"/"+setts.symbol+setts.periodo+"-"+setts.MAGICMA + ".log","UTF-8");
@@ -142,7 +140,7 @@ public class Graphic extends Thread {
                     sendMessage.logIn();
                     Thread.sleep(3000);
                     if(!getLoggedIn()){
-                        Console.info("Re-Log-In:"+setts.MAGICMA);
+                        Console.warning("Re-Log-In:"+setts.MAGICMA);
                         hardLogIn();                        
                     }
                 } catch (InterruptedException ex) {
@@ -200,10 +198,6 @@ public class Graphic extends Thread {
                         this.writeBlackBoxFile(stateFeed.getExpertState());
                     }
                     break;
-                case "close":
-                    //TODO hacer algo con este precio de cierre
-                    System.err.println("Close: "+msj+ "!");
-                    break;
                 case "get-state":
                     this.sendMessage.ExpertState();
                     break;
@@ -232,11 +226,11 @@ public class Graphic extends Thread {
                     
                     break;
                 case "logged":
-                    Console.success("Logged In "+ this.setts.symbol+ " - " + this.setts.MAGICMA);
+                    Console.warning("Logged In "+ this.setts.symbol+ " - " + this.setts.MAGICMA);
                     this.loggedIn = true;
                     break;
                 default:
-                    Console.warning("Mensaje no identificado"+ json.toString());
+                    Console.warning("Mensaje no identificado Graphic MsjHandler => "+ json.toString());
             }
 
         } catch (ParseException ex) {

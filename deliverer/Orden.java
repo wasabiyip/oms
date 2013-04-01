@@ -33,6 +33,7 @@ public class Orden implements java.io.Serializable {
     private String ordId;
     private String grafId;
     private String execId;
+    private String type;
     private int date;
     private int hora;
     private String ocoId = null;
@@ -61,6 +62,7 @@ public class Orden implements java.io.Serializable {
     public Orden(String grafId, String symbol, Double lotes, Integer magicma, Double price, Character side) {
         this.grafId = grafId;
         this.side = side;
+        this.type = this.side == '1' ? "Buy" : "sell";
         this.averse = this.side == '1' ? '2' : '1';
         this.lotes = lotes * 10000;
         this.isActiva = true;
@@ -100,6 +102,7 @@ public class Orden implements java.io.Serializable {
             Double price, char side, Double sl, Double tp) {
         this.grafId = grafId;
         this.side = side;
+        this.type = this.side == '1' ? "Buy" : "sell";
         this.averse = this.side == '1' ? '2' : '1';
         this.lotes = lotes * 10000;
         this.isActiva = true;
@@ -143,7 +146,7 @@ public class Orden implements java.io.Serializable {
         this.newOrderSingle.set(new OrdType('C'));
         this.newOrderSingle.set(new Price(close));
         try {
-            Console.info("Cerrando orden " + this.ordId);
+            Console.info("close request in process " + this.ordId + " " + reason);
             OrderHandler.sendOrder(this);
         } catch (TradeContextBusy ex) {
             Console.exception(ex);
@@ -168,7 +171,7 @@ public class Orden implements java.io.Serializable {
         this.newOrderSingle.set(new OrdType('C'));
         this.newOrderSingle.set(new Price(close));
         try {
-            Console.info("Cerrando orden " + this.ordId + " " + reason);
+            Console.info("close request in process " + this.ordId + " " + reason);
             OrderHandler.sendOrder(this);
         } catch (TradeContextBusy ex) {
             Console.exception(ex);
@@ -408,7 +411,8 @@ public class Orden implements java.io.Serializable {
             this.horaOpen = msj.getTransactTime().getValue();
             this.execId = msj.getExecID().getValue();
             this.brokerOrderId = msj.getOrderID().getValue();
-            Console.success("Nueva orden: " + this);
+            Console.warning("Order was opened: #" + this.ordId + " " + this.type
+                    + " " + this.lotes + " " + this.symbol + " at " + this.getOpenPrice() + " ");
         } catch (FieldNotFound ex) {
             Console.exception(ex);
         }
@@ -456,7 +460,8 @@ public class Orden implements java.io.Serializable {
             }
 
             this.ocoId = msj.getOrderID().getValue();
-            Console.success("OCO abierta: " + this.ocoId);
+            Console.warning("order #" + this.ordId + " " + this.type
+                     + " was modified -> sl: "+this.sl + " tp:"+this.tp);
         } catch (FieldNotFound ex) {
             Console.exception(ex);
         }
@@ -476,7 +481,8 @@ public class Orden implements java.io.Serializable {
         } catch (FieldNotFound ex) {
             Console.exception(ex);
         }
-        Console.info("Cerramos posicion: " + this + " correctamente! :)");
+        Console.warning("order #" + this.ordId + " " + this.type
+                     + " closed at price: "+this.close_price + " => "+this.reason);
     }
 
     /**
@@ -506,8 +512,7 @@ public class Orden implements java.io.Serializable {
      */
     @Override
     public String toString() {
-        String tipo = this.getSide() == '1' ? "Compra" : "Venta ";
-        return "#" + this.getId() + " Symbol:" + this.symbol + "  OT:" + this.horaOpen + " " + tipo + " OP: " + this.getOpenPrice() + " SL:"
+        return "#" + this.getId() + " Symbol:" + this.symbol + "  OT:" + this.horaOpen + " " + this.type + " OP: " + this.getOpenPrice() + " SL:"
                 + this.getSl() + " TP:" + this.getTp() + " CT:" + this.horaClose + " CP:" + this.getClosePrice();
     }
 }

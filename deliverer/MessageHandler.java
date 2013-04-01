@@ -16,7 +16,7 @@ public class MessageHandler {
     SessionID sessionID;
     static String temp_msj = new String();
     public static Date date = null;
-    static MsjStreaming mStreaming = new MsjStreaming();
+    public static MsjStreaming mStreaming = new MsjStreaming();
     /**
      * Pequeña clase tipo constructior.
      */
@@ -69,9 +69,7 @@ public class MessageHandler {
              * emitimos la notificación relacionada con las ordenés nuevas o
              * ordenes que cierran.
              */
-            case '2':
-                //Obtenemos la Orden entrante...
-                
+            case '2':                
                 /**
                  * Si la orden entrante: 40=C -> Forex - Market, la orden
                  * entrante es de un Apertura/Cierre de posicion.
@@ -82,7 +80,6 @@ public class MessageHandler {
                      * cierre de posicion, sino pues solo es una órden nueva.
                      */
                     if (tempOrden.isFilled()) {
-                        //TODO La marcamos como cerrada
                         tempOrden.setOrdenClose(msj);
                         //La cerramos en mongo:
                         OrderHandler.shutDown(tempOrden);
@@ -100,7 +97,7 @@ public class MessageHandler {
                 } else if (msj.getOrdType().getValue() == 'W') {
                     temp_msj = "La orden cerro por OCO #" + msj.getClOrdID().getValue() + ".";
                     tempOrden.setReason("cirre por oco");
-                    Console.info(temp_msj);
+                    Console.warning(temp_msj);
                     mStreaming.msg(temp_msj);
                     //La marcamos como cerrada.
                     tempOrden.setOrdenClose(msj);
@@ -130,7 +127,7 @@ public class MessageHandler {
                 } else if(msj.getOrdStatus().getValue() == '4') {
                     //La cerramos en mongo:
                     //OrderHandler.shutDown(tempOrden);
-                    Console.info("OCO cerrada cancelada: "+msj.getClOrdID().getValue());
+                    Console.warning("OCO cerrada: "+msj.getClOrdID().getValue());
                 }
                 break;
             /**

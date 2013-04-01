@@ -54,7 +54,7 @@ public abstract class AbstractExpert {
      * @param tp 
      */
     public void orderSend(Double price,Double lotes, char side,Double sl, Double tp) {
-        Console.info("Enviando Orden "+ price + " sl:"+sl + " tp:"+tp);
+        Console.info("Open request in process at: "+ price + " sl:"+sl + " tp:"+tp);
         try {
             if(sl == 0 && tp == 0){
                 OrderHandler.sendOrder(new Orden(this.setts.id, this.Symbol, lotes, this.setts.MAGICMA, price, side));

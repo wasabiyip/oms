@@ -35,7 +35,7 @@ public class Sender  {
          * TODO: Validar o algo.
          */ 
         System.out.println("Hora del servidor:"+GMTDate.getTime());
-        
+        Console.setPath(path);
         SenderApp application = new SenderApp(settings.getString("UserName"),settings.getString("PassWord"), path);
         MessageStoreFactory messageStoreFactory = new FileStoreFactory(settings);
         LogFactory logFactory = new ScreenLogFactory(true,true, true, true);
@@ -48,7 +48,8 @@ public class Sender  {
         if (!initStarted){
             try{
                 initiator.start();
-                initStarted = true;                
+                initStarted = true;
+                
             }catch(Exception ex){
                 Console.error(ex);
                 log.error("Colapso en Login", ex);
