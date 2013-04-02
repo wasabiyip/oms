@@ -87,6 +87,7 @@ h4,h5,p{
 #terminal{
     bottom: 0;
     left:0;
+    margin-bottom: 10px;
 }
 #terminal-tab{
     margin: 4px;

@@ -5,13 +5,15 @@ import com.mongodb.DBObject;
 import oms.Grafica.DAO.MongoDao;
 import oms.Grafica.GMTDate;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import oms.CustomException.IndicatorLengthGap;
 
 /**
  * Esta clase regula la creacion de Bollingers se encarga de llenar con valores
  * históricos, de esta forma cuando se crea un bollinger este listo para hacer
  * calculos, de otra forma tendriamos que esperar hasta que se llene de forma
- * natural.
+ * natural. Tenemos un Hash de bollinger para cada moneda, todas las graficas del
+ * mismo symbol comparten éste.
  *
  * @author omar
  */
@@ -21,7 +23,8 @@ public class Indicador {
     private int periodoGrafica;
     private int dif;
     private ArrayList<BollingerBands> bolls_arr = new ArrayList();
-
+    //Pool Party yei!
+    private static Hashtable<String,ArrayList<BollingerBands>> bandsPoolParty;
     /**
      * El constructor!
      *
@@ -30,6 +33,7 @@ public class Indicador {
      */
     public Indicador(String symbol, int periodo) {
         this.symbol = symbol;
+        
         this.periodoGrafica = periodo;
         this.dif = GMTDate.getMod(periodo);
     }
@@ -133,7 +137,6 @@ public class Indicador {
         }
         return temp;
     }
-
     /**
      * Obtenemos minutos de hora en formato 1234 = 34.
      *

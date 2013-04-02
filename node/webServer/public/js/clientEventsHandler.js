@@ -51,10 +51,7 @@ $(document).ready(function(){
     //Añadimos controlador de popover.
     $(function(){
       //Para que la primer .rowfluid tenga el menu de los inputs diferente a todos los demas
-      if(graficas.length <= 2 ){
-        $("#"+data.setts.ID+" #inputs").popover({html: true,content:temp,trigger:"hover",placement:"bottom"});
-      }else
-        $("#"+data.setts.ID+" #inputs").popover({html: true,content:temp,trigger:"hover", placement:"left"});
+      $("#"+data.setts.ID+" #inputs").popover({html: true,content:temp,trigger:"hover", placement:"bottom"});
     }); 
   });
 
@@ -154,7 +151,7 @@ $(document).ready(function(){
   });
   //Entro una orden.
   socket.on('grafica-order', function(data){
-    playOrder(); 
+   // playOrder(); 
     document.title = '('+ ++contOp +') Operaciones';
     var id =  data.id;
     var ord = data.ordid;

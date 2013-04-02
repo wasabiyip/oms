@@ -38,7 +38,7 @@ public class StateFeed {
             temp.append("\"bollUpS\":"+ expert.redondear(expert.bollUpS()) + ",");
             temp.append("\"bollDnS\":"+ expert.redondear(expert.bollDnS())+ ",");
             temp.append("\"bollDif\":"+ expert.redondear(expert.bollingerDif())+ ",");
-            temp.append("\"limite\":"+(expert.OrdersCount()<expert.setts.limiteCruce?true:false) + ",");
+            temp.append("\"limite\":"+(expert.OrdersBySymbol()<expert.setts.limiteCruce?true:false) + ",");
             temp.append("\"hora\":"+ (expert.CurrentHora()< expert.setts.horaFin && expert.CurrentHora()>=expert.setts.horaIni)+ ",");
             temp.append("\"bollX\":"+(expert.bollingerDif() < expert.setts.bollxUp && 
                              expert.bollingerDif()> expert.setts.bollxDn)+ ",");
@@ -55,7 +55,6 @@ public class StateFeed {
             init.append("\"symbol\" : \"" + setts.symbol+"\",");
             init.append("\"ID\" : \"" + setts.id + "\",");
             init.append("\"Magicma\" : " + setts.MAGICMA + ",");
-            init.append("\"Lotes\" : " + setts.lots + ",");
             init.append("\"Boll1\" : " + setts.boll1 + ",");
             init.append("\"Boll2\" : " + setts.boll2 + ",");
             init.append("\"Boll3\" : " + setts.boll3 + ",");
@@ -68,14 +67,10 @@ public class StateFeed {
             init.append("\"TP\" : " + setts.tp + ",");
             init.append("\"SL\" : " + setts.sl + ",");
             init.append("\"VelasSalida\": " + setts.velasS + ",");
-            init.append("\"horaInicial\":" + setts.horaIni + ",");
-            init.append("\"horaFinal\" :" + setts.horaFin +",");
-            init.append("\"horaSalida\" :" + setts.horaIniS+",");
             init.append("\"Periodo\" :" + setts.periodo + ",");
             init.append("\"bollSpecial\" :" + setts.boll_special+",");
             init.append("\"spreadAsk\" :" + setts.spreadAsk + ",");
-            init.append("\"limiteCruce\" :" + setts.limiteCruce + ",");
-            init.append("\"limiteMagic\" :" + setts.limiteMagic);
+            init.append("\"limiteCruce\" :" + setts.limiteCruce);
             init.append("}");
         return init;
     }

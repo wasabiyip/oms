@@ -1,4 +1,53 @@
 extends layout
+//-Algunos helpers para reciclar un poco el código.
+mixin chartBlock(charts)
+  //-Construimos el bloque de graficas para cada moneda.
+  .tab
+    -for(var j=1; j<charts.length; j++){
+      -var row = charts[j]
+      .row-fluid
+        -for(var k=0; k<row.length;k++){
+          -var chart = row[k].setts                              
+          .span6
+            div(id= chart.ID, class="grafica")
+              .content-graf
+                  .graf-header
+                    a.pull-right(id="inputs",rel="popover") 
+                      i.icon-list 
+                    i.icon-certificate(id="trades")
+                    span #{chart.symbol} M#{chart.Periodo}-#{chart.Magicma}
+                  hr
+                  #chart-div
+                    .row-fluid  
+                      .vars.well.span2
+                        span.limite-cruce
+                          abbr(title="Limite de operaciones para este cruce") 
+                            h6 Limite
+                              i.icon-minus-sign.var-ico
+                        hr
+                        span.hora
+                          abbr(title="Rangos de hora para esta grafica") 
+                            h6 Hora
+                              i.icon-minus-sign.var-ico
+                        hr
+                        span.bollx
+                          abbr(title="Bollinger de apertura (rango)") 
+                            h6 BollX
+                              i.icon-minus-sign.var-ico
+                        span
+                          -var prom = chart.ID + '-prom'
+                          a.promedios(id=prom,href="#", rel="tooltip", data-placement="bottom", data-original-title="?")
+                            i.icon-plus
+                            
+                      -var id = chart.ID +'-chart'
+                      .span9.chart(id=id)
+        -}                          
+    -}
+//-Construimos el nav-tab de cada moneda.
+mixin liSymbol(title, symbol, length)
+  a(href=title,data-toggle="tab") 
+    i.icon-bookmark
+    span #{symbol}(#{length})
 
 block content
   .container-fluid
@@ -27,68 +76,19 @@ block content
         #estrategias.well                  
           -var temps = []
             if graficas.length==0
-              h2 No hay graficas conectadas :(
+              h2 No hay graficas conectadas
             else 
               .tabbable.tabs-below(id="charts-tabs")
                 .tab-content
                   -for(var i=0;i<graficas.length;i++){
                     -var temp = graficas[i];
                     -var title = graficas[i][0].toLowerCase();
-                    .tab-pane(id=title)
-                      .tab
-                        -for(var j=1; j<temp.length; j++){
-                          -var row = temp[j]
-                          .row-fluid
-                            -for(var k=0; k<row.length;k++){
-                              -var chart = row[k].setts                              
-                              .span6
-                                div(id= chart.ID, class="grafica")
-                                  .content-graf
-                                      .graf-head
-                                        .btn-group.pull-right(id="opciones")
-                                          a.btn-small.btn.btn-primary.dropdown-toggle(data-toggle='dropdown',href='#') Opciones 
-                                            i(id="active").icon-thumbs-up.icon-white
-                                            span.caret
-                                          ul.dropdown-menu
-                                            li(data-filter-camera-type='all')
-                                              a(id="inputs",rel="popover") 
-                                                i.icon-list 
-                                                span Inputs
-                                            li(data-filter-camera-type='all')
-                                              a
-                                                form  
-                                                  input(type="checkbox", name="", value="") 
-                                                  span Activo
-                                        .graf-header
-                                          i.icon-certificate(id="trades")
-                                          span #{chart.symbol} M#{chart.Periodo}-#{chart.Magicma}                           
-                                      hr
-                                      #chart-div
-                                        .row-fluid  
-                                          .vars.well.span2
-                                            span.limite-cruce
-                                              abbr(title="Limite de operaciones para este cruce") 
-                                                h6 Limite
-                                                  i.icon-minus-sign.var-ico
-                                            hr
-                                            span.hora
-                                              abbr(title="Rangos de hora para esta grafica") 
-                                                h6 Hora
-                                                  i.icon-minus-sign.var-ico
-                                            hr
-                                            span.bollx
-                                              abbr(title="Bollinger de apertura (rango)") 
-                                                h6 BollX
-                                                  i.icon-minus-sign.var-ico
-                                            span
-                                              -var prom = chart.ID + '-prom'
-                                              a.promedios(id=prom,href="#", rel="tooltip", data-placement="bottom", data-original-title="?")
-                                                i.icon-plus
-                                                
-                                          -var id = chart.ID +'-chart'
-                                          .span9.chart(id=id)
-                            -}                          
-                        -}
+                    - if(i==0)
+                      .tab-pane.active(id=title)
+                        mixin chartBlock(temp)
+                    - else
+                      .tab-pane(id=title)
+                        mixin chartBlock(temp)
                   -}               
                 ul.nav.nav-tabs(id="charts-tab")
                   -for(var i=0;i<graficas.length;i++){
@@ -100,10 +100,12 @@ block content
                     -}
                     
                     -var title = "#"+symbol.toLowerCase();
-                    li
-                      a(href=title,data-toggle="tab") 
-                        i.icon-bookmark
-                        span #{symbol}(#{length})
+                    if i==0
+                      li.active
+                        mixin liSymbol(title,symbol,length)
+                    else 
+                      li  
+                        mixin liSymbol(title,symbol,length)
                   -}                     
     #terminal
       .well.sidebar-nav(id="terminal-wrap")

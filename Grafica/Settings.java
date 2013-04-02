@@ -11,6 +11,7 @@ import oms.util.Console;
 
 /**
  * PRECAUCION ESTA CLASE VIOLA TODAS LAS REGLAS DE OOP. :)
+ * TODO: Poner todos los atributos privados y con su set & get.
  * @author omar
  */
 public class Settings {
@@ -120,6 +121,7 @@ public class Settings {
          * CHARRADA!
          */
         this.lots = 1.00;
+        limiteCruce=2;
     }
     
     /**

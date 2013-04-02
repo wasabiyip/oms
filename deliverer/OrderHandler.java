@@ -298,7 +298,17 @@ public class OrderHandler {
         }
         return temp;
     }
+    public synchronized static ArrayList<Orden> getOrdersByGraph(String graf) {
+        ArrayList<Orden> temp = new ArrayList();
 
+        for (int i = 0; i < ordersArr.size(); i++) {
+            if (ordersArr.get(i).IsActiva() && ordersArr.get(i).getGrafId().equals(graf)) {
+                temp.add(ordersArr.get(i));
+            }
+        }
+
+        return temp;
+    }
     /**
      * Obtenemos El total de ordenes para determinado Symbol.
      *

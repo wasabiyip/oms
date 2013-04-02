@@ -107,7 +107,7 @@ public abstract class AbstractExpert {
      * restringida a sólo poder cerrar ordenes de su Symbol
      * @return 
      */
-    public int OrdersCount(){
+    public int OrdersBySymbol(){
         
         Integer temp = null;
         temp = OrderHandler.getOrdersBySymbol(this.Symbol).size();
@@ -116,20 +116,28 @@ public abstract class AbstractExpert {
     /**
      * @return número de ordenes que hay para este magic
      */
-    public int OrderMagicCount(){
+    public int OrdersByMagic(){
         int temp=0;
         temp = OrderHandler.getOrdersByMagic(this.Symbol, this.setts.MAGICMA).size();
         return temp;
     }
     /**
-     * Obetenemos El total de ordenes que podemos cerrar, cada gráfica esta
-     * restringida a sólo poder cerrar ordenes de su Symbol
+     * @return número de ordenes que hay para este magic
+     */
+    public int OrdersByGraph(){
+        int temp=0;
+        temp = OrderHandler.getOrdersByGraph(this.setts.id).size();
+        return temp;
+    }
+    /**
+     * Obetenemos El total de ordenes que podemos cerrar, una gráfica sólo 
+     * puede cerrar ordenés que tengan su id.
      * @return Ordenes en forma de ArrayList
      */
     public ArrayList<Orden> OrdersTotal() {
         
         ArrayList<Orden> temp = null;
-        temp = OrderHandler.getOrdersBySymbol(this.Symbol);
+        temp = OrderHandler.getOrdersByGraph(this.setts.id);
         return temp;
     }
     /**

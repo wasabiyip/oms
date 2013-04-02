@@ -49,7 +49,10 @@ public class Orden implements java.io.Serializable {
     private Date horaClose;
     private String account;
     private String reason = "";
-
+    private long orderMillsInit;
+    private long orderMillsFin;
+    private long OrderExecTime;
+    
     /**
      * Constructor que inicializa con datos de una orden, sin SL/TP.
      *
@@ -83,6 +86,7 @@ public class Orden implements java.io.Serializable {
         this.newOrderSingle.set(new OrdType('C'));
         this.newOrderSingle.set(new Price(this.open_price));
         this.esNueva = true;
+        this.orderMillsInit = System.currentTimeMillis();
     }
 
     /**
@@ -125,6 +129,7 @@ public class Orden implements java.io.Serializable {
         this.esNueva = true;
         this.sl = this.redondear(sl);
         this.tp = this.redondear(tp);
+        this.orderMillsInit = System.currentTimeMillis();
     }
 
     /**
@@ -405,6 +410,7 @@ public class Orden implements java.io.Serializable {
         this.executionReport = msj;
         this.filled = true;
         this.esNueva = false;
+        this.orderMillsFin = System.currentTimeMillis();
         try {
             this.open_price = msj.getLastPx().getObject();
             this.account = msj.getAccount().getValue();
@@ -412,7 +418,7 @@ public class Orden implements java.io.Serializable {
             this.execId = msj.getExecID().getValue();
             this.brokerOrderId = msj.getOrderID().getValue();
             Console.warning("Order was opened: #" + this.ordId + " " + this.type
-                    + " " + this.lotes + " " + this.symbol + " at " + this.getOpenPrice() + " ");
+                    + " " + this.lotes + " " + this.symbol + " at " + this.getOpenPrice() + " "+(this.orderMillsFin - this.orderMillsInit)+" milliseconds");
         } catch (FieldNotFound ex) {
             Console.exception(ex);
         }

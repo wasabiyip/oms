@@ -76,12 +76,12 @@ public class ExpertMoc extends AbstractExpert{
             bollUpS = this.bollUpS();
             bollDnS = this.bollDnS();
             this.cont_velas++;
-            Console.log(this);
+            //Console.log(this);
             this.startTime = this.TimeCurrent();
         }
         //Revisamos que los rmprecios se encuentren dentro de el rango de entrada.
         if ((this.Ask-this.Bid)<=(this.setts.spread*this.Point)&&(this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
-                && (this.OrdersCount() < this.setts.limiteCruce) && this.OrderMagicCount()<1 && (bollDif < this.setts.bollxUp 
+                && (this.OrdersBySymbol() < this.setts.limiteCruce) && this.OrdersByGraph()<1 && (bollDif < this.setts.bollxUp 
                 && bollDif > setts.bollxDn)) {
             //entrada de operaciones.
             if ((this.open_min+ this.setts.boll_special) <= bollDn) {
@@ -96,37 +96,28 @@ public class ExpertMoc extends AbstractExpert{
                 this.cont_velas = 0;
             }
         //Revisamos que haya entrado alguna operación      
-        }else if (this.OrdersCount() > 0) {
-            //System.out.println(contVelas);
+        }else if ( this.OrdersByGraph()> 0) {
+            //Recorremos las operaciones.
             for (int i = 0; i < OrdersTotal().size(); i++) {
                 Orden currentOrden = OrdersTotal().get(i);
-                if(currentOrden.getMagic()==this.setts.MAGICMA){
-                    if (currentOrden.getSide() == '1') {
-                        if (setts.salidaBollinger && this.open_min  >= bollUpS) {
-                            //System.out.println("Cerrando orden por bollinger");
-                            currentOrden.close(this.Bid, "cierre por bollinger");
-                            break;
-                        } else if (cont_velas == setts.velasS) {
-                            //System.out.println("Cerrando orden por velas");
-                            currentOrden.close(this.Bid, "cierre por velas");
-                            break;
-                        } else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
-                            //currentOrden.Modify(this.Bid-this.setts.sl, this.Bid+this.setts.tp);
-                        }
-                    } else if (currentOrden.getSide() == '2') {
-                        if (setts.salidaBollinger && this.open_min  <= bollDnS) {
-                            //System.out.println("Cerrando orden por bollinger");
-                            currentOrden.close(this.Ask, "cierre por bollinger");
-                            break;
-                            //Cerramos las ordenes...
-                        } else if (cont_velas == setts.velasS) {
-                            //System.out.println("Cerrando orden por velas");
-                            currentOrden.close(this.Ask, "cierre por velas");
-                            break;
-                        } else if(currentOrden.getSl() == 0 || currentOrden.getTp() == 0){
-                            //currentOrden.Modify(this.Ask+this.setts.sl, this.Ask-this.setts.tp);
-                        }
-                    }
+                //Si es compra
+                if (currentOrden.getSide() == '1') {
+                    if (setts.salidaBollinger && this.open_min  >= bollUpS) {
+                        currentOrden.close(this.Bid, "cierre por bollinger");
+                        break;
+                    } else if (cont_velas == setts.velasS) {
+                        currentOrden.close(this.Bid, "cierre por velas");
+                        break;
+                    } 
+                //Si es venta.
+                } else if (currentOrden.getSide() == '2') {
+                    if (setts.salidaBollinger && this.open_min  <= bollDnS) {
+                        currentOrden.close(this.Ask, "cierre por bollinger");
+                        break;
+                    } else if (cont_velas == setts.velasS) {
+                        currentOrden.close(this.Ask, "cierre por velas");
+                        break;
+                    } 
                 }
             }
         }
