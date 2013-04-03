@@ -79,6 +79,7 @@ public class ExpertMoc extends AbstractExpert{
             //Console.log(this);
             this.startTime = this.TimeCurrent();
         }
+       // System.out.println(this);
         //Revisamos que los rmprecios se encuentren dentro de el rango de entrada.
         if ((this.Ask-this.Bid)<=(this.setts.spread*this.Point)&&(this.CurrentHora() < this.setts.horaFin) && (this.CurrentHora() >= this.setts.horaIni)
                 && (this.OrdersBySymbol() < this.setts.limiteCruce) && this.OrdersByGraph()<1 && (bollDif < this.setts.bollxUp 
@@ -196,6 +197,6 @@ public class ExpertMoc extends AbstractExpert{
     }
     @Override
     public String toString(){
-        return this.Symbol+" "+"MAGIC:"+this.setts.MAGICMA+" Up:"+this.bollUp+" Dn:"+this.bollDn+" UpS:"+this.bollUpS +" DnS:"+this.bollDnS+" Velas"+this.cont_velas;
+        return this.Symbol+" "+"MAGIC:"+this.setts.MAGICMA+" Open:"+ this.open_min +" Up:"+this.bollUp+" Dn:"+this.bollDn+" UpS:"+this.bollUpS +" DnS:"+this.bollDnS+" Velas"+this.cont_velas;
     }
 }

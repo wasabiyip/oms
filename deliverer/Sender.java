@@ -36,7 +36,7 @@ public class Sender  {
          */ 
         System.out.println("Hora del servidor:"+GMTDate.getTime());
         Console.setPath(path);
-        SenderApp application = new SenderApp(settings.getString("UserName"),settings.getString("PassWord"), path);
+        SenderApp application = new SenderApp(settings, path);
         MessageStoreFactory messageStoreFactory = new FileStoreFactory(settings);
         LogFactory logFactory = new ScreenLogFactory(true,true, true, true);
         MessageFactory messageFactory = new DefaultMessageFactory();

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import oms.CustomException.OrdenNotFound;
 import oms.CustomException.TradeContextBusy;
 import oms.Grafica.Graphic;
+import oms.dao.MongoDao;
 import oms.util.Console;
 import quickfix.*;
 import quickfix.field.*;
@@ -39,7 +40,7 @@ public class OrderHandler {
      * OMS/temp/_cereal
      */
     private static String path = "";
-
+    private static MongoDao dao = SenderApp.getDAO();
     public static void Init() {
         ordersArr = getSerializedOrders();//
     }
@@ -199,7 +200,7 @@ public class OrderHandler {
      * @throws Exception
      */
     public synchronized static void shutDown(Orden orden) throws Exception {
-        Graphic.dao.recordOrden(orden);
+        dao.recordOrden(orden);
         deleteCerealFile(orden.getId());
         //Borramos orden de array de ordenes.
         for (int i = 0; i < ordersArr.size(); i++) {

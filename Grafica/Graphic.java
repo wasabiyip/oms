@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Properties;
 import oms.CustomException.GraficaNotConnected;
 import oms.CustomException.OrdenNotFound;
-import oms.Grafica.DAO.MongoDao;
 import oms.deliverer.Orden;
 import oms.deliverer.OrderHandler;
 import oms.util.Console;
@@ -36,8 +35,6 @@ public class Graphic extends Thread {
     private int periodo;
     private String id;
     private Double bid, ask;
-    //Guardamos las ordenes de que entran en cada gráfica.
-    public static MongoDao dao = new MongoDao();
     private Settings setts;
     private int lastOpen = GMTDate.getDate().getMinute();
     private PrintWriter blackBox;
@@ -195,7 +192,7 @@ public class Graphic extends Thread {
                     //Si el expert puede operar, guardamos una bitacora.
                     }
                     if(expert.isActive()){
-                        this.writeBlackBoxFile(stateFeed.getExpertState());
+                        this.writeBlackBoxFile(this.expert);
                     }
                     break;
                 case "get-state":

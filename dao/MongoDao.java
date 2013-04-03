@@ -1,26 +1,27 @@
 package oms.dao;
 
 import com.mongodb.*;
+import com.mongodb.util.JSON;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import oms.dao.MongoConnection;
+import oms.deliverer.Orden;
+import oms.util.fixToJson;
 
 /**
  *
  * @author omar Clase que se comunica con mongo para obtener datos.
  */
-public class MongoDao extends IMongoDAO {
+public class MongoDao {
 
     protected MongoConnection mongo;
     private DB db;
     private DBCollection coll;
     private DBCursor cursor;
     private BasicDBObject query = new BasicDBObject();
-    private BasicDBObject fechaMin;
     private BasicDBObject sort;
     private ArrayList<Double> arrList = new ArrayList();
-    
+
     /**
      * Constructor Obtiene la conexión con mongo y hace un query con el
      * parametro recibido.
@@ -28,53 +29,28 @@ public class MongoDao extends IMongoDAO {
      * @param date fecha apartir de la cual queremos obtener datos.
      * @throws Exception
      */
-    public MongoDao(String path) {
-        super(path);
+    public MongoDao(String host, Integer port, String db) {
+       
         mongo = MongoConnection.getInstance();
         try {
-            mongo.connect();
-            db = mongo.getDataBase();
+            
+            mongo.connect(host, port);
+            this.db = mongo.m.getDB(db);
         } catch (Exception ex) {
             Logger.getLogger(MongoDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    public DBCursor query(int ini, int fin) {
-
-        //query.put("Date", new BasicDBObject("$gt",date));
-        ArrayList<String> temp;
-        DBCursor cursor;
-
-        query.put("Date", new BasicDBObject("$gte", ini).append("$lte", fin));
-        cursor = coll.find(query);
-        return cursor;
     }
 
     public DB getDB() {
         return this.db;
     }
 
-    public DBCollection getCollection(String coll) {
-        return this.db.getCollection(coll);
-    }
-    
     public void setDB(String db) {
-        this.db = mongo.getConnection().getDB(db);
+        this.db = mongo.m.getDB(db);
     }
 
     public void setCollection(String coll) {
         this.coll = this.db.getCollection(coll);
-    }
-
-    /**
-     * Cambia la fecha que se esta utilizado.
-     *
-     * @param date Nueva fecha con la que trabajaremos.
-     */
-    public void setDate(int date) {
-
-        query.put("Date", new BasicDBObject("$gt", date));
-        this.cursor = coll.find(query).sort((new BasicDBObject("Date", -1)));
     }
 
     /**
@@ -101,17 +77,31 @@ public class MongoDao extends IMongoDAO {
         return doble;
     }
 
-    public ArrayList getCandleData(String symbol, int periodo) {
+    public DBCursor getCandleData(String symbol, int periodo) {
         ArrayList precios = new ArrayList();
         this.setDB("history");
         this.setCollection(symbol);
         DBCursor cursor;
+        if (periodo > 0) {
+            //Obtenemos la cantidad de datos necesarios para formar velas de ciertos
+            //periodos
+            cursor = this.coll.find().sort(new BasicDBObject("$natural", -1)).limit(periodo);
 
-        cursor = this.coll.find().sort(new BasicDBObject("$natural", -1)).limit(periodo);
-        while (cursor.hasNext()) {
-
-            precios.add(cursor.next().get("Open"));
+        } else {
+            return null;
         }
-        return precios;
+        return cursor;
+    }
+    /**
+     * Guardamos la representacion de una orden.
+     * @param orden 
+     */
+    public void recordOrden(Orden orden){
+        DBObject obj;
+        String entry = "";
+        String json = new fixToJson().parseOrder(orden);
+        this.setCollection("operaciones");
+        obj = (DBObject) JSON.parse(json);
+        this.coll.insert(obj);
     }
 }

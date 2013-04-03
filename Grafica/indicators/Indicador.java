@@ -2,11 +2,12 @@ package oms.Grafica.indicators;
 
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import oms.Grafica.DAO.MongoDao;
 import oms.Grafica.GMTDate;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import oms.CustomException.IndicatorLengthGap;
+import oms.dao.MongoDao;
+import oms.deliverer.SenderApp;
 
 /**
  * Esta clase regula la creacion de Bollingers se encarga de llenar con valores
@@ -23,6 +24,7 @@ public class Indicador {
     private int periodoGrafica;
     private int dif;
     private ArrayList<BollingerBands> bolls_arr = new ArrayList();
+    private MongoDao dao = SenderApp.getDAO();
     //Pool Party yei!
     private static Hashtable<String,ArrayList<BollingerBands>> bandsPoolParty;
     /**
@@ -51,8 +53,7 @@ public class Indicador {
             return this.bolls_arr.get(exists);
         } else {
             ArrayList data = new ArrayList();
-            MongoDao dao = new MongoDao();
-            DBCursor cursor = dao.getCandleData(this.symbol, (periodo * periodoGrafica) + this.dif);
+            DBCursor cursor = this.dao.getCandleData(this.symbol, (periodo * periodoGrafica) + this.dif);
             int last_hora = 0;
             Double last_open = 0.0;
             int resta;

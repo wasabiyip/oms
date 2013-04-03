@@ -1,81 +1,53 @@
 package oms.dao;
 
 import com.mongodb.Mongo;
-import com.mongodb.DB;
 import com.mongodb.MongoException;
-
 
 /**
  *
  * @author Omar
- * 
- * Esta clase crea un Singletone de la conexion a mongodb, regresa la conexion o
- * tambien regresa una colleccion, Tenemos algunas variables estáticas por 
- * el Singletone.
+ *
+ * Esta clase crea un Singletone de la conexion con mongo para asegur que sólo
+ * haya una instancia de la DB.
  */
-public class MongoConnection extends IMongoDAO {
+public class MongoConnection {
 
     private static MongoConnection INSTANCE;
-    private static Mongo m = null;
-    private static String path;
-    DB db;  
-        
+    //Representacion de mongo.
+    Mongo m = null;
+
     /**
      * Constructor vacio de acuerdo para hacer Singletone.
      */
-    private MongoConnection(){
+    private MongoConnection() {
         //---//
-        super(path);
     }
-    
+
     /**
      * Aqui es donde creamos el objeto mongo si es que no se ha creado, y este
      * es el que es retornado.
      */
-    public synchronized static MongoConnection getInstance(){
-        if(INSTANCE == null){
+    public synchronized static MongoConnection getInstance() {
+        if (INSTANCE == null) {
             INSTANCE = new MongoConnection();
-            
+
         }
         return INSTANCE;
     }
-    
+
     /**
-     * Este método inicia la conexión con Mongo.
-     * @throws Exception 
+     * Establecemos conexión con host.
+     *
+     * @throws Exception
      */
-    public synchronized void connect() throws Exception{
-        
-        try{
-            
-            MongoConnection.m = new Mongo(super.host, super.puerto);
-            
-        }catch (MongoException.Network e){
+    public synchronized void connect(String host, Integer port) throws Exception {
+
+        try {
+            System.err.println("Conectando "+host + " "+ port);
+            this.m = new Mongo(host, port);
+
+        } catch (MongoException.Network e) {
             throw new Exception("No se pudo conectar a MongoDB");
         }
-    }
-    
-    /**
-     * 
-     * @return El objeto mongo que contiene la conexión  actual con la base de
-     *         datos.
-     */
-    public Mongo getConnection(){
-        
-        return MongoConnection.m;
-    }
-    
-    /**
-     * 
-     * @return La base de datos especificada en el archivo de configuración.
-     */
-    public DB getDataBase(){
-        
-        this.db = m.getDB("history");
-        return this.db;
-    }
-    
-    public static void setPath(String pathIn){
-        path = pathIn;
     }
 }

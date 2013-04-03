@@ -1,7 +1,10 @@
 package oms.deliverer;
 
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import oms.dao.MongoConnection;
+import oms.dao.MongoDao;
 import oms.util.Console;
 import quickfix.*;
 import quickfix.field.*;
@@ -18,32 +21,35 @@ public class SenderApp extends MessageCracker implements Application{
     private GraficaHandler graficaHandler ;
     boolean lock = false;
     private String path;
-    
+    private SessionSettings settings;
+    private static MongoDao dao;
     /**
      * Constructor nos loggeamos a node al construir esta clase.
      */
-    public SenderApp(String userName, String passWord, String path){
-        this.userName = userName;
-        this.passWord = passWord;
-        MessageHandler.Init();
-        OrderHandler.setPath(path);
-        OrderHandler.Init();                
-        this.path = path;
-        graficaHandler = new GraficaHandler(this.path);
+    public SenderApp(SessionSettings settings, String path){
+        try {
+            this.userName = settings.getString("UserName");
+            this.passWord = settings.getString("PassWord");
+            this.settings = settings;
+            MessageHandler.Init();
+            OrderHandler.setPath(path);
+            OrderHandler.Init();                
+            this.path = path;
+            graficaHandler = new GraficaHandler(this.path);
+        } catch (ConfigError | FieldConvertError ex) {
+            Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    
+    public static MongoDao getDAO(){
+        return dao;
+    }
     /**
      * Método que se ejecuta al crear aplicación.
      * @param id 
      */
     @Override
     public void onCreate(SessionID id){
-        /**
-         * Antes de obtener la instancia debemos añadir el path.
-         */
-        MongoConnection.setPath(this.path);
-        //Pedimos la instancia de Mongo.
-        mongo = MongoConnection.getInstance();
+       
     }
     
     /**
@@ -57,12 +63,21 @@ public class SenderApp extends MessageCracker implements Application{
         SenderApp.sessionID = id;
         //Para que los threads no se dupliquen cuando el servidor nos desconecta.
         if(!lock){
-            //Enviamos el login de app.            
-            MessageHandler.mStreaming.login(this.graficaHandler.getProfile());
-            Console.warning("Iniciando perfil: "+this.graficaHandler.getProfile());
-            //corremos la gráfica.
-            this.graficaHandler.runProfile();
-            lock = true;
+             try {
+                /**
+                 * Construimos Data Access Obj.
+                 */
+                dao = new MongoDao(settings.getString("RemoteHost"),Integer.parseInt(settings.getString("RemotePort")),"history");
+                //Enviamos el login de app.            
+                MessageHandler.mStreaming.login(this.graficaHandler.getProfile());
+                Console.warning("Iniciando perfil: "+this.graficaHandler.getProfile());
+                //corremos la gráfica.
+                this.graficaHandler.runProfile();
+                lock = true;
+            } catch (ConfigError | FieldConvertError ex) {
+                Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         }
     }
     
