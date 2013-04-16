@@ -1,0 +1,81 @@
+extends layout
+
+block content
+  .container-fluid(id='content')
+    .row-fluid
+      .span3
+        
+      .span9(id='chart-window')
+        if graficas.length==0
+            h1 No hay graficas conectadas :(
+          else                  
+            .tab-content(id="tab-chart")
+              each grafica in graficas
+                .tab-pane(id=grafica.setts.ID)
+                  div(id= grafica.setts.ID, class="grafica")
+                        .content-graf
+                            .graf-head
+                              h4 #{grafica.setts.symbol}
+                              .btn-group.pull-right(id="opciones")
+                                a.btn-small.btn.btn-primary.dropdown-toggle(data-toggle='dropdown',href='#') Opciones 
+                                  span.caret
+                                ul.dropdown-menu
+                                  li(data-filter-camera-type='all')
+                                    a(id="inputs",rel="popover") Inputs                           
+                            hr
+                            p#stream
+                              strong Bid
+                              span.bid -------
+                              strong Ask
+                              span.ask -------
+                              .promedios
+                                h5 Apertura de minuto
+                                  span.apertura
+                                h5 Promedios
+                                ul#calculos.unstyled
+                              .operaciones
+            ul.nav.nav-tabs
+              each grafica in graficas
+                li
+                  a(href='#'+grafica.setts.ID, data-toggle="tab") #{grafica.setts.symbol}
+      #terminal
+        .well.sidebar-nav(id="terminal-wrap")
+          ul.nav.nav-tabs(id='terminal-tab')
+            li.active
+              a(href="#trade", data-toggle="tab") Trade
+            li
+              a(href="#experts", data-toggle="tab") Experts  
+            li
+              a(href="#journal", data-toggle="tab") Journal
+          #terminal-cont.tab-content
+            #trade.tab-pane.active
+              table.table.table-striped
+                tr
+                  th Order
+                  th Tipo
+                  th Lotes
+                  th Par
+                  th Precio
+                  th S/L
+                  th T/P          
+            #experts.tab-pane
+              table.table.table-hover.table-condensed.table-bordered
+              thead
+                  tr
+                    th Time
+                    th Message
+                tbody.log
+                  tr.warning
+                    td ---------------
+                    td "When you look at the dark side, careful you must be... for the dark side looks back".- Yoda
+            #journal.tab-pane
+              table.table.table-hover.table-condensed.table-bordered
+              thead
+                tr
+                  th Time
+                  th Message
+              tbody.log
+                tr.warning
+                  td ---------------
+                  td "Money is the root of all evil today.".- Pink Floyd
+      

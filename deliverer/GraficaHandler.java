@@ -3,8 +3,6 @@ package oms.deliverer;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import oms.CustomException.GraficaNotFound;
 import oms.CustomException.NoProfileFound;
 import oms.Grafica.Graphic;

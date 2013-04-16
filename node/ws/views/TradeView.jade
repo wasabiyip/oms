@@ -1,0 +1,157 @@
+extends layout
+//-Algunos helpers para reciclar un poco el código.
+mixin chartBlock(charts)
+  //-Construimos el bloque de graficas para cada moneda.
+  .tab
+    -for(var j=1; j<charts.length; j++){
+      -var row = charts[j]
+      .row-fluid
+        -for(var k=0; k<row.length;k++){
+          -var chart = row[k].setts                              
+          .span6
+            div(id= chart.ID, class="grafica")
+              .content-graf
+                  .graf-header
+                    a.pull-right(id="inputs",rel="popover") 
+                      i.icon-list 
+                    i.icon-certificate(id="trades")
+                    span #{chart.symbol} M#{chart.Periodo}-#{chart.Magicma}
+                  hr
+                  #chart-div
+                    .row-fluid  
+                      .vars.well.span2
+                        span.limite-cruce
+                          abbr(title="Limite de operaciones para este cruce") 
+                            h6 Limite
+                              i.icon-minus-sign.var-ico
+                        hr
+                        span.hora
+                          abbr(title="Rangos de hora para esta grafica") 
+                            h6 Hora
+                              i.icon-minus-sign.var-ico
+                        hr
+                        span.bollx
+                          abbr(title="Bollinger de apertura (rango)") 
+                            h6 BollX
+                              i.icon-minus-sign.var-ico
+                        span
+                          -var prom = chart.ID + '-prom'
+                          a.promedios(id=prom,href="#", rel="tooltip", data-placement="bottom", data-original-title="?")
+                            i.icon-plus
+                            
+                      -var id = chart.ID +'-chart'
+                      .span9.chart(id=id)
+        -}                          
+    -}
+//-Construimos el nav-tab de cada moneda.
+mixin liSymbol(title, symbol, length)
+  a(href=title,data-toggle="tab") 
+    i.icon-bookmark
+    span #{symbol}(#{length})
+
+block content
+  .container-fluid
+    .row-fluid
+      .span3
+        .well.sidebar-nav(id="market-watch")
+          p 
+            i.icon-eye-open
+            Market Watch:
+            span#market-hora
+        .well.sidebar-nav(id="stream")
+          table.table.table-striped.table-bordered.table-hover
+              thead.stream-tab  
+                tr
+                  th Symbol
+                  th Bid
+                  th Ask
+              tbody.log  
+                each moneda in monedas
+                  tr.moneda(id= moneda)
+                    td #{moneda}
+                      i.icon-chevron-right
+                    td.bid(id='high') ------
+                    td.ask(id='high') ------
+      .span9
+        #estrategias.well                  
+          -var temps = []
+            if graficas.length==0
+              h2 No hay graficas conectadas
+            else 
+              .tabbable.tabs-below(id="charts-tabs")
+                .tab-content
+                  -for(var i=0;i<graficas.length;i++){
+                    -var temp = graficas[i];
+                    -var title = graficas[i][0].toLowerCase();
+                    - if(i==0)
+                      .tab-pane.active(id=title)
+                        mixin chartBlock(temp)
+                    - else
+                      .tab-pane(id=title)
+                        mixin chartBlock(temp)
+                  -}               
+                ul.nav.nav-tabs(id="charts-tab")
+                  -for(var i=0;i<graficas.length;i++){
+                    -var symbol = graficas[i][0];
+                    -var temp = graficas[i]
+                    -var length=0;
+                    -for(var j=1;j<temp.length;j++){
+                      -length = length +temp[j].length
+                    -}
+                    
+                    -var title = "#"+symbol.toLowerCase();
+                    if i==0
+                      li.active
+                        mixin liSymbol(title,symbol,length)
+                    else 
+                      li  
+                        mixin liSymbol(title,symbol,length)
+                  -}                     
+    #terminal
+      .well.sidebar-nav(id="terminal-wrap")
+        ul.nav.nav-tabs(id='terminal-tab')
+          li.active
+            a(href="#trade", data-toggle="tab") 
+              i.icon-shopping-cart
+              span(id="terminal-trade-title") Trade
+          li
+            a(href="#experts", data-toggle="tab") 
+              i.icon-exclamation-sign
+              span(id="terminal-exp-title") Experts  
+          li
+            a(href="#journal", data-toggle="tab") 
+              i.icon-info-sign
+              span(id="terminal-journal-title") Journal
+        #terminal-cont.tab-content
+          #trade.tab-pane.active
+            table.table.table-striped.table-hover.table-condensed.table-bordered
+              thead  
+                tr
+                  th Order
+                  th Tipo
+                  th Lotes
+                  th Par
+                  th Precio
+                  th S/L
+                  th T/P          
+                tbody.log
+          #experts.tab-pane
+            table.table.table-hover.table-condensed.table-bordered
+              thead
+                  tr
+                    th Time
+                    th Message
+                tbody.log
+                  tr.warning
+                    td.time "Mensaje de prueba"
+                    td "When you look at the dark side, careful you must be... for the dark side looks back".- Yoda
+          #journal.tab-pane
+            table.table.table-hover.table-condensed.table-bordered
+              thead
+                tr
+                  th Time
+                  th Message
+              tbody.log
+                tr.warning
+                  td.time "Mensaje de prueba"
+                  td "Money is the root of all evil today.".- Pink Floyd     

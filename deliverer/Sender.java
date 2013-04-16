@@ -19,15 +19,18 @@ public class Sender  {
     private static Sender sender;
     private boolean initStarted = false;
     private static Logger log = LoggerFactory.getLogger(Sender.class);
+    public static SenderApp application ;
     /**
      * 
      * @throws Exception 
      */
     public Sender() throws Exception{
         System.out.println("Ingresa el nombre del usuario:");
-        String input = new Scanner(System.in).next();
-        String path = "/home/"+input;
-        SessionSettings settings = new SessionSettings("/home/"+input+"/OMS/config/app.cnf");
+        //String input = new Scanner(System.in).next();
+        //String path = "/home/"+input;
+        String path = "/home/omar";
+        //SessionSettings settings = new SessionSettings("/home/"+input+"/OMS/config/app.cnf");
+        SessionSettings settings = new SessionSettings("/home/omar/OMS/config/app.cnf");
         /**
          * El path es la raíz en donde se encuentra la carpeta del programa, 
          * localmente: /home/omar
@@ -36,7 +39,7 @@ public class Sender  {
          */ 
         System.out.println("Hora del servidor:"+GMTDate.getTime());
         Console.setPath(path);
-        SenderApp application = new SenderApp(settings, path);
+        application = new SenderApp(settings, path);
         MessageStoreFactory messageStoreFactory = new FileStoreFactory(settings);
         LogFactory logFactory = new ScreenLogFactory(true,true, true, true);
         MessageFactory messageFactory = new DefaultMessageFactory();
@@ -62,6 +65,7 @@ public class Sender  {
             }
         }
     }
+    
     public void stop(){
         shutdownLatch.countDown();
     }

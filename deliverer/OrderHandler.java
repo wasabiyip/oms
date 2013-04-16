@@ -12,8 +12,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import oms.CustomException.OrdenNotFound;
 import oms.CustomException.TradeContextBusy;
-import oms.Grafica.Graphic;
 import oms.dao.MongoDao;
+import static oms.deliverer.MessageHandler.mStreaming;
 import oms.util.Console;
 import quickfix.*;
 import quickfix.field.*;
@@ -44,7 +44,13 @@ public class OrderHandler {
     public static void Init() {
         ordersArr = getSerializedOrders();//
     }
-
+    public synchronized static void reStreamCerealOrders(){
+        if( ordersArr.size()>=0){
+            for (int i = 0; i < ordersArr.size(); i++) {
+                mStreaming.nwOrden(ordersArr.get(i));
+            }
+        }
+    }
     /**
      * Metodo que envia las ordenes a Currenex, es sincronizado para que no se
      * confunda si muchas graficas quieren enviar ordenés al mismo tiempo.
@@ -200,8 +206,8 @@ public class OrderHandler {
      * @throws Exception
      */
     public synchronized static void shutDown(Orden orden) throws Exception {
-        dao.recordOrden(orden);
         deleteCerealFile(orden.getId());
+        dao.recordOrden(orden);
         //Borramos orden de array de ordenes.
         for (int i = 0; i < ordersArr.size(); i++) {
             if (ordersArr.get(i).getId() == orden.getId()) {

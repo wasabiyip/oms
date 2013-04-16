@@ -70,6 +70,7 @@ public class Indicador {
                  */
                 int mins = getMinVela(hora / 100);
                 if (mins - (this.periodoGrafica * (mins / this.periodoGrafica)) == 0) {
+                    System.out.println(open);
                     data.add(open);
                     /**
                      * Si la resta es mayor a 100 quiere decir que hay un gap,
@@ -90,6 +91,7 @@ public class Indicador {
                     for (int i = 1; i <= resta / 100; i++) {
                         //Misma forma de "mod" 
                         if ((mins + i) - (this.periodoGrafica * ((mins + i) / this.periodoGrafica)) == 0) {
+                            System.out.println(last_open);
                             data.add(last_open);
                         }
                     }

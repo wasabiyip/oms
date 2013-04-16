@@ -176,19 +176,19 @@ public class Graphic extends Thread {
     private void handler(String msj) {
         
         try {
-            JSONObject root = (JSONObject) new JSONParser().parse("{" + msj);
+            JSONObject root = (JSONObject) new JSONParser().parse("{"+msj);
             JSONObject json = (JSONObject) root.get("msj");
-            
             switch ((String) json.get("type")) {
                 case "open":
-                    double open = (double) json.get("precio");                    
+                    double open = (double) json.get("precio");
                     //Este evento puede ser llamado cada tick, auqque mosotros
                     //lo llamamos cada open para ahorrar recursos.
                     this.expert.open_min = open;
                     //Si es una nueva vel
                     if (candle.isNewCandle()) {
                         this.expert.indicator.appendBollsData(open);
-                        this.sendMessage.ExpertState();                    
+                        this.sendMessage.Candle();    
+                        System.out.println("Vela: " + this.symbol + " "+ this.setts.MAGICMA);
                     //Si el expert puede operar, guardamos una bitacora.
                     }
                     if(expert.isActive()){
@@ -198,18 +198,22 @@ public class Graphic extends Thread {
                 case "get-state":
                     this.sendMessage.ExpertState();
                     break;
-                case "ask":
-                    //expert.setAsk((double) json.get("precio"));
-                    expert.Ask = ((double) json.get("precio"));
-                    break;
-                case "bid":
-                    expert.Bid = ((double) json.get("precio"));
-                    //Unica condición para dar tick.
-                    if(expert.Bid > 0 && expert.Ask > 0 && expert.open_min >0)
-                        this.expert.onTick();
+                case "tick":
+                    String entry = (String) json.get("entry");
+                    if(entry.equals("bid")){
+                        Double bid = ((double) json.get("precio"));
+                        expert.Bid = bid;
+                        //Unica condición para dar tick.
+                        if(expert.Bid > 0 && expert.Ask > 0 && expert.open_min >0)
+                            this.expert.onTick();
+                    }else if(entry.equals("ask")){
+                        Double ask = ((double) json.get("precio"));
+                        expert.Ask = ask;
+                    }
                     
                     break;
-                case "close-order":
+                case "order-close":
+                    
                     try {
                         Orden orden = OrderHandler.getOrdenById(id);
                         if(orden.getSide() == '1'){

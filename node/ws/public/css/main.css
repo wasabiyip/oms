@@ -1,0 +1,265 @@
+@font-face {
+  font-family: 'modernpics';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Tangerine'), url('../fonts/modernpics.otf') format('truetype');
+}
+@font-face {
+  font-family: 'bentham';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Tangerine'), url('../fonts/Bentham.otf') format('truetype');
+}
+@font-face {
+  font-family: 'enriqueta';
+  font-style: normal;
+  font-weight: normal;
+  src: local('Tangerine'), url('../fonts/Enriqueta-Regular.otf') format('truetype');
+}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+    color: #1A202C;
+    background-image:url(../imgs/transmit.gif); 
+    background-repeat:repeat
+    color: #333333;
+    font-family: ‘Lucida Console’, Monaco, monospace;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+
+.settings li{
+   display: inline;
+   margin: 10px 10px 0 0;
+}
+
+.estado{
+    margin: 10px 10px 10px 30px;
+    font-size: 30px;
+    color:green;
+}
+#content{
+    height:100%;
+    width: 100%;
+    position: absolute;
+}
+#wrap{
+    float:left;
+    width:80%;
+    height: 99.2%;
+    padding:5px 0 0 0;
+    background-color: rgba(249, 249, 249, 0.9);
+    color : #000;
+    overflow: scroll;
+}
+#lefty{
+    background-color: rgba(1, 0, 0, 0.7);
+    width:20%;
+    float: left;
+    height: 100%;
+    color:white;
+    font-family: 'enriqueta';
+}
+#data{
+    margin: 15px;
+}
+#lefty {
+    font-family: monospace;
+}
+#lefty h2{
+    font-size: 17px;
+    text-decoration: underline;
+    bottom: 3px;
+}
+#inputs{
+    font-size: 15px;
+}
+#estrategias{
+    padding: 10px 10px 0px 10px; 
+    
+    margin-top: 15px;
+}
+#main-state{
+    position: fixed;
+    float: left;
+    top: 0px;
+    left: 22%;
+    height: 23px;
+    width: 25px;
+    background-color: black;
+    color: white;
+    padding:2px 0px 6px 9px;
+    box-shadow: 1px 1px 1px #666;
+   -webkit-box-shadow: 1px 1px 1px #666;
+   -moz-box-shadow: 1px 1px 1px #666;
+}
+.grafica{
+    margin: 10px 0px 8px 2%;
+    padding:10px 0px 10px 10px;
+    width: 470px;
+    background-color: #FFF;
+    -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    -border-radius:3px;
+     box-shadow: 1px 2px 4px #666;
+   -webkit-box-shadow: 1px 2px 5px #666;
+   -moz-box-shadow: 1px 2px 4px #666;
+    color : #343643;
+    font-family: ‘Courier New’, Courier, monospace;
+    float:left;
+}
+.content-graf{
+    width: 93%;
+    float: left;
+    margin:0px;
+}
+.menu-graf{
+    top:-10px;
+    width: 30px;
+    position: relative;
+    float: left;
+}
+.cerrar, .icons{
+    font-family: 'modernpics', serif;
+    font-size: 23px;
+    cursor:pointer;
+    margin: 0px;
+}
+.cerrar{
+    top:2px;
+    position: relative;
+    
+}
+.cerrar:hover{
+    color: gray;
+}
+.icons span{
+    margin-top:0px;
+    float:left;
+}
+#estrategias h2{
+    font-size: 17px;
+    font-weight:bold;
+}
+
+#estrategias h3{
+    font-weight:bold;
+}
+
+ul{
+    margin: 0px 0px 0px 10px;
+}
+
+.bid{
+    background-color: blue;
+    color:#FFF;
+}
+.ask{
+    background-color: #E00E0E;
+    color:#FFF;
+}
+.apertura{
+    color:green;
+}
+.operaciones{
+    top:5px;
+    position: relative;
+    height: 50px;
+}
+.promedios{
+    margin:5px;
+}
+.promedios ul li span{
+    color:red;
+}
+.operaciones ul li span{
+    margin: 5px;
+}
+
+table{
+    font-family: "Lucida Sans Unicode", "Lucida Grande";
+    font-size: 12px;
+    margin:0px;
+    width: 100%;
+    text-align: center;
+    border-collapse: collapse;
+}
+
+th{
+    padding:8px;
+    font-weight: normal;
+    font-size: 10px;
+    color:#FFF;
+    background: #005DB3;
+}
+td{
+    background:	#F9F9F9;
+    padding-left: 5px
+    color:#000000;
+    font-size: 11px;
+}
+tr:hover td{
+    background: rgba(195,187,176,0.1);
+}
+#log-data{
+   position: relative;
+   z-index: 3;
+   display: none;
+   background-color: white;
+   -webkit-border-radius:3px;
+    -moz-border-radius:3px;
+    -border-radius:3px;
+     box-shadow: 1px 2px 4px #666;
+   -webkit-box-shadow: 0px 2px 5px #666;
+   -moz-box-shadow: 1px 2px 4px #666;
+   list-style: none;
+   
+   width: 130px;
+}
+#resta{
+    color: blue;
+}            
+menu-icons{
+    left: 2px;
+    font-size: 10px;
+}
+#terminal{
+    position: relative;
+    margin-bottom: 
+    width: 200px;
+    height: 150px;
+    background-color: black;
+}

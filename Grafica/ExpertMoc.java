@@ -5,8 +5,8 @@
 package oms.Grafica;
 
 import oms.Grafica.indicators.BollingerBands;
-import oms.util.Console;
 import oms.deliverer.Orden;
+import oms.util.Console;
 
 /**
  *
@@ -35,8 +35,9 @@ public class ExpertMoc extends AbstractExpert{
     @Override
     public void Init() {
         
-        bollBand1 = this.iBands(setts.boll1);
-        bollBand2 = this.iBands(setts.boll2);
+        bollBand1 = this.iBands(5);
+        System.out.println(bollBand1);
+        /*bollBand2 = this.iBands(setts.boll2);
         bollBand3 = this.iBands(setts.boll3);
         
         bollBandS1 = this.iBands(setts.bollS1);
@@ -50,13 +51,13 @@ public class ExpertMoc extends AbstractExpert{
         bollDn = this.getAvgBoll(this.bollDn());
         bollDif = this.bollingerDif();
         bollUpS = this.getAvgBoll(this.bollUpS());
-        bollDnS = this.getAvgBoll(this.bollDnS());*/
+        bollDnS = this.getAvgBoll(this.bollDnS());
         bollUp = this.bollUp();
         bollDn = this.bollDn();
         bollDif = this.bollingerDif();
         bollUpS = this.bollUpS();
         bollDnS = this.bollDnS();
-        this.cont_velas = 0;
+        this.cont_velas = 0;*/
         this.startTime = this.TimeCurrent() - this.getMod();
     }
     /**
@@ -76,7 +77,7 @@ public class ExpertMoc extends AbstractExpert{
             bollUpS = this.bollUpS();
             bollDnS = this.bollDnS();
             this.cont_velas++;
-            //Console.log(this);
+            Console.log(this);
             this.startTime = this.TimeCurrent();
         }
        // System.out.println(this);

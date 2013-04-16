@@ -39,6 +39,11 @@ public class SendMessage {
             + "\"id\":\"" + this.stateFeed.getId() + "\","
             + this.stateFeed.getExpertState()
             +"}");
+        System.out.println("{"
+            + "\"type\": \"expert-state\","
+            + "\"id\":\"" + this.stateFeed.getId() + "\","
+            + this.stateFeed.getExpertState()
+            +"}");
     }
     /**
      * Cuando una vela enviamos el estado del expert.
@@ -62,7 +67,7 @@ public class SendMessage {
             //Esperamos entre 1 y el número de graficas enmilis para prevenir 
             //mensajes traslapados.
             Thread.sleep(random);
-            this.outNode.writeUTF(msj + "\n");
+            this.outNode.write(msj.getBytes());
             this.outNode.flush();
             
         } catch (IOException ex) {

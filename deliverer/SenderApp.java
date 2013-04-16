@@ -20,6 +20,7 @@ public class SenderApp extends MessageCracker implements Application{
     public static SessionID sessionID;
     private GraficaHandler graficaHandler ;
     boolean lock = false;
+    private boolean logged = false;
     private String path;
     private SessionSettings settings;
     private static MongoDao dao;
@@ -36,10 +37,27 @@ public class SenderApp extends MessageCracker implements Application{
             OrderHandler.Init();                
             this.path = path;
             graficaHandler = new GraficaHandler(this.path);
+             /**
+            * Construimos Data Access Obj.
+            */
+            dao = new MongoDao(settings.getString("RemoteHost"),Integer.parseInt(settings.getString("RemotePort")),"history");
         } catch (ConfigError | FieldConvertError ex) {
             Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    public void setLogIn(boolean log){
+        
+        this.logged = log;
+        Console.warning("Iniciando perfil: "+this.graficaHandler.getProfile());
+        if(this.logged){
+            //corremos la gráfica.
+            this.graficaHandler.runProfile();
+        }
+    }
+    /**
+     * 
+     * @return 
+     */
     public static MongoDao getDAO(){
         return dao;
     }
@@ -59,25 +77,13 @@ public class SenderApp extends MessageCracker implements Application{
     @Override
     public void onLogon(SessionID id) {
         //MessageHandler.mStreaming.msg("Conectados exitosasmente con "+id+" desde la cuenta " + this.userName);
-        Console.info("Conectados exitosasmente con "+id+" desde la cuenta " + this.userName);
+        //Console.info("Conectados exitosasmente con "+id+" desde la cuenta " + this.userName);
         SenderApp.sessionID = id;
         //Para que los threads no se dupliquen cuando el servidor nos desconecta.
-        if(!lock){
-             try {
-                /**
-                 * Construimos Data Access Obj.
-                 */
-                dao = new MongoDao(settings.getString("RemoteHost"),Integer.parseInt(settings.getString("RemotePort")),"history");
-                //Enviamos el login de app.            
-                MessageHandler.mStreaming.login(this.graficaHandler.getProfile());
-                Console.warning("Iniciando perfil: "+this.graficaHandler.getProfile());
-                //corremos la gráfica.
-                this.graficaHandler.runProfile();
-                lock = true;
-            } catch (ConfigError | FieldConvertError ex) {
-                Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
+        if(!lock){ 
+            MessageHandler.mStreaming.login(this.graficaHandler.getProfile());
+            //Enviamos el login de app.            
+            lock = true;            
         }
     }
     

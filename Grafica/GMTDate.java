@@ -6,7 +6,7 @@ import java.util.*;
 public class GMTDate {
 
     private static Date date;
-    static int ajuste = 9;
+    static int ajuste = 8;
 
     public static Date getDate() {
 

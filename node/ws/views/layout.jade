@@ -1,0 +1,36 @@
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/css/bootstrap/bootstrap.css')
+    -var css = '/css/'+title.toLowerCase()+'.css'
+    link(rel='stylesheet', href=css)
+    link(rel='stylesheet', href='/css/bootstrap/bootstrap-responsive.css')
+  body
+    #wrap
+      .navbar.navbar-inverse.navbar-top
+        .navbar-inner
+          .container-fluid
+            a.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
+            a.brand #{profile}
+            .nav-collapse.collapse
+              p.navbar-text
+                ul.nav
+                  li(id="trading")
+                    a(href='/') Trading
+                  li(id="monitor")
+                    a(href='/operaciones') Operaciones
+      block content
+      #sound_order
+script(src='http://code.jquery.com/jquery-latest.min.js')
+script(src='js/lib/jquery.dataTables.min.js')
+script(src='js/lib/socket.io.js')
+script(src='https://www.google.com/jsapi')
+script(src='js/lib/bootstrap-affix.js')
+script(src='js/lib/bootstrap-dropdown.js')
+script(src='js/lib/bootstrap-tooltip.js')
+script(src='js/lib/bootstrap-popover.js')
+script(src='js/lib/bootstrap-tab.js')
+script(src='js/lib/bootstrap-scrollspy.js')   
+script(src='js/grafica.js')
+script(src='js/clientEventsHandler.js')
+script(src='js/util.js') 

@@ -1,6 +1,6 @@
 *~
-node/webServer/public/js/lib/*
-node/webServer/public/css/bootstrap/*
-/node/webServer/node_modules
+node/ws/public/js/lib/*
+node/ws/public/css/bootstrap/*
+/node/node_modules
 /node/*.json
-/node/webServer/public/*.txt
+/node/ws/public/*.txt

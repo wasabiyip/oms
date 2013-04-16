@@ -51,10 +51,14 @@ public class MsjStreaming extends Thread {
             Logger.getLogger(SenderApp.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }
+    /**
+     * Log In de la aplicacion.
+     * @param profile 
+     */
     public void login(String profile){
         
         this.writeNode("{\"type\": \"login\", "
-                    + "\"name\":\"app\", "
+                    + "\"name\":\"OMS\", "
                     + "\"profile\":\""+ profile +"\""
                     + "}");
     }
@@ -97,7 +101,7 @@ public class MsjStreaming extends Thread {
         temp.append("{");
         temp.append("\"type\": \"log\",");
         //enviamos warning solo para que se vea como amarillo no por que sea un,
-        //errror o algo.
+        //errror o algo.    
         temp.append("\"label\": \"warning\",");
         temp.append("\"msj\":\""+msj+" \"");
         temp.append("}");
@@ -143,7 +147,8 @@ public class MsjStreaming extends Thread {
      */
     private void writeNode(String msj) {
         try {
-            this.outNode.writeUTF(msj + "\n");
+            //this.outNode.writeUTF(msj + "\n");
+            this.outNode.write(msj.getBytes());
             int random = new Random().nextInt(10);
             //Esperamos entre 1-15 milis para prevenir perdida de mensajes.
             Thread.sleep(random);
@@ -153,15 +158,21 @@ public class MsjStreaming extends Thread {
             Logger.getLogger(MsjStreaming.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+    /**
+     * Node's input stream.
+     * @param msj -> Mensaje de entrada.
+     */
     private void inHandler(String msj) {
         
         try {
             JSONObject root = (JSONObject) new JSONParser().parse("{" + msj);
             JSONObject json = (JSONObject) root.get("msj");
-           
             switch ((String) json.get("type")) {
-                
+                case "logged":
+                    Sender.application.setLogIn(true);
+                    //Reenviamos ordenes acumuladas.
+                    OrderHandler.reStreamCerealOrders();
+                    break;
                 case "getOrders":
                     Orden temp ;
                     for (int i = 0; i < OrderHandler.ordersArr.size(); i++) {
